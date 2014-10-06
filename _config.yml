@@ -1,7 +1,7 @@
-title:            Site Title
+title:            Don't Panic
 description:      Describe your website here.
 disqus_shortname: 
-reading_time:     true
+reading_time:     false
 words_per_minute: 200
 #Your site's domain goes here. Leave localhost server or blank when working locally.
 url:              http://lambda.hk
@@ -10,7 +10,7 @@ url:              http://lambda.hk
 owner:
   name:           Pathfinder Mok
   avatar:         avatar.jpg
-  bio:            "Your bio goes here. It shouldn't be super long but a good two sentences or two should suffice."
+  bio:            "Answer to The Ultimate Question of Life, the Universe, and Everything."
   email:          xtcmhs@gmail.com
   # Social networking links used in footer. Update and remove as you like.
   twitter:        

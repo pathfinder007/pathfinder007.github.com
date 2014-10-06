@@ -10,20 +10,20 @@ url:              http://lambda.hk
 owner:
   name:           Pathfinder Mok
   avatar:         avatar.jpg
-  bio:            "Answer to The Ultimate Question of Life, the Universe, and Everything."
+  bio:            "Coding   Hiking   Cycling   Reading"
   email:          xtcmhs@gmail.com
   # Social networking links used in footer. Update and remove as you like.
   twitter:        
   facebook:       
-  github:         
+  github:        +yourid 
   stackexchange:  
-  linkedin:       
+  linkedin:     +yourid    
   instagram:      
   flickr:         
   tumblr:         
   # For Google Authorship https://plus.google.com/authorship
   # google plus id, include the '+', eg +mmistakes
-  google_plus:    +yourid
+  google_plus:
 
 # Background image to be tiled on all pages
 background: 

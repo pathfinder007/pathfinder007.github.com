@@ -4,7 +4,7 @@
 <!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
-{% include head.html %}
+    {% include head.html %}
 </head>
 
 <body id="page" {% if page.image.feature %}class="feature"{% endif %}>
@@ -14,13 +14,13 @@
 
 {% if page.image.feature %}
 <div class="entry-header">
-  {% if page.image.credit %}<div class="image-credit">Image source: <a href="{{ page.image.creditlink }}">{{ page.image.credit }}</a></div><!-- /.image-credit -->{% endif %}
   <div class="entry-image">
     <img src="{{ site.url }}/images/{{ page.image.feature }}" alt="{{ page.title }}">
   </div><!-- /.entry-image -->
 </div><!-- /.entry-header -->
 {% endif %}
 
+{% include rightnav.html %}
 <div id="main" role="main">
   <article class="entry">
     <header class="header-title">

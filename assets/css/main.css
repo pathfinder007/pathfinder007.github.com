@@ -1579,22 +1579,22 @@ svg:not(:root) {
 @media only screen and (min-width: 48em) {
   .dl-menuwrapper {
     position: fixed;
-    top: 25px;
-    left: 25px;
-    max-width: 175px;
+    top: 160px;
+    left: 1.5%;
+    max-width: 220px;
   }
 }
 
 .dl-menuwrapper button {
-  position: relative;
-  top: 0;
-  left: 0;
-  width: 48px;
-  height: 45px;
+  position: absolute;
+  top: 0px;
+  left: 30%;
+  width: 72px;
+  height: 72px;
   overflow: hidden;
   text-indent: -900em;
   cursor: pointer;
-  background: #222222;
+  background: url(/images/lambda72.png);
   border: none;
   -webkit-border-top-right-radius: 0;
           border-top-right-radius: 0;
@@ -1635,7 +1635,7 @@ svg:not(:root) {
   }
 }
 
-.dl-menuwrapper button:hover,
+dl-menuwrapper button:hover,
 .dl-menuwrapper button.dl-active,
 .dl-menuwrapper ul {
   background: #aaa;
@@ -1645,9 +1645,8 @@ svg:not(:root) {
   position: absolute;
   top: 10px;
   left: 16%;
-  width: 68%;
-  height: 5px;
-  background: #ffffff;
+  width: 0%;
+  height: 0px;
   content: '';
   box-shadow: 0 10px 0 #ffffff, 0 20px 0 #ffffff;
 }
@@ -1980,6 +1979,7 @@ All this is done for any sub-level being entered.
   display: none;
 }
 
+
 .no-js .dl-menuwrapper .dl-menu {
   position: relative;
   pointer-events: auto;
@@ -2005,7 +2005,10 @@ All this is done for any sub-level being entered.
   content: '';
 }
 
-.dl-menuwrapper button:hover,
+.dl-menuwrapper button:hover {
+  background: url(/images/marvin72.png);
+}
+
 .dl-menuwrapper button.dl-active,
 .dl-menuwrapper ul {
   background: #222222;
@@ -4953,7 +4956,7 @@ body {
 @media only screen and (min-width: 62.5em) {
   #post .entry-content,
   #page .entry-content {
-    max-width: 800px;
+    max-width: 900px;
     padding: 50px 80px;
     margin: 50px auto 30px auto;
   }
@@ -4990,7 +4993,7 @@ body {
 @media only screen and (min-width: 62.5em) {
   #post #disqus_thread,
   #page #disqus_thread {
-    max-width: 800px;
+    max-width: 900px;
     padding: 50px 80px;
     margin: 0 auto 30px auto;
   }
@@ -5049,7 +5052,7 @@ body {
 
 @media only screen and (min-width: 62.5em) {
   .read-more {
-    max-width: 800px;
+    max-width: 900px;
     padding: 50px 80px;
     margin: 60px auto;
   }
@@ -5179,7 +5182,7 @@ body {
 
 @media only screen and (min-width: 62.5em) {
   #post-index #main {
-    max-width: 800px;
+    max-width: 900px;
     margin-top: 50px;
     margin-right: auto;
     margin-left: auto;
@@ -5304,3 +5307,62 @@ body {
   color: #222222;
   background-color: #ffffff;
 }
+
+.right-nav {
+  position: absolute;
+  float: right;
+  width: 17%;
+  height: 1300px;
+  right: 1%;
+  margin-top: 0px;
+  margin-right: auto;
+  margin-left: auto;
+  background-color: #ffffff;
+}
+
+.nav-unit {
+  width: 90%;
+  height: 900px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 10px;
+  background-color: #073642;
+}
+
+.visitor {
+  width: 90%;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 10px;
+  background-color: #073642;
+}
+
+.right-nav h4 {
+  font-size:30px;
+  line-height: 52px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  display: block;
+  font-weight: bold;
+  color:#ffffff;
+}
+
+.the-map {
+  margin-left:5%;
+}
+
+#toTop { 
+  background: url("/images/top.png") no-repeat 0 0; 
+  position: fixed;
+  margin-left: 1040px;
+  bottom: 30px;
+  display: block; 
+  height: 66px; 
+  width: 66px; 
+  opacity: 0.8; //调整透明可见度 
+} 
+		
+#toTop:hover {  
+  opacity: 1; //鼠标经过时完全可见 
+}
+

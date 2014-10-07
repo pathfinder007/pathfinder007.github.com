@@ -14,13 +14,13 @@
 
 {% if page.image.feature %}
 <div class="entry-header">
-  {% if page.image.credit %}<div class="image-credit">Image source: {% if page.image.creditlink %}<a href="{{ page.image.creditlink }}">{% endif %}{{ page.image.credit }}{% if page.image.creditlink %}</a>{% endif %}</div><!-- /.image-credit -->{% endif %}
   <div class="entry-image">
     <img src="{{ site.url }}/images/{{ page.image.feature }}" alt="{{ page.title }}">
   </div><!-- /.entry-image -->
 </div><!-- /.entry-header -->
 {% endif %}
 
+{% include rightnav.html %}
 <div id="main" role="main">
   <article class="hentry">
     <header class="header-title">
@@ -53,10 +53,10 @@
             <li class="twitter"><a href="https://twitter.com/intent/tweet?text={{ site.url }}{{ page.url }}" title="Share on Twitter"><span class="count"><i class="fa fa-twitter-square"></i> Tweet</span></a></li>
             <li class="googleplus"><a href="https://plus.google.com/share?url={{ site.url }}{{ page.url }}" title="Share on Google Plus"><span class="count"><i class="fa fa-google-plus-square"></i> +1</span></a></li>
           </ul>
-        </div><!-- /.social-share -->{% endif %}
+	  </div><!-- /.social-share -->{% endif %}
       </footer>
     </div><!-- /.entry-content -->
-    {% if site.disqus_shortname and page.comments %}<section id="disqus_thread"></section><!-- /#disqus_thread -->{% endif %}
+
     {% if site.related_posts.size %}
     <div class="read-more">
       {% for post in site.related_posts limit:1 %}
@@ -68,6 +68,7 @@
           <p>{% if post.description %}{{ post.description }}{% else %}{{ post.content | strip_html | strip_newlines | truncate: 140 }}&hellip;{% endif %} <a href="{{ site.url }}{{ post.url }}">Continue reading</a></p>
         </div><!-- /.read-more-content -->
       {% endfor %}
+
       <div class="read-more-list">
         {% for post in site.related_posts limit:2 offset:1 %}
           <div class="list-item">
@@ -76,8 +77,9 @@
           </div><!-- /.list-item -->
         {% endfor %}
       </div><!-- /.read-more-list -->
-      {% endif %}
     </div><!-- /.read-more -->
+    {% endif %}
+    {% if site.disqus_shortname %}<section id="disqus_thread"></section><!-- /#disqus_thread -->{% endif %}
   </article>
 </div><!-- /#main -->
 

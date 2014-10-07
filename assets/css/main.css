@@ -5357,7 +5357,7 @@ body {
 #toTop { 
   background: url("/images/top.png") no-repeat 0 0; 
   position: fixed;
-  margin-left: 1040px;
+  right: 6%;
   bottom: 30px;
   display: block; 
   height: 66px; 

@@ -2,7 +2,7 @@
 layout: post
 title: "Tracking Learning Detection"
 description: "TLD, a object Tracking framework, summary from a paper in computer version."
-modified: 2014-10-07
+modified: 2014-10-06
 category: CV
 tags: CV
 image:

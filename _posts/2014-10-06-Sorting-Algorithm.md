@@ -2,7 +2,7 @@
 layout: post
 title: "Sorting algorithm"
 description: "Summary of sorting algorithm, implement in C++"
-modified: 2014-10-07
+modified: 2014-10-06
 category: Algorithm
 tags: C++, Algorithm
 image:

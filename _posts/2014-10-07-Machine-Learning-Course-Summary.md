@@ -3,8 +3,8 @@ layout: post
 title: "Machine Learning Course Summary"
 description: "A summary for Machine Learning master course taught by professor Qing."
 modified: 2014-10-07
-category: Machine Learning
-tags: Machine Learning
+category: "Machine Learning"
+tags: "Machine Learning"
 image:
   feature: abstract-4.jpg
 comments: true

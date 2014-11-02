@@ -161,7 +161,7 @@ public:
  * 正确思路：先排序，map形式仍然为map<int, vector<pair<int, int> > >，通过约定找出不符合条件的value，直接跳过。
    1. 第二次两层循环嵌套扫数组，求出gap。由于map中每个value的第一个索引肯定小于第二个索引(先排序，再建map)，而第二次扫数组时的两个值，num[i], num[j]，也是前一个值小于后一个值。则建立一个约定，num[i] < num[j] < num[tmp[k].first] < num[tmp[k].second或者num[tmp[k].first] < num[tmp[k].second < num[i] < num[j]，对于不满足条件的值，跳过。
    2. 这样的思路，可能出现的重复，主要在于，数组中可能有重复元素，则在map的建立时，某一些key对应的value(vector)中，是存在重复的。
-   3. 最后对结果vector去重，Acceptd.不过这种方法，运行时间比较长，leetcode上给出的时间在756ms. 在数组建立时进行去重，或者第二次循环嵌套扫描时先进行去重，应该会有所提高。
+   3. 最后对结果vector去重，Acceptd.不过这种方法，运行时间比较长，leetcode上给出的时间在756ms. 在数组建立时进行有效去重，或者第二次循环嵌套扫描时先进行去重，应该会有所提高。
    
 {% highlight C++ %}
 class Solution {

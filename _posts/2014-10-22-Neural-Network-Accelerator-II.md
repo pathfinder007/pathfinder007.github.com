@@ -11,6 +11,7 @@ comments: true
 share: true
 ---
 
+### 写在前面
 &emsp;&emsp;这段时间由于工作需要，研究了一下ASPLOS'14的Best Paper，"Dianao: A Small-Footprint High-Throughput Accelerator for Ubiquitous Machine-Learning." 这是中国大陆的学者首次获得 CCF 推荐的体系结构领域 A 类会议的最佳论文奖。而此前,ASPLOS 最佳论文 奖一直被美国卡耐基梅隆大学、德州大学奥斯丁分校、微软等 8 个欧美著名研究机构所垄断。下面结合这篇文章，写写阅读摘要。
 
 ### 神经网络协处理器的发展.

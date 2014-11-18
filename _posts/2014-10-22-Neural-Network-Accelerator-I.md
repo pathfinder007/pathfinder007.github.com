@@ -3,8 +3,8 @@ layout: post
 title: "Neural Network Accelerator I"
 description: "浅层学习到深度学习，GPU不适合做神经网络算法运行平台。软硬件神经元全映射协处理器的劣势"
 modified: 2014-10-06
-category: Deep_Learning
-tags: Deep_learning
+category: Machine_Learning
+tags: Machine_learning
 image:
   feature: abstract-10.jpg
 comments: true

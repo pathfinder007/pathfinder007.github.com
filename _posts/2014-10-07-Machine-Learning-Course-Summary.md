@@ -4,7 +4,7 @@ title: "Machine Learning Course Summary"
 description: "A summary for Machine Learning master course taught by professor Qing."
 modified: 2014-10-07
 category: Machine_Learning
-tags: Machine_Learning
+tags: Machine_learning
 image:
   feature: abstract-4.jpg
 comments: true

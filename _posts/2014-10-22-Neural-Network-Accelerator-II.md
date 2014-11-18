@@ -4,7 +4,7 @@ title: "Neural Network Accelerator II"
 description: "Dianao: A Small-Footprint High-Throughput Accelerator for Ubiquitous Machine-Learning."
 modified: 2014-10-06
 category: Machine_Learning
-tags: Machine_learning
+tags: Machine_Learning
 image:
   feature: abstract-11.jpg
 comments: true

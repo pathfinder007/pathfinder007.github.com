@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Linux Device Driver——内存分配"
+title: "Linux Device Driver——PCI基础"
 description: "Linux Device Driver 3rd阅读笔记（PCI驱动基础）"
 modified: 2014-11-24
 category: Linux_Kernel
@@ -34,16 +34,14 @@ share: true
 ### 注册PCI驱动：
 * struct pci_device_id结构可以告诉用户空间相应驱动支持哪些设备；
 * PCI驱动必须创建主结构struct pci_driver，包含函数回调和变量，才能被正确注册到内核；
-{% highlight C++ %}
-const char *name；驱动名字，必须唯一，通常设置为和驱动模块名字相同；
-const struct pci_device_id *id_table: 指向struct pci_device_id表的指针；
-int (*probe)(struct pci_dev *dev, const struct pci_device_id *id): 指向PCI驱动中probe函数的指针，当它认为有一个这个驱动想要控制的struct pci_dev时，被PCI核心调用；
-void (*remove)(struct pci_dev *dev): 指向对应的pci_dev被从系统中去除时调用的函数；
-int (*suspend) (struct pci_dev *dev, u32 state): struct pci_dev被挂起时调用；函数可选；
-int (*resume) (struct pci_dev *dev): pci_dev被恢复时调用；函数可选；
-pci_register_driver(&pci_driver)注册struct pci_driver到PCI核心，若所有都成功注册，返回0，否则，返回负的错误码；
-pci_unregister_driver(&pci_driver)注销内核中的struct pci_driver，绑定到这个驱动的PCI设备被去除，函数返回之前remove函数被调用；
-{% endhighlight %}
+* const char *name；驱动名字，必须唯一，通常设置为和驱动模块名字相同；
+* const struct pci_device_id *id_table: 指向struct pci_device_id表的指针；
+* int (*probe)(struct pci_dev *dev, const struct pci_device_id *id): 指向PCI驱动中probe函数的指针，当它认为有一个这个驱动想要控制的struct pci_dev时，被PCI核心调用；
+* void (*remove)(struct pci_dev *dev): 指向对应的pci_dev被从系统中去除时调用的函数；
+* int (*suspend) (struct pci_dev *dev, u32 state): struct pci_dev被挂起时调用；函数可选；
+* int (*resume) (struct pci_dev *dev): pci_dev被恢复时调用；函数可选；
+* pci_register_driver(&pci_driver)注册struct pci_driver到PCI核心，若所有都成功注册，返回0，否则，返回负的错误码；
+* pci_unregister_driver(&pci_driver)注销内核中的struct pci_driver，绑定到这个驱动的PCI设备被去除，函数返回之前remove函数被调用；
 
 ### 使能PCI设备：
 * 在驱动可存取PCI设备的任何设备资源之前(I/O区域或者中断)，驱动必须调用pci_enable_device函数；

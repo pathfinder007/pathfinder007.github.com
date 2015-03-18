@@ -9,7 +9,7 @@ markdown: kramdown
 
 # The title and tagline is showed on homepage
 #
-title :  Hombo's Blog 
+title :  Mushsen's Blog 
 tagline: 
 
 # Information about author
@@ -20,16 +20,15 @@ author :
 # Information for contacts showed at on the footer
 #
 contact :
-  e-mail  : mailto:wanghongbo@ict.ac.cn
-  LinkedIn: http://cn.linkedin.com/pub/hongbo-wang/70/4b0/921/
-  Github  : https://github.com/kingmacrobo
-  WeiBo   : http://www.weibo.com/mbkg
-  CSDN    : http://blog.csdn.net/u013101828
+  e-mail  : mailto:mohuansheng@ict.ac.cn
+  #LinkedIn: http://cn.linkedin.com/pub/hongbo-wang/70/4b0/921/
+  Github  : https://github.com/pathfinder007
+  #WeiBo   : http://www.weibo.com/mbkg
   
 # Links showed on the footer
 #
 links :
-  Hombo's Blog : http://lambda.hk
+  Mushsen's Blog : http://lambda.hk
 
 # The search engine. Only support google custom search engine.
 #

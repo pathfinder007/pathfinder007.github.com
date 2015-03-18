@@ -127,9 +127,9 @@ JB :
   comments :
     provider : duoshuo
     duoshuo :
-      short_name : hombo
+      short_name : mushsen
     disqus :
-      short_name : hombo
+      short_name : Mushsen
     livefyre :
       site_id : 123
     intensedebate :

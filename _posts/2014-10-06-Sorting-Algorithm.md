@@ -4,7 +4,7 @@ title: "Sorting algorithm"
 description: "Summary of sorting algorithm, implement in C++"
 modified: 2014-10-06
 category: Algorithm
-tags: C++, Algorithm
+tags: Algorithm
 image:
   feature: abstract-2.jpg
 comments: true

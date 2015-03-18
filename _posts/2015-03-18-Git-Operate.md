@@ -21,7 +21,7 @@ tags: git，版本控制
 
 &emsp;&emsp;个人的用户名称和电子邮件地址。这两条配置很重要，每次 Git 提交时都会引用这两条信息，说明是谁提交了更新，所以会随更新内容一起被永久纳入历史记录，对我来说，当时就是把user.email改成了wubin91的email账号，导致了账号切换的问题；
 
-{% highlight python %}
+{% highlight %}
 $ git config --global user.name "Mushsen"
 $ git config --global user.email xtcmhs@gmail.com
 {% endhighlight %}

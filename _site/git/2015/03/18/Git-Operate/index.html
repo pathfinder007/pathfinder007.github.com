@@ -158,28 +158,31 @@
 				</div>
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title">Git操作中切换本地账户<span class="author">by Mushsen</span>
+				<h1 class="journal-title">Git操作中切换本地账户<span class="author"></span>
 				</h1>
 				<span class="the-article">
-				<p>前段时间由于项目需要，一直往oschina上面wubin91的私有空间提交代码，懒得新建账户，就将本地的Git账户切换成了这个公共账号。今天在整Blog，才发现当时把本地的global设置给改了。而oschina和github，用的是一套机制。提交代码到github时，显示的不是自己账户提交，很不爽。翻了下资料，把本地的git设置给改了回来，留个备忘。</p>
+				<p>  前段时间由于项目需要，一直往oschina上面的私有空间提交代码，懒得新建账户，就将本地的Git账户切换成了oschina上面团队的公共账号。今天在整Blog，才发现当时把本地的global设置给改了。而oschina和github，用的是一套机制。提交代码到github时，显示的不是自己账户提交，很不爽。翻了下资料，把本地的git设置给改了回来，留个备忘。</p>
 
 <!--more-->
 
 <h3 id="git-config">1. git-config工具</h3>
 
-<p>Git提供了一个git config工具，专门用来配置或者读取相应的工作环境变量，这些环境变量，决定Git在各个环节的具体工作方式和行为，文档显示这些变量可以存储在三个地方：
-* /etc/gitconfig文件：系统中对所有用户普遍适用的配置，git config –system 选项，读写的即是这个文件，但在Mac OS X上，该目录未找到这个文件；
-* ~/.gitconfig 文件：只适用于当前用户，git config –global 选项，读写的就是这个文件；
-* 当前项目Git目录中的配置文件，即.git/config 文件，这里的配置仅针对当前项目有效。每一个级别的配置都会覆盖上层的相同配置，所以 .git/config 里的配置会覆盖 /etc/gitconfig 中的同名变量；</p>
+<p>   Git提供了一个git config工具，专门用来配置或者读取相应的工作环境变量，这些环境变量，决定Git在各个环节的具体工作方式和行为，文档显示这些变量可以存储在三个地方：</p>
+
+<ul>
+  <li>/etc/gitconfig文件：系统中对所有用户普遍适用的配置，git config –system 选项，读写的即是这个文件，但在Mac OS X上，该目录未找到这个文件；</li>
+  <li>~/.gitconfig 文件：只适用于当前用户，git config –global 选项，读写的就是这个文件；</li>
+  <li>当前项目Git目录中的配置文件，即.git/config 文件，这里的配置仅针对当前项目有效。每一个级别的配置都会覆盖上层的相同配置，所以 .git/config 里的配置会覆盖 /etc/gitconfig 中的同名变量；</li>
+</ul>
 
 <h3 id="section">2. 用户信息</h3>
 
-<p>个人的用户名称和电子邮件地址。这两条配置很重要，每次 Git 提交时都会引用这两条信息，说明是谁提交了更新，所以会随更新内容一起被永久纳入历史记录，对我来说，当时就是把user.email改成了wubin91的email账号，导致了账号切换的问题；</p>
+<p>  个人的用户名称和电子邮件地址。这两条配置很重要，每次 Git 提交时都会引用这两条信息，说明是谁提交了更新，所以会随更新内容一起被永久纳入历史记录，对我来说，当时就是把user.email改成了wubin91的email账号，导致了账号切换的问题；</p>
 
-<p>$ git config –global user.name “John Doe”
-$ git config –global user.email johndoe@example.com</p>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="err">$</span> <span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span> <span class="s">&quot;Mushsen&quot;</span>
+<span class="err">$</span> <span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="k">global</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span> <span class="n">xtcmhs</span><span class="nd">@gmail.com</span></code></pre></div>
 
-<p>如果用了 –global 选项，那么更改的配置文件就是位于你用户主目录下的那个，以后你所有的项目都会默认使用这里配置的用户信息。如果要在某个特定的项目中使用其他名字或者电邮，只要去掉 –global 选项重新配置即可，新的设定保存在当前项目的 .git/config 文件里。</p>
+<p>  如果用了 –global 选项，那么更改的配置文件就是位于你用户主目录下的那个，以后你所有的项目都会默认使用这里配置的用户信息。如果要在某个特定的项目中使用其他名字或者电邮，只要去掉 –global 选项重新配置即可，新的设定保存在当前项目的 .git/config 文件里。</p>
 
 				</span>
 				<div class="journal-date">Published 18 March 2015</div>
@@ -187,9 +190,9 @@ $ git config –global user.email johndoe@example.com</p>
 				
 				
 	 
-		<a class="tag-cont" href="/tags.html#git-ref">
+		<a class="tag-cont" href="/tags.html#git，版本控制-ref">
 			<div class="tag-l"></div>
-			<div class="tag-c">git</div>
+			<div class="tag-c">git，版本控制</div>
 			<div class="tag-r"></div>
 		</a>
 	
@@ -213,7 +216,7 @@ $ git config –global user.email johndoe@example.com</p>
 <!-- 多说评论框 end -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
-var duoshuoQuery = {short_name:"hombo"};
+var duoshuoQuery = {short_name:"mushsen"};
 	(function() {
 		var ds = document.createElement('script');
 		ds.type = 'text/javascript';ds.async = true;

@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	
 	<title>PCI Express基本概念</title>
-    <meta name="description" content="PCI Express体系结构导读阅读笔记（PCIe基本概念）">
+    
 	
 	<meta name="author" content="Hombo Wang">
 	
@@ -161,21 +161,14 @@
 				<h1 class="journal-title">PCI Express基本概念<span class="author"></span>
 				</h1>
 				<span class="the-article">
-				<h3 id="pciebar">PCIe设备BAR空间的初始化：</h3>
-<ul>
-  <li>PCIe设备进行数据传输之前，系统软件需要初始化BAR0~5寄存器，使用DFS算法遍历并完成寄存器初始化，即分配这些设备在PCI总线域的地址空间，当寄存器都初始化完毕后，PCI设备可以使用PCI总线地址进行数据传递；</li>
-  <li>BAR0~5寄存器保存的都是PCI设备的地址空间，x86处理器中，没有存储器域和PCI总线域地址空间的转换机制，两个域的地址相等，也是一种简单映射，地址隔离的概念仍然存在；</li>
-  <li>假设在一个32位处理器中，其存储器域的0xF000-0000~0xF7FF-FFFF总共128M的物理地址空间与PCI总线的地址空间映射；当处理器访问这段存储器地址空间，HOST主桥认领这个存储器访问，并将其使用的物理地址空间转换为PCI总线地址空间，并与PCI总线地址空间0xF000-0000~0xF7FF-FFFF对应；</li>
-</ul>
+				<h3 id="pciebar">1. PCIe设备BAR空间的初始化：</h3>
+<p>   PCIe设备进行数据传输之前，系统软件使用DFS算法遍历并完成BAR0~BAR5寄存器初始化，即分配这些设备在PCI总线域的地址空间，之后，PCI设备可以使用PCI总线地址进行数据传递；BAR0~5寄存器保存的都是PCI设备的地址空间，x86处理器中，没有存储器域和PCI总线域地址空间的转换机制，两个域的地址相等，也是一种简单映射，地址隔离的概念仍然存在；假设在一个32位处理器中，其存储器域的0xF000-0000~0xF7FF-FFFF总共128M的物理地址空间与PCI总线的地址空间映射；当处理器访问这段存储器地址空间，HOST主桥认领这个存储器访问，并将其使用的物理地址空间转换为PCI总线地址空间，并与PCI总线地址空间0xF000-0000~0xF7FF-FFFF对应；</p>
 
 <!--more-->
-<ul>
-  <li>当PCI设备使用DMA机制访问存储器域地址空间，处理器同样需要将存储器域地址空间反向映射；假设一个处理器系统中，主存储器大小为2GB，其在存储器域的地址范围为0x0000-0000~0x7FFF-FFFF，而这段地址在PCI总线域中对应的“PCI总线地址空间”为0x8000-0000~0xFFFF-FFFF。则PCI设备进行DMA操作时，必须使用0x8000-0000~0xFFFF-FFFF这段PCI总线域的地址，HOST主桥才能认领这个PCI总线事务；</li>
-  <li>实际处理器系统中，两个地址空间域的映射采用“简单相等”的方法；</li>
-  <li>PCI设备的BAR寄存器中，包含该设备使用的PCI总线域的地址范围，6个BAR寄存器，因此一个PCI设备最多可以使用6组32位的PCI总线地址空间，或者33组64位的PCI总线地址空间；这些BAR空间保存PCI总线域的存储器地址空间或者I/O地址空间；大多数设备仅使用存储器地址空间，而通常一个设备使用2~3个BAR寄存器就足够；</li>
-</ul>
 
-<h3 id="pcie">PCIe设备的数据传递：</h3>
+<p>   当PCI设备使用DMA机制访问存储器域地址空间，处理器同样需要将存储器域地址空间反向映射；假设一个处理器系统中，主存储器大小为2GB，其在存储器域的地址范围为0x0000-0000~0x7FFF-FFFF，而这段地址在PCI总线域中对应的“PCI总线地址空间”为0x8000-0000~0xFFFF-FFFF。则PCI设备进行DMA操作时，必须使用0x8000-0000~0xFFFF-FFFF这段PCI总线域的地址，HOST主桥才能认领这个PCI总线事务；PCI设备的BAR寄存器中，包含该设备使用的PCI总线域的地址范围，6个BAR寄存器，因此一个PCI设备最多可以使用6组32位的PCI总线地址空间，或者33组64位的PCI总线地址空间；这些BAR空间保存PCI总线域的存储器地址空间或者I/O地址空间；大多数设备仅使用存储器地址空间，而通常一个设备使用2~3个BAR寄存器就足够；</p>
+
+<h3 id="pcie">2. PCIe设备的数据传递：</h3>
 <ul>
   <li>地址译码方式，存储器读写总线事务到达PCI总线时，在这条总线上的所有PCI设备将进行地址译码，如果当前总线事务使用的地址在某个PCI设备的BAR空间中时，该PCI设备将使能DEVSEL#信号，认领这个总线事务；</li>
   <li>处理器到PCI设备的数据传送：</li>
@@ -192,7 +185,7 @@
   <li>存储器控制器将从HOST主桥接收数据，并将其写入到主存储器；</li>
 </ul>
 
-<h3 id="pcie-1">PCIe概述：</h3>
+<h3 id="pcie-1">3. PCIe概述：</h3>
 <ul>
   <li>PCIe总线由包括事务层、数据链路层、物理层组成，使用数据报文进行数据传递；使用硬件实现了交换、路由、仲裁机制的协议栈；</li>
   <li>PCIe体系结构中出现的RC(Root Complex)，RC主要功能与PCI总线中的HOST主桥类似，但增加了很多功能；</li>
@@ -210,7 +203,7 @@
   <li>PCIe链路必须使用Switch才能连接多个设备，Switch由1个上游端口和2~n个下游端口组成，RC端口位于上方，下游端口一般和EP相连；</li>
 </ul>
 
-<h3 id="pcie-2">PCIe组成部件：</h3>
+<h3 id="pcie-2">4. PCIe组成部件：</h3>
 <ul>
   <li>大多数处理器系统，都使用了RC、Switch、PCIe-to-PCIe 桥这些基本模块连接PCIe和PCI设备；基于PCIe总线的设备，称为EP(Endpoint);</li>
   <li>之前介绍的PCI设备基本配置空间由64Bytes组成，地址范围为0x00~0x3F，这是PCI设备必须支持的；PCIe设备还拓展了0x40~0xFF这段配置空间，主要存放与MSI中断机制和电源管理相关的Capabilities结构，可以提交中断请求的PCIe设备，必须支持MSI Capabilities结构；</li>
@@ -218,13 +211,13 @@
   <li>x86中，使用CONFIG_ADDRESS寄存器和CONFIG_DATA寄存器访问PCIe的0x00~0xFF，使用ECAM方式访问0x100 ~ 0xFFF;</li>
 </ul>
 
-<h3 id="tlp">TLP的路由：</h3>
+<h3 id="tlp">5. TLP的路由：</h3>
 <ul>
   <li>TLP的路由指TLP通过Switch或者PCIe桥片时采用哪条路径，最终到达EP或者RC的方法；PCIe总线定义了三种路由方法：基于地址、基于ID和隐性路由；</li>
   <li>存储器I/O读写采用基于地址的路由方式；配置读写报文采用基于ID的路由方式；</li>
 </ul>
 
-<h3 id="msi">MSI中断机制：</h3>
+<h3 id="msi">6. MSI中断机制：</h3>
 <ul>
   <li>PCIe总线中，PCIe设备必须支持MSI/MSI-X中断请求机制，可以不支持INTx中断信息；</li>
   <li>MSI中断机制使用存储器写请求TLP向处理器提交中断请求；</li>
@@ -233,7 +226,7 @@
   <li>Message Address和Message Data寄存器应该是位于PCIe设备的配置空间中；而MSI-X机制使用的这两寄存器位于BAR空间，因此可以由用户决定使用MSI-X中断请求的数目；</li>
 </ul>
 
-<h3 id="message-addressmessage-data">Message Address和Message Data字段：</h3>
+<h3 id="message-addressmessage-data">7. Message Address和Message Data字段：</h3>
 <ul>
   <li>PCIe设备使用Message Address字段保存PCI总线域地址，其中[31:20]存放FSB Interrupt存储器空间基地址，值为0xFEE，PCIe设备向0xFEEX-XXXX这段“PCI总线域”地址空间进行写操作，首先进行PCI总线域到存储器域的地址转换，之后写操作翻译成FSB总线的Interrupt Message总线事务，从而向CPU内核提交中断请求；</li>
   <li>FSB总线事务提交PCIe设备使用的中断向量，从而CPU不需要使用中断响应周期从寄存器获得中断向量；</li>
@@ -249,9 +242,9 @@
 				
 				
 	 
-		<a class="tag-cont" href="/tags.html#Linux_Kernel-ref">
+		<a class="tag-cont" href="/tags.html#Linux-ref">
 			<div class="tag-l"></div>
-			<div class="tag-c">Linux_Kernel</div>
+			<div class="tag-c">Linux</div>
 			<div class="tag-r"></div>
 		</a>
 	
@@ -341,7 +334,7 @@ var duoshuoQuery = {short_name:"mushsen"};
     	</a></li>
      
     	<li><a href="/categories.html#git-ref">
-    		git <span>1</span>
+    		git <span>2</span>
     	</a></li>
     
   

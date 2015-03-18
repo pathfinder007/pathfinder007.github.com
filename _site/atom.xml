@@ -4,7 +4,7 @@
  <title>Mushsen's Blog</title>
  <link href="http://lambda.hk/" rel="self"/>
  <link href="http://lambda.hk"/>
- <updated>2015-03-18T19:21:32+08:00</updated>
+ <updated>2015-03-18T21:16:51+08:00</updated>
  <id>http://lambda.hk</id>
  <author>
    <name>Hombo Wang</name>
@@ -13,10 +13,91 @@
 
  
  <entry>
-   <title>Git操作中切换本地账户</title>
+   <title>Git中基本操作</title>
    <link href="http://lambda.hk/git/2015/03/18/Git-Operate"/>
    <updated>2015-03-18T00:00:00+08:00</updated>
    <id>http://lambda.hk/git/2015/03/18/Git-Operate</id>
+   <content type="html">&lt;p&gt;  前两天看王神面实习的简历，简历上面清晰地标出每个项目的tag似是一个很好的办法，既给面试官重点突出的感觉，也便于将面试中心集中，方便自己准备，而作为大型软件的开发，版本控制必不可少，将Git与SVN相关的东西做一个小总结。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;git-vs-svn&quot;&gt;1. Git vs SVN&lt;/h3&gt;
+
+&lt;p&gt;  之前做实验室iPU的项目时，主要使用Subversion进行代码管理，现在自己的项目，基本使用Git；在不需要建多个分支的情况下，看起来二者差别不大；但一个分布式管理，一个集中式，还是倾向于使用Git，更安全。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;SVN分支代码只有一份，当需要开发新功能或者增加新版本或者修改一个复杂的Bug时，通常需要copy整份代码到本地一个目录，然后再手动添加到SVN上进行管理，比较麻烦；而Git可以建多个branches，分支独立，每次commit，只是对本地仓库的修改；&lt;/li&gt;
+  &lt;li&gt;SVN的log在服务器上，而Git的log在本地，方便查阅；&lt;/li&gt;
+  &lt;li&gt;Git可以无限在本地建分支，当我们在本地新建不同分支用于不同目的时，合并代码要比SVN上合并一堆工程copy更为方便；&lt;/li&gt;
+  &lt;li&gt;在Git本地仓库根目录，只有一个.git文件，包含所有的管理信息，而SVN每个子目录都有.svn，修改文件冲突时麻烦；&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;section&quot;&gt;2. 初始化一个新的代码仓库&lt;/h3&gt;
+
+&lt;p&gt;经常使用的Git功能主要有以下几个：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;初始化一个新的代码仓库，做一些适当配置；&lt;/li&gt;
+  &lt;li&gt;开始或者停止跟踪某些文件；&lt;/li&gt;
+  &lt;li&gt;暂存或者提交某些更新；&lt;/li&gt;
+  &lt;li&gt;浏览项目的更新历史，查看某两次更新之间的差异；&lt;/li&gt;
+  &lt;li&gt;如何从远程仓库pull数据下来，或者push数据到远程仓库；&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;获取相应命令的帮助信息
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git &lt;span class=&quot;nb&quot;&gt;help &lt;/span&gt;config 
+  初始化一个新的代码仓库，会生成.git目录
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git init	
+  告诉Git开始对某些文件进行跟踪             
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git add README
+  提交一个版本	        
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git commit -m &lt;span class=&quot;s2&quot;&gt;&amp;quot;message.&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;3. 从现有仓库克隆&lt;/h3&gt;
+
+&lt;p&gt;  即将项目的Git仓库复制一份出来，Git 收取的是项目历史的所有数据（每一个文件的每一个版本），服务器上有的数据克隆之后本地也都有了。实际上，即便服务器的磁盘发生故障，用任何一个克隆出来的客户端都可以重建服务器上的仓库，回到当初克隆时的状态。&lt;code&gt;$ git clone git://github.com/schacon/grit.git mygrit&lt;/code&gt; 克隆一个代码仓库，也可以不指定克隆下来存储代码仓库的文件夹名字。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;4. 纪录每次更新到仓库&lt;/h3&gt;
+
+&lt;p&gt;  工作目录下面文件的两种状态：已跟踪或未跟踪。已跟踪的文件是指本来就被纳入版本控制管理的文件，在上次快照中有它们的记录，工作一段时间后，它们的状态可能是未更新，已修改或者已放入暂存区。而所有其他文件都属于未跟踪文件。它们既没有上次更新时的快照，也不在当前的暂存区域。&lt;/p&gt;
+
+&lt;p&gt;  初次克隆某个仓库时，工作目录中的所有文件都属于已跟踪文件，且状态为未修改。在编辑过某些文件之后，Git 将这些文件标为已修改。我们逐步把这些修改过的文件放到暂存区域，直到最后一次性提交所有这些暂存起来的文件。&lt;/p&gt;
+
+&lt;figure&gt;
+    &lt;img src=&quot;http://git-scm.com/figures/18333fig0201-tn.png&quot; alt=&quot;&quot; /&gt;
+    &lt;figcaption&gt;使用Git时的文件状态变化周期.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;确定哪些文件处于什么状态
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git status
+  开始跟踪file文件；修改某个文件之后，需要执行该命令将文件放入暂存区；  
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git add file 
+  可以创建.gitignore文件，不跟踪某些文件，自动忽略以o/a为后缀的文件；；       
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;cat .gitignore        
+  *.&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;oa&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;            
+  *~
+  查看尚未暂存的文件更新了哪些部分；
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git diff  
+  将所有已经跟踪过的文件暂存起来并一块提交；        
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git commit -a	 
+  删除一个文件之后，再从未跟踪文件清单中将其清除；  
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rm file
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git rm file 
+  相当于执行了&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;mv, git rm, git add&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;三条操作；
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git mv file1 file2 
+  将改动提交到远程仓库；
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git push	
+  从远程仓库将最新代码拉到本地；		  
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git pull&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Git操作中切换本地账户</title>
+   <link href="http://lambda.hk/git/2015/03/18/Git-Change-Account"/>
+   <updated>2015-03-18T00:00:00+08:00</updated>
+   <id>http://lambda.hk/git/2015/03/18/Git-Change-Account</id>
    <content type="html">&lt;p&gt;  前段时间由于项目需要，一直往oschina上面的私有空间提交代码，懒得新建账户，就将本地的Git账户切换成了oschina上面团队的公共账号。今天在整Blog，才发现当时把本地的global设置给改了。而oschina和github，用的是一套机制。提交代码到github时，显示的不是自己账户提交，很不爽。翻了下资料，把本地的git设置给改了回来，留个备忘。&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -35,8 +116,8 @@
 
 &lt;p&gt;  个人的用户名称和电子邮件地址。这两条配置很重要，每次 Git 提交时都会引用这两条信息，说明是谁提交了更新，所以会随更新内容一起被永久纳入历史记录，对我来说，当时就是把user.email改成了wubin91的email账号，导致了账号切换的问题；&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;global&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Mushsen&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;global&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;email&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xtcmhs&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;@gmail.com&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git config --global user.name &lt;span class=&quot;s2&quot;&gt;&amp;quot;Mushsen&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git config --global user.email xtcmhs@gmail.com&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;  如果用了 –global 选项，那么更改的配置文件就是位于你用户主目录下的那个，以后你所有的项目都会默认使用这里配置的用户信息。如果要在某个特定的项目中使用其他名字或者电邮，只要去掉 –global 选项重新配置即可，新的设定保存在当前项目的 .git/config 文件里。&lt;/p&gt;
 </content>
@@ -47,21 +128,14 @@
    <link href="http://lambda.hk/linux_kernel/2014/11/28/pcie-arch"/>
    <updated>2014-11-28T00:00:00+08:00</updated>
    <id>http://lambda.hk/linux_kernel/2014/11/28/pcie-arch</id>
-   <content type="html">&lt;h3 id=&quot;pciebar&quot;&gt;PCIe设备BAR空间的初始化：&lt;/h3&gt;
-&lt;ul&gt;
-  &lt;li&gt;PCIe设备进行数据传输之前，系统软件需要初始化BAR0~5寄存器，使用DFS算法遍历并完成寄存器初始化，即分配这些设备在PCI总线域的地址空间，当寄存器都初始化完毕后，PCI设备可以使用PCI总线地址进行数据传递；&lt;/li&gt;
-  &lt;li&gt;BAR0~5寄存器保存的都是PCI设备的地址空间，x86处理器中，没有存储器域和PCI总线域地址空间的转换机制，两个域的地址相等，也是一种简单映射，地址隔离的概念仍然存在；&lt;/li&gt;
-  &lt;li&gt;假设在一个32位处理器中，其存储器域的0xF000-0000~0xF7FF-FFFF总共128M的物理地址空间与PCI总线的地址空间映射；当处理器访问这段存储器地址空间，HOST主桥认领这个存储器访问，并将其使用的物理地址空间转换为PCI总线地址空间，并与PCI总线地址空间0xF000-0000~0xF7FF-FFFF对应；&lt;/li&gt;
-&lt;/ul&gt;
+   <content type="html">&lt;h3 id=&quot;pciebar&quot;&gt;1. PCIe设备BAR空间的初始化：&lt;/h3&gt;
+&lt;p&gt;   PCIe设备进行数据传输之前，系统软件使用DFS算法遍历并完成BAR0~BAR5寄存器初始化，即分配这些设备在PCI总线域的地址空间，之后，PCI设备可以使用PCI总线地址进行数据传递；BAR0~5寄存器保存的都是PCI设备的地址空间，x86处理器中，没有存储器域和PCI总线域地址空间的转换机制，两个域的地址相等，也是一种简单映射，地址隔离的概念仍然存在；假设在一个32位处理器中，其存储器域的0xF000-0000~0xF7FF-FFFF总共128M的物理地址空间与PCI总线的地址空间映射；当处理器访问这段存储器地址空间，HOST主桥认领这个存储器访问，并将其使用的物理地址空间转换为PCI总线地址空间，并与PCI总线地址空间0xF000-0000~0xF7FF-FFFF对应；&lt;/p&gt;
 
 &lt;!--more--&gt;
-&lt;ul&gt;
-  &lt;li&gt;当PCI设备使用DMA机制访问存储器域地址空间，处理器同样需要将存储器域地址空间反向映射；假设一个处理器系统中，主存储器大小为2GB，其在存储器域的地址范围为0x0000-0000~0x7FFF-FFFF，而这段地址在PCI总线域中对应的“PCI总线地址空间”为0x8000-0000~0xFFFF-FFFF。则PCI设备进行DMA操作时，必须使用0x8000-0000~0xFFFF-FFFF这段PCI总线域的地址，HOST主桥才能认领这个PCI总线事务；&lt;/li&gt;
-  &lt;li&gt;实际处理器系统中，两个地址空间域的映射采用“简单相等”的方法；&lt;/li&gt;
-  &lt;li&gt;PCI设备的BAR寄存器中，包含该设备使用的PCI总线域的地址范围，6个BAR寄存器，因此一个PCI设备最多可以使用6组32位的PCI总线地址空间，或者33组64位的PCI总线地址空间；这些BAR空间保存PCI总线域的存储器地址空间或者I/O地址空间；大多数设备仅使用存储器地址空间，而通常一个设备使用2~3个BAR寄存器就足够；&lt;/li&gt;
-&lt;/ul&gt;
 
-&lt;h3 id=&quot;pcie&quot;&gt;PCIe设备的数据传递：&lt;/h3&gt;
+&lt;p&gt;   当PCI设备使用DMA机制访问存储器域地址空间，处理器同样需要将存储器域地址空间反向映射；假设一个处理器系统中，主存储器大小为2GB，其在存储器域的地址范围为0x0000-0000~0x7FFF-FFFF，而这段地址在PCI总线域中对应的“PCI总线地址空间”为0x8000-0000~0xFFFF-FFFF。则PCI设备进行DMA操作时，必须使用0x8000-0000~0xFFFF-FFFF这段PCI总线域的地址，HOST主桥才能认领这个PCI总线事务；PCI设备的BAR寄存器中，包含该设备使用的PCI总线域的地址范围，6个BAR寄存器，因此一个PCI设备最多可以使用6组32位的PCI总线地址空间，或者33组64位的PCI总线地址空间；这些BAR空间保存PCI总线域的存储器地址空间或者I/O地址空间；大多数设备仅使用存储器地址空间，而通常一个设备使用2~3个BAR寄存器就足够；&lt;/p&gt;
+
+&lt;h3 id=&quot;pcie&quot;&gt;2. PCIe设备的数据传递：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;地址译码方式，存储器读写总线事务到达PCI总线时，在这条总线上的所有PCI设备将进行地址译码，如果当前总线事务使用的地址在某个PCI设备的BAR空间中时，该PCI设备将使能DEVSEL#信号，认领这个总线事务；&lt;/li&gt;
   &lt;li&gt;处理器到PCI设备的数据传送：&lt;/li&gt;
@@ -78,7 +152,7 @@
   &lt;li&gt;存储器控制器将从HOST主桥接收数据，并将其写入到主存储器；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;pcie-1&quot;&gt;PCIe概述：&lt;/h3&gt;
+&lt;h3 id=&quot;pcie-1&quot;&gt;3. PCIe概述：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;PCIe总线由包括事务层、数据链路层、物理层组成，使用数据报文进行数据传递；使用硬件实现了交换、路由、仲裁机制的协议栈；&lt;/li&gt;
   &lt;li&gt;PCIe体系结构中出现的RC(Root Complex)，RC主要功能与PCI总线中的HOST主桥类似，但增加了很多功能；&lt;/li&gt;
@@ -96,7 +170,7 @@
   &lt;li&gt;PCIe链路必须使用Switch才能连接多个设备，Switch由1个上游端口和2~n个下游端口组成，RC端口位于上方，下游端口一般和EP相连；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;pcie-2&quot;&gt;PCIe组成部件：&lt;/h3&gt;
+&lt;h3 id=&quot;pcie-2&quot;&gt;4. PCIe组成部件：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;大多数处理器系统，都使用了RC、Switch、PCIe-to-PCIe 桥这些基本模块连接PCIe和PCI设备；基于PCIe总线的设备，称为EP(Endpoint);&lt;/li&gt;
   &lt;li&gt;之前介绍的PCI设备基本配置空间由64Bytes组成，地址范围为0x00~0x3F，这是PCI设备必须支持的；PCIe设备还拓展了0x40~0xFF这段配置空间，主要存放与MSI中断机制和电源管理相关的Capabilities结构，可以提交中断请求的PCIe设备，必须支持MSI Capabilities结构；&lt;/li&gt;
@@ -104,13 +178,13 @@
   &lt;li&gt;x86中，使用CONFIG_ADDRESS寄存器和CONFIG_DATA寄存器访问PCIe的0x00~0xFF，使用ECAM方式访问0x100 ~ 0xFFF;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;tlp&quot;&gt;TLP的路由：&lt;/h3&gt;
+&lt;h3 id=&quot;tlp&quot;&gt;5. TLP的路由：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;TLP的路由指TLP通过Switch或者PCIe桥片时采用哪条路径，最终到达EP或者RC的方法；PCIe总线定义了三种路由方法：基于地址、基于ID和隐性路由；&lt;/li&gt;
   &lt;li&gt;存储器I/O读写采用基于地址的路由方式；配置读写报文采用基于ID的路由方式；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;msi&quot;&gt;MSI中断机制：&lt;/h3&gt;
+&lt;h3 id=&quot;msi&quot;&gt;6. MSI中断机制：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;PCIe总线中，PCIe设备必须支持MSI/MSI-X中断请求机制，可以不支持INTx中断信息；&lt;/li&gt;
   &lt;li&gt;MSI中断机制使用存储器写请求TLP向处理器提交中断请求；&lt;/li&gt;
@@ -119,7 +193,7 @@
   &lt;li&gt;Message Address和Message Data寄存器应该是位于PCIe设备的配置空间中；而MSI-X机制使用的这两寄存器位于BAR空间，因此可以由用户决定使用MSI-X中断请求的数目；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;message-addressmessage-data&quot;&gt;Message Address和Message Data字段：&lt;/h3&gt;
+&lt;h3 id=&quot;message-addressmessage-data&quot;&gt;7. Message Address和Message Data字段：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;PCIe设备使用Message Address字段保存PCI总线域地址，其中[31:20]存放FSB Interrupt存储器空间基地址，值为0xFEE，PCIe设备向0xFEEX-XXXX这段“PCI总线域”地址空间进行写操作，首先进行PCI总线域到存储器域的地址转换，之后写操作翻译成FSB总线的Interrupt Message总线事务，从而向CPU内核提交中断请求；&lt;/li&gt;
   &lt;li&gt;FSB总线事务提交PCIe设备使用的中断向量，从而CPU不需要使用中断响应周期从寄存器获得中断向量；&lt;/li&gt;
@@ -136,7 +210,7 @@
    <link href="http://lambda.hk/linux_kernel/2014/11/28/pci-arch"/>
    <updated>2014-11-28T00:00:00+08:00</updated>
    <id>http://lambda.hk/linux_kernel/2014/11/28/pci-arch</id>
-   <content type="html">&lt;h3 id=&quot;pci&quot;&gt;PCI体系结构：&lt;/h3&gt;
+   <content type="html">&lt;h3 id=&quot;pci&quot;&gt;1. PCI体系结构：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;PCI为局部总线，系统总线的延伸，用于连接外设；&lt;/li&gt;
   &lt;li&gt;PCI Express总线：PCIe总线；PCI-to-PCI桥：PCI桥；PCI Express-to-PCI桥：PCIe桥；Host-to-PCI主桥：HOST桥，也称为PCI主桥或者PCI总线控制器；&lt;/li&gt;
@@ -144,7 +218,7 @@
 
 &lt;!--more--&gt;
 
-&lt;h3 id=&quot;hostpci&quot;&gt;HOST主桥(PCI控制器)：&lt;/h3&gt;
+&lt;h3 id=&quot;hostpci&quot;&gt;2. HOST主桥(PCI控制器)：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;PCI总线与处理器地址空间隔离：PCI设备的独立地址空间，即PCI总线地址空间，通过HOST主桥和处理器地址空间隔离，处理器通过HOST主桥访问PCI设备，PCI设备通过HOST主桥访问主存储器；&lt;/li&gt;
   &lt;li&gt;HOST主桥的多极缓冲，确保处理器总线和PCI总线工作在各自的时钟频率不干扰，设备和处理器共享主存储器资源；&lt;/li&gt;
@@ -158,7 +232,7 @@
   &lt;li&gt;HOST主桥中设置了许多寄存器，HOST处理器可以通过操作这些寄存器管理PCI设备，可以通过寄存器或者存储器映像寻址方式访问PCI设备寄存器空间；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;pci-1&quot;&gt;PCI总线的存储器读写事务：&lt;/h3&gt;
+&lt;h3 id=&quot;pci-1&quot;&gt;3. PCI总线的存储器读写事务：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;地址译码方式进行数据传递，即采用地址信号；&lt;/li&gt;
   &lt;li&gt;ID译码方式进行配置信息传递，使用PCI设备的ID号，包括Bus Number、Device Number、Founction Number和Register Number；&lt;/li&gt;
@@ -168,7 +242,7 @@
   &lt;li&gt;数据传送方式：Posted-数据请求通过PCI总线之后，将逐级释放总线资源，因此PCI总线利用率较高；Non-Posted-请求通过PCI总线时，并不及时释放总线资源，必须在当前总线事务结束后，才能释放；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;hostpci-1&quot;&gt;HOST设备访问PCI设备：&lt;/h3&gt;
+&lt;h3 id=&quot;hostpci-1&quot;&gt;4. HOST设备访问PCI设备：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;HOST处理器对PCI设备的数据访问：发起存储器和I/O读写请求；对PC设备进行配置读写；&lt;/li&gt;
   &lt;li&gt;PCI设备配置空间，共6个BAR寄存器，每一个BAR寄存器都与PCI设备使用的一组PCI总线地址空间对应，BAR寄存器记录这组地址空间基地址；BAR寄存器对应的PCI总线空间为BAR空间，可以存放I/O地址空间，或存储器地址空间；存放的是“PCI总线域”而不是“存储器域”的物理地址；&lt;/li&gt;
@@ -177,14 +251,14 @@
   &lt;li&gt;需要再次强调的是：处理器能够直接使用的是存储器域的地址；PCI设备能够直接使用的是PCI总线域的地址；许多处理器中，存储器地址与PCI总线地址完全相等，但含义完全不同；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;pci-2&quot;&gt;PCI设备读写主存储器：&lt;/h3&gt;
+&lt;h3 id=&quot;pci-2&quot;&gt;5. PCI设备读写主存储器：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;PCI设备与主存储器直接进行数据交换(DMA)时，需要获得数据传送的目的地址和传送大小；支持DMA传递的PCI设备可以在BAR空间设置两个寄存器，分别保存目的地址和传送大小，这两个寄存器也是PCI设备DMA控制器的组成部件；&lt;/li&gt;
   &lt;li&gt;PCI设备进行DMA操作，目的地址为PCI总线域的物理地址，HOST主桥负责其到存储器域地址的转换；HOST主桥需要合理设置，将存储器地址空间映射到PCI总线，PCI设备才能对这段存储器空间进行DMA操作；&lt;/li&gt;
   &lt;li&gt;许多处理器允许PCI设备访问所有存储器域地址空间，但是有些处理器设置PCI设备所能访问的存储器地址空间；只有在PCI总线域中有映像的存储器空间才能被PCI设备访问；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;pci-3&quot;&gt;存储器域与PCI总线域：&lt;/h3&gt;
+&lt;h3 id=&quot;pci-3&quot;&gt;6. 存储器域与PCI总线域：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;CPU访问主存储器时，将读写指令放入读写指令缓冲中，然后发送到DRAM控制器或者HOST主桥，再转换为DRAM或者PCI总线地址，分别进入DRAM域或者PCI总线域，再访问相应地址空间；&lt;/li&gt;
   &lt;li&gt;DRAM域地址空间指DRAM控制器可以访问的地址空间集合，目前处理器系统的DRAM一般由DDR-SDRAM组成，也称为主存储器；&lt;/li&gt;
@@ -194,7 +268,7 @@
   &lt;li&gt;PCI设备使用的地址空间保存在各自的PCI配置寄存器中(BAR)，这些PCI总线地址空间需要在初始化时映射成存储器域的地址空间，之后处理器才能访问，x86处理器中，HOST主桥的硬件逻辑中存在这个地址转换的概念；而PowerPC处理器通过独立的寄存器保存这个地址映射规则；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;pci-4&quot;&gt;PCI设备配置空间访问机制：&lt;/h3&gt;
+&lt;h3 id=&quot;pci-4&quot;&gt;7. PCI设备配置空间访问机制：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;PCI总线规定了配置空间的访问事务，使用ID号进行寻址，ID号由总线号(Bus Number)、设备号(Device Number)、功能号(Function)组成；&lt;/li&gt;
   &lt;li&gt;总线号在HOST主桥遍历PCI总线树时确定，总线号由系统软件决定；系统软件使用DFS算法扫描PCI总线树，并编号；与主桥直接相连的PCI总线为PCI总线0；与HOST主桥连接的PCI总线都为0，当有多个HOST主桥时，存在多个编号0的总线，但属于不同PCI总线域；&lt;/li&gt;
@@ -211,14 +285,14 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
   &lt;li&gt;x86处理器对CONFIG_DATA寄存器进行I/O读写访问，且CONFIG_DATA的Enable位为1时，HOST主桥将这个I/O读写访问转换为PCI配置读写总线事务，发到PCI总线，PCI总线根据保存在CONFIG_DATA寄存器的ID号，将PCI配置读写请求发送到指定PCI设备的指定配置寄存器；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;pci-5&quot;&gt;PCI桥：&lt;/h3&gt;
+&lt;h3 id=&quot;pci-5&quot;&gt;8. PCI桥：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;PCI桥的配置空间对其下PCI设备进行管理，系统软件不需要专门的驱动程序设置PCI桥，因此PCI桥称为透明桥；&lt;/li&gt;
   &lt;li&gt;有一种非透明桥，在PCI总线挂接另一个处理器系统时有用，即连接两个不同的PCI总线域(看起来当使用PCIe连接不同tail时需要使用非透明桥)&lt;/li&gt;
   &lt;li&gt;通过PCI桥连接的PCI总线属于同一个总线域，不需要进行地址转换；PCI桥可以扩展出新的PCI总线，但不能扩展PCI总线域，如果系统使用32位PCI总线地址，则系统的PCI总线域地址空间为4GB，总线域上的所有设备共享4GB的空间；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;pci-6&quot;&gt;PCI设备的配置空间：&lt;/h3&gt;
+&lt;h3 id=&quot;pci-6&quot;&gt;9. PCI设备的配置空间：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;具体处理器应用时，PCI设备常将PCI配置信息存放在EEPROM中，PCI设备上电初始化时，将其读到PCI设备配置空间作为初始值，该过程由硬件逻辑完成(目测我们的芯片不采用这种方式，而是软件进行初始化)；&lt;/li&gt;
   &lt;li&gt;PCI设备的配置空间包含很多寄存器，决定了该设备在PCI总线中的使用方法，即常见的那个寄存器图(包括Device ID和Vender ID等)；PCI Agent设备配置空间包含的寄存器如下；&lt;/li&gt;
@@ -237,7 +311,7 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
 *. Base Address Register0~5：即BAR寄存器；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;bar&quot;&gt;BAR寄存器：&lt;/h3&gt;
+&lt;h3 id=&quot;bar&quot;&gt;10. BAR寄存器：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;Base Address Register0~5：即BAR寄存器，保存PCI设备使用的地址空间的基地址，保存设备在PCI总线域中的地址，每个设备最多可以有6个基址空间；&lt;/li&gt;
   &lt;li&gt;PCI设备复位之后，存放PCI设备需要使用的基地址空间大小，该空间是I /O空间还是存储器空间等信息；&lt;/li&gt;
@@ -254,13 +328,13 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
    <link href="http://lambda.hk/linux_kernel/2014/11/24/Linux-Device-Driver-pci"/>
    <updated>2014-11-24T00:00:00+08:00</updated>
    <id>http://lambda.hk/linux_kernel/2014/11/24/Linux-Device-Driver-pci</id>
-   <content type="html">&lt;h3 id=&quot;pci&quot;&gt;PCI接口：&lt;/h3&gt;
+   <content type="html">&lt;h3 id=&quot;pci&quot;&gt;1. PCI接口：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;PCI总线通过使用比ISA更高的时钟频率，获得更好的性能；时钟设置运行在25或者33MHz、66MHz甚至133MHz；&lt;/li&gt;
   &lt;li&gt;PCI对接口板自动探测，没有跳线，并且在系统启动时自动配置；设备驱动必须能够存取设备中的配置信息以便完成初始化；&lt;/li&gt;
   &lt;li&gt;每个PCI外设有一个总线号、一个设备号、一个功能号标识，PCI规范允许单个系统占用多达256根总线，每个总线占用32个设备，每个设备可以&lt;/li&gt;
   &lt;li&gt;是一个最多具有8个功能的多功能卡，每个功能在硬件层次被一个16位地址标识；&lt;/li&gt;
-  &lt;li&gt;如果需要多个PCI总线，可以通过PCI桥实现，PCI系统的实现是树状分布；和PCI外设相关的16-位硬件地址，隐藏在struct pci_dev结构中；&lt;/li&gt;
+  &lt;li&gt;如果需要多个PCI总线，可以通过PCI桥实现，PCI系统的实现是树状分布；和PCI外设相关的16-位硬件地址，隐藏在&lt;code&gt;struct pci_dev&lt;/code&gt;结构中；&lt;/li&gt;
   &lt;li&gt;PCI总线的I/O空间使用一个32位地址总线，而内存空间可以使用32位或者64位地址存取；系统启动时BIOS固件初始化PCI硬件，映射每个区到&lt;/li&gt;
   &lt;li&gt;不同地址来避免冲突，被映射的地址可以从配置空间读出，因此Linux驱动不需要使用探测读取设备，根据配置寄存器信息安全存取相应硬件；&lt;/li&gt;
   &lt;li&gt;每个设备的PCI(包括PCI Express设备)配置空间包含256Bytes，每个功能有4KB配置空间，配置空间排布标准化；配置空间的4个字节含有唯一&lt;/li&gt;
@@ -270,38 +344,38 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
 
 &lt;!--more--&gt;
 
-&lt;h3 id=&quot;section&quot;&gt;配置空间：&lt;/h3&gt;
+&lt;h3 id=&quot;section&quot;&gt;2. 配置空间：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;PCI设备上电时，硬件保持未激活，内存和I/O端口都没有映射到计算机地址空间，即设备只能被配置；BIOS固件可以读写配置地址空间；&lt;/li&gt;
   &lt;li&gt;系统启动时，固件配置PCI外设，分配安全的位置给外设提供的地址区；驱动存取设备时，将其内存和I/O区域映射到处理器地址空间；&lt;/li&gt;
   &lt;li&gt;所有的PCI设备都有至少一个256-Bytes的地址空间，前64字节是标准的，剩下的依赖设备；&lt;/li&gt;
   &lt;li&gt;venderID和deviceID标识一个设备，由PCI制造商分配，驱动使用这两个ID来查找设备；venderID有一个全球的注册，由供应商决定；&lt;/li&gt;
-  &lt;li&gt;__u32 vender, device指定一个设备的PCI供应商和设备ID，如果驱动可以处理任何供应商或者设备ID，这两个值应该为PCI_ANY_ID;&lt;/li&gt;
-  &lt;li&gt;PCI_DEVICE(vender, device)创建一个struct pci_device_id，该宏设置结构的供应商和设备成员为PCI_ANY_ID;&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;__u32 vender, device&lt;/code&gt;指定一个设备的PCI供应商和设备ID，如果驱动可以处理任何供应商或者设备ID，这两个值应该为PCI_ANY_ID;&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;PCI_DEVICE(vender, device)&lt;/code&gt;创建一个&lt;code&gt;struct pci_device_id&lt;/code&gt;，该宏设置结构的供应商和设备成员为PCI_ANY_ID;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;pci-1&quot;&gt;注册PCI驱动：&lt;/h3&gt;
+&lt;h3 id=&quot;pci-1&quot;&gt;3. 注册PCI驱动：&lt;/h3&gt;
 &lt;ul&gt;
-  &lt;li&gt;struct pci_device_id结构可以告诉用户空间相应驱动支持哪些设备；&lt;/li&gt;
-  &lt;li&gt;PCI驱动必须创建主结构struct pci_driver，包含函数回调和变量，才能被正确注册到内核；&lt;/li&gt;
-  &lt;li&gt;const char *name；驱动名字，必须唯一，通常设置为和驱动模块名字相同；&lt;/li&gt;
-  &lt;li&gt;const struct pci_device_id *id_table: 指向struct pci_device_id表的指针；&lt;/li&gt;
-  &lt;li&gt;int (*probe)(struct pci_dev *dev, const struct pci_device_id *id): 指向PCI驱动中probe函数的指针，当它认为有一个这个驱动想要控制的struct pci_dev时，被PCI核心调用；&lt;/li&gt;
-  &lt;li&gt;void (*remove)(struct pci_dev *dev): 指向对应的pci_dev被从系统中去除时调用的函数；&lt;/li&gt;
-  &lt;li&gt;int (*suspend) (struct pci_dev *dev, u32 state): struct pci_dev被挂起时调用；函数可选；&lt;/li&gt;
-  &lt;li&gt;int (*resume) (struct pci_dev *dev): pci_dev被恢复时调用；函数可选；&lt;/li&gt;
-  &lt;li&gt;pci_register_driver(&amp;amp;pci_driver)注册struct pci_driver到PCI核心，若所有都成功注册，返回0，否则，返回负的错误码；&lt;/li&gt;
-  &lt;li&gt;pci_unregister_driver(&amp;amp;pci_driver)注销内核中的struct pci_driver，绑定到这个驱动的PCI设备被去除，函数返回之前remove函数被调用；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;struct pci_device_id&lt;/code&gt;结构可以告诉用户空间相应驱动支持哪些设备；&lt;/li&gt;
+  &lt;li&gt;PCI驱动必须创建主结构&lt;code&gt;struct pci_driver&lt;/code&gt;，包含函数回调和变量，才能被正确注册到内核；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;const char *name；&lt;/code&gt;驱动名字，必须唯一，通常设置为和驱动模块名字相同；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;const struct pci_device_id *id_table&lt;/code&gt;: 指向&lt;code&gt;struct pci_device_id&lt;/code&gt;表的指针；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;int (*probe)(struct pci_dev *dev, const struct pci_device_id *id)&lt;/code&gt;: 指向PCI驱动中probe函数的指针，当它认为有一个这个驱动想要控制的&lt;code&gt;struct pci_dev&lt;/code&gt;时，被PCI核心调用；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;void (*remove)(struct pci_dev *dev)&lt;/code&gt;: 指向对应的pci_dev被从系统中去除时调用的函数；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;int (*suspend) (struct pci_dev *dev, u32 state)&lt;/code&gt;: struct pci_dev被挂起时调用；函数可选；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;int (*resume) (struct pci_dev *dev)&lt;/code&gt;: pci_dev被恢复时调用；函数可选；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;pci_register_driver(&amp;amp;pci_driver)&lt;/code&gt;注册&lt;code&gt;struct pci_driver&lt;/code&gt;到PCI核心，若所有都成功注册，返回0，否则，返回负的错误码；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;pci_unregister_driver(&amp;amp;pci_driver)&lt;/code&gt;注销内核中的struct pci_driver，绑定到这个驱动的PCI设备被去除，函数返回之前remove函数被调用；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;pci-2&quot;&gt;使能PCI设备：&lt;/h3&gt;
+&lt;h3 id=&quot;pci-2&quot;&gt;4. 使能PCI设备：&lt;/h3&gt;
 &lt;ul&gt;
-  &lt;li&gt;在驱动可存取PCI设备的任何设备资源之前(I/O区域或者中断)，驱动必须调用pci_enable_device函数；&lt;/li&gt;
-  &lt;li&gt;int pci_enable_device(struct pci_dev *dev); 唤醒设备；&lt;/li&gt;
+  &lt;li&gt;在驱动可存取PCI设备的任何设备资源之前(I/O区域或者中断)，驱动必须调用&lt;code&gt;pci_enable_device&lt;/code&gt;函数；&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;int pci_enable_device(struct pci_dev *dev)&lt;/code&gt;; 唤醒设备；&lt;/li&gt;
   &lt;li&gt;函数将PCI配置空间的Command域的0位和1位置1，从而开启设备，即开启内存映射和I/O映射；还做开启中断的工作；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;section-1&quot;&gt;存取配置空间：&lt;/h3&gt;
+&lt;h3 id=&quot;section-1&quot;&gt;5. 存取配置空间：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;驱动探测到设备以后，常常需要读写3个地址空间，内存、端口、和配置；这是唯一找到设备被映射到内存和I/O空间位置的方法；&lt;/li&gt;
   &lt;li&gt;CPU无法直接存取配置空间，为了存取配置空间，CPU必须读写PCI控制器中的寄存器，Linux提供标准接口存取配置空间；&lt;/li&gt;
@@ -320,7 +394,7 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;pci_write_config_byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pci_dev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;u8&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; 
 &lt;span class=&quot;n&quot;&gt;pci_write_config_word&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pic_write_config_dword&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h3 id=&quot;io&quot;&gt;存取I/O和内存空间：&lt;/h3&gt;
+&lt;h3 id=&quot;io&quot;&gt;6. 存取I/O和内存空间：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;一个PCI设备实现6个I/O地址区，每个区域由内存区或者I/O区组成，大部分设备在内存区中实现其I/O寄存器；&lt;/li&gt;
   &lt;li&gt;PCI_ADDRESS_0到 PCI_ADDRESS_5为配置空间的6个32位配置寄存器；内核中PCI设备的I/O区域集成在通用资源管理中，不必存取配置&lt;/li&gt;
@@ -330,7 +404,7 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;pic_resource_start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pic_dev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;//函数返回某个bar的第一个地址(内存地址或者I/O端口号)；&lt;/span&gt;
 &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;pic_resource_start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pic_dev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;	&lt;span class=&quot;c1&quot;&gt;//函数返回某个bar的最后一个地址；&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h3 id=&quot;pci-3&quot;&gt;PCI中断：&lt;/h3&gt;
+&lt;h3 id=&quot;pci-3&quot;&gt;7. PCI中断：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;Linux启动时，BIOS给设备分配唯一的中断号，中断号存储在PCI配置寄存器的60(PCI_INTERRUPT_LINE);&lt;/li&gt;
 &lt;/ul&gt;
@@ -348,11 +422,11 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
    <link href="http://lambda.hk/linux_kernel/2014/11/24/Linux-Device-Driver-memory"/>
    <updated>2014-11-24T00:00:00+08:00</updated>
    <id>http://lambda.hk/linux_kernel/2014/11/24/Linux-Device-Driver-memory</id>
-   <content type="html">&lt;h3 id=&quot;kmalloc&quot;&gt;kmalloc：&lt;/h3&gt;
+   <content type="html">&lt;h3 id=&quot;kmalloc&quot;&gt;1. kmalloc：&lt;/h3&gt;
 &lt;ul&gt;
-  &lt;li&gt;不清零获得的内存，分配的区在物理内存中连续；void *kmalloc(size_t size, int flags);size为分配块的大小，flags为分配标志；&lt;/li&gt;
-  &lt;li&gt;flags：GFP_KERNEL 分配代表运行在内核空间的进程进行，意味着调用函数代表一个进程执行一个系统调用，能够使当前进程在少内存情况下睡眠等待一页；内部通过调用__get_free_pages进行；&lt;/li&gt;
-  &lt;li&gt;如果一个模块需要分配大块内存，最好使用面向页的技术；__get_free_page(unsigned int flags);返回一个指向新页的指针，不清零该页；&lt;/li&gt;
+  &lt;li&gt;不清零获得的内存，分配的区在物理内存中连续；&lt;code&gt;void *kmalloc(size_t size, int flags)&lt;/code&gt;;size为分配块的大小，flags为分配标志；&lt;/li&gt;
+  &lt;li&gt;flags：GFP_KERNEL 分配代表运行在内核空间的进程进行，意味着调用函数代表一个进程执行一个系统调用，能够使当前进程在少内存情况下睡眠等待一页；内部通过调用&lt;code&gt;__get_free_pages&lt;/code&gt;进行；&lt;/li&gt;
+  &lt;li&gt;如果一个模块需要分配大块内存，最好使用面向页的技术；&lt;code&gt;__get_free_page(unsigned int flags)&lt;/code&gt;;返回一个指向新页的指针，不清零该页；&lt;/li&gt;
   &lt;li&gt;flags：GFP_ATOMIC kmalloc从一个进程上下文外部调用时，当前进程不被睡眠，内核试图保持一些空闲页满足原子的分配；&lt;/li&gt;
   &lt;li&gt;Linux内核内存区：支持DMA操作内存区、普通内存、高端内存；&lt;/li&gt;
   &lt;li&gt;支持DMA操作内存区位于一个优先的地址范围，外设可以在此进行DMA存取，大部分健全平台，所有内存都在该区，在x86，DMA区在RAM的&lt;/li&gt;
@@ -362,7 +436,7 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
 
 &lt;!--more--&gt;
 
-&lt;h3 id=&quot;vmalloc&quot;&gt;vmalloc：&lt;/h3&gt;
+&lt;h3 id=&quot;vmalloc&quot;&gt;2. vmalloc：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;在虚拟内存空间分配一块连续内存区，尽管这些页在物理内存不连续，内核将其看作连续的地址范围；使用alloc_page调用获得每个页；&lt;/li&gt;
   &lt;li&gt;vmalloc分配的地址只有在处理器的MMU之上才有意义，当驱动需要一个真正的物理地址时，无法使用vmalloc；只有在为一个大的只存在于软件中的顺序缓冲分配内存时，调用vmalloc，vmalloc比__get_free_pages开销更大，因为必须获取内存并建立页表；&lt;/li&gt;
@@ -370,13 +444,13 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
   &lt;li&gt;ioremap对于映射一个PCI缓冲的物理地址到虚拟内核空间；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;section&quot;&gt;获得大空间的缓冲区：&lt;/h3&gt;
+&lt;h3 id=&quot;section&quot;&gt;3. 获得大空间的缓冲区：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;大量连续内存缓冲区的分配容易失败，系统内存长时间会碎片化，常常出现真正的大内存区不可得；&lt;/li&gt;
   &lt;li&gt;如果需要一个物理上连续的大空间内存缓冲区，最好启动时请求内存进行分配，只有直接链接到内核的驱动可以这样做；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;section-1&quot;&gt;与硬件通讯：&lt;/h3&gt;
+&lt;h3 id=&quot;section-1&quot;&gt;4. 与硬件通讯：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;驱动是软件概念和硬件电路之间的抽象层，需要存取I/O端口和I/O内存；&lt;/li&gt;
   &lt;li&gt;数字I/O是一个输入/输出打开的最简单形式，写到设备的数据出现在输出管脚，处理器可以直接存取到输入管脚上的电平；&lt;/li&gt;
@@ -385,7 +459,7 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
   &lt;li&gt;大部分PCI设备映射寄存器到一个内存地址区域，这种I/O存取内存更加有效；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;io&quot;&gt;使用I/O端口：&lt;/h3&gt;
+&lt;h3 id=&quot;io&quot;&gt;5. 使用I/O端口：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;I/O端口是驱动跟设备通讯的方法，内核提供注册接口以允许去东莞声明需要的端口；接口中核心函数是request_region;&lt;/li&gt;
   &lt;li&gt;struct resource *request_region(unsigned long first, unsigned long n, const char *name);&lt;/li&gt;
@@ -393,7 +467,7 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
   &lt;li&gt;驱动为硬件请求了需要使用的I/O端口范围之后，必须读/写到这些端口，&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;io-1&quot;&gt;使用I/O内存：&lt;/h3&gt;
+&lt;h3 id=&quot;io-1&quot;&gt;6. 使用I/O内存：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;尽管I/O端口在x86世界流行，但设备通讯的主要机制是通过寄存器和设备内存的映射实现，即I/O内存，寄存器和内存之间的区别对软件透明；&lt;/li&gt;
   &lt;li&gt;I/O内存是一个RAM区域，处理器使用I/O内存跨过总线存取设备；     &lt;/li&gt;
@@ -403,13 +477,13 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
   &lt;li&gt;不能直接引用从ioremap返回返回的地址指针，应当使用内核提供的存取函数进行I/O内存的存取：I/O读：unsigned int ioread8(void *addr); ioread16; ioread32; addr是从ioremap获得的地址，返回值从给定I/O内存读取；I/O写：void iowrite8(u8 value, void *addr); iowrite16; iowrite32;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;section-2&quot;&gt;中断处理：&lt;/h3&gt;
+&lt;h3 id=&quot;section-2&quot;&gt;7. 中断处理：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;驱动只需要为其设备注册一个中断处理函数，中断到来时进行正确处理；&lt;/li&gt;
   &lt;li&gt;中断线资源有限，一个模块需要注册中断通道，不使用时进行释放；int request_irq(unsigned int irq, irqreturn_t (*handle)(int, void *, struct pt_regs *), unsigned long flags, const char *dev_name, void *dev_id);&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;section-3&quot;&gt;可移植性：&lt;/h3&gt;
+&lt;h3 id=&quot;section-3&quot;&gt;8. 可移植性：&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;通常的C数据类型如int、long，在不同体系上大小不同；内核中经常使用的数据类型有自己的typedef语句，阻止了任何可移植性的问题；&lt;/li&gt;
   &lt;li&gt;使用内存时，一个内存页应该是PAGE_SIZE字节，不是4KB，页大小根据平台有4KB~64KB的可能性；&lt;/li&gt;
@@ -422,7 +496,7 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
    <link href="http://lambda.hk/linux_kernel/2014/11/18/Linux-Device_Driver-spinlock"/>
    <updated>2014-11-18T00:00:00+08:00</updated>
    <id>http://lambda.hk/linux_kernel/2014/11/18/Linux-Device_Driver-spinlock</id>
-   <content type="html">&lt;h3 id=&quot;section&quot;&gt;并发和竞争&lt;/h3&gt;
+   <content type="html">&lt;h3 id=&quot;section&quot;&gt;1. 并发和竞争&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;实际产生竞争的情况&lt;/li&gt;
 &lt;/ul&gt;
@@ -442,7 +516,7 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
 
 &lt;!--more--&gt;
 
-&lt;h3 id=&quot;section-1&quot;&gt;信号量（旗标）&lt;/h3&gt;
+&lt;h3 id=&quot;section-1&quot;&gt;2. 信号量（旗标）&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;加锁，保证数据结构操作原子化；如果一个线程必须分配一个特殊内存块，这个分配必须在其他线程做测试之前，必须建立临界区，在任何给定时间只有一个线程可以执行代码；&lt;/li&gt;
   &lt;li&gt;一个Linux进程到达一个无法做进一步处理的地方时，阻塞，让出处理器直到某个时间被唤醒，进程通常在等待I/O完成时睡眠；&lt;/li&gt;
@@ -455,7 +529,7 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
   &lt;li&gt;V函数为up，void up(struct semaphore *sem);up函数被调用，则调用者不再拥有旗标；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;section-2&quot;&gt;自旋锁&lt;/h3&gt;
+&lt;h3 id=&quot;section-2&quot;&gt;3. 自旋锁&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;大部分加锁通过自旋锁机制实现，自旋锁可以用在不能睡眠的代码中，例如中断处理；&lt;/li&gt;
   &lt;li&gt;一个自旋锁是一个互斥设备，只能有两个值，上锁和解锁；上锁，则代码进入临界区；如果该锁被别人获得，代码进入循环并反复检查该锁，直到可用，该循环即自旋锁的自旋部分；&lt;/li&gt;
@@ -466,7 +540,7 @@ Register Number：第7~2位，记录PCI设备的寄存器号；&lt;/li&gt;
   &lt;li&gt;必须一直是尽可能短时间持有，确保其他进程自旋等待释放锁的时间不会太长；长时间自旋也阻止了当前处理器调度，高优先级进程不得不等待；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;section-3&quot;&gt;信号量与自旋锁&lt;/h3&gt;
+&lt;h3 id=&quot;section-3&quot;&gt;4. 信号量与自旋锁&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;信号量和读写信号量适合于保持时间较长的情况，它们会导致调用者睡眠，因此只能在进程上下文使用（因为中断的上下文不允许休眠） &lt;/li&gt;
   &lt;li&gt;自旋锁适合于保持时间非常短的情况，因为一个被争用的自旋锁使得请求它的线程在等待重新可用时自旋，特别浪费处理时间，所以自旋锁不应该 被长时间持有。&lt;/li&gt;

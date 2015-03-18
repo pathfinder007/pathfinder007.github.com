@@ -14,6 +14,7 @@ http://lambda.hk/3/index.html
 http://lambda.hk/4/index.html
 
 http://lambda.hk/git/2015/03/18/Git-Operate
+http://lambda.hk/git/2015/03/18/Git-Change-Account
 http://lambda.hk/linux_kernel/2014/11/28/pcie-arch
 http://lambda.hk/linux_kernel/2014/11/28/pci-arch
 http://lambda.hk/linux_kernel/2014/11/24/Linux-Device-Driver-pci

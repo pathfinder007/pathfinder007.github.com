@@ -163,14 +163,40 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/git/2015/03/18/Git-Operate">Git操作中切换本地账户</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/git/2015/03/18/Git-Operate">Git中基本操作</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  前两天看王神面实习的简历，简历上面清晰地标出每个项目的tag似是一个很好的办法，既给面试官重点突出的感觉，也便于将面试中心集中，方便自己准备，而作为大型软件的开发，版本控制必不可少，将Git与SVN相关的东西做一个小总结。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/git/2015/03/18/Git-Operate">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#git-ref" title="git">
+	git
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/git/2015/03/18/Git-Change-Account">Git操作中切换本地账户</a><span class="author"></span></h1>
 				
 				<span class="teaser"><p>  前段时间由于项目需要，一直往oschina上面的私有空间提交代码，懒得新建账户，就将本地的Git账户切换成了oschina上面团队的公共账号。今天在整Blog，才发现当时把本地的global设置给改了。而oschina和github，用的是一套机制。提交代码到github时，显示的不是自己账户提交，很不爽。翻了下资料，把本地的git设置给改了回来，留个备忘。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/git/2015/03/18/Git-Operate">Read More</a></span>
+				<span class="readmore"><a href="/git/2015/03/18/Git-Change-Account">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -191,12 +217,8 @@
 			<div class="journal-body">
 				<h1 class="journal-title"><a href="/linux_kernel/2014/11/28/pcie-arch">PCI Express基本概念</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="pciebar">PCIe设备BAR空间的初始化：</h3>
-<ul>
-  <li>PCIe设备进行数据传输之前，系统软件需要初始化BAR0~5寄存器，使用DFS算法遍历并完成寄存器初始化，即分配这些设备在PCI总线域的地址空间，当寄存器都初始化完毕后，PCI设备可以使用PCI总线地址进行数据传递；</li>
-  <li>BAR0~5寄存器保存的都是PCI设备的地址空间，x86处理器中，没有存储器域和PCI总线域地址空间的转换机制，两个域的地址相等，也是一种简单映射，地址隔离的概念仍然存在；</li>
-  <li>假设在一个32位处理器中，其存储器域的0xF000-0000~0xF7FF-FFFF总共128M的物理地址空间与PCI总线的地址空间映射；当处理器访问这段存储器地址空间，HOST主桥认领这个存储器访问，并将其使用的物理地址空间转换为PCI总线地址空间，并与PCI总线地址空间0xF000-0000~0xF7FF-FFFF对应；</li>
-</ul>
+				<span class="teaser"><h3 id="pciebar">1. PCIe设备BAR空间的初始化：</h3>
+<p>   PCIe设备进行数据传输之前，系统软件使用DFS算法遍历并完成BAR0~BAR5寄存器初始化，即分配这些设备在PCI总线域的地址空间，之后，PCI设备可以使用PCI总线地址进行数据传递；BAR0~5寄存器保存的都是PCI设备的地址空间，x86处理器中，没有存储器域和PCI总线域地址空间的转换机制，两个域的地址相等，也是一种简单映射，地址隔离的概念仍然存在；假设在一个32位处理器中，其存储器域的0xF000-0000~0xF7FF-FFFF总共128M的物理地址空间与PCI总线的地址空间映射；当处理器访问这段存储器地址空间，HOST主桥认领这个存储器访问，并将其使用的物理地址空间转换为PCI总线地址空间，并与PCI总线地址空间0xF000-0000~0xF7FF-FFFF对应；</p>
 
 
 				
@@ -222,7 +244,7 @@
 			<div class="journal-body">
 				<h1 class="journal-title"><a href="/linux_kernel/2014/11/28/pci-arch">PCI基本概念</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="pci">PCI体系结构：</h3>
+				<span class="teaser"><h3 id="pci">1. PCI体系结构：</h3>
 <ul>
   <li>PCI为局部总线，系统总线的延伸，用于连接外设；</li>
   <li>PCI Express总线：PCIe总线；PCI-to-PCI桥：PCI桥；PCI Express-to-PCI桥：PCIe桥；Host-to-PCI主桥：HOST桥，也称为PCI主桥或者PCI总线控制器；</li>
@@ -252,13 +274,13 @@
 			<div class="journal-body">
 				<h1 class="journal-title"><a href="/linux_kernel/2014/11/24/Linux-Device-Driver-pci">Linux Device Driver——PCI基础</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="pci">PCI接口：</h3>
+				<span class="teaser"><h3 id="pci">1. PCI接口：</h3>
 <ul>
   <li>PCI总线通过使用比ISA更高的时钟频率，获得更好的性能；时钟设置运行在25或者33MHz、66MHz甚至133MHz；</li>
   <li>PCI对接口板自动探测，没有跳线，并且在系统启动时自动配置；设备驱动必须能够存取设备中的配置信息以便完成初始化；</li>
   <li>每个PCI外设有一个总线号、一个设备号、一个功能号标识，PCI规范允许单个系统占用多达256根总线，每个总线占用32个设备，每个设备可以</li>
   <li>是一个最多具有8个功能的多功能卡，每个功能在硬件层次被一个16位地址标识；</li>
-  <li>如果需要多个PCI总线，可以通过PCI桥实现，PCI系统的实现是树状分布；和PCI外设相关的16-位硬件地址，隐藏在struct pci_dev结构中；</li>
+  <li>如果需要多个PCI总线，可以通过PCI桥实现，PCI系统的实现是树状分布；和PCI外设相关的16-位硬件地址，隐藏在<code>struct pci_dev</code>结构中；</li>
   <li>PCI总线的I/O空间使用一个32位地址总线，而内存空间可以使用32位或者64位地址存取；系统启动时BIOS固件初始化PCI硬件，映射每个区到</li>
   <li>不同地址来避免冲突，被映射的地址可以从配置空间读出，因此Linux驱动不需要使用探测读取设备，根据配置寄存器信息安全存取相应硬件；</li>
   <li>每个设备的PCI(包括PCI Express设备)配置空间包含256Bytes，每个功能有4KB配置空间，配置空间排布标准化；配置空间的4个字节含有唯一</li>
@@ -270,42 +292,6 @@
 				
 				</span>
 				<span class="readmore"><a href="/linux_kernel/2014/11/24/Linux-Device-Driver-pci">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/24/Linux-Device-Driver-memory">Linux Device Driver——内存分配</a><span class="author"></span></h1>
-				
-				<span class="teaser"><h3 id="kmalloc">kmalloc：</h3>
-<ul>
-  <li>不清零获得的内存，分配的区在物理内存中连续；void *kmalloc(size_t size, int flags);size为分配块的大小，flags为分配标志；</li>
-  <li>flags：GFP_KERNEL 分配代表运行在内核空间的进程进行，意味着调用函数代表一个进程执行一个系统调用，能够使当前进程在少内存情况下睡眠等待一页；内部通过调用__get_free_pages进行；</li>
-  <li>如果一个模块需要分配大块内存，最好使用面向页的技术；__get_free_page(unsigned int flags);返回一个指向新页的指针，不清零该页；</li>
-  <li>flags：GFP_ATOMIC kmalloc从一个进程上下文外部调用时，当前进程不被睡眠，内核试图保持一些空闲页满足原子的分配；</li>
-  <li>Linux内核内存区：支持DMA操作内存区、普通内存、高端内存；</li>
-  <li>支持DMA操作内存区位于一个优先的地址范围，外设可以在此进行DMA存取，大部分健全平台，所有内存都在该区，在x86，DMA区在RAM的</li>
-  <li>前16MB。</li>
-  <li>kmalloc和__get_free_pages返回的内存地址是虚拟地址，实际物理地址寻址仍然由MMU管理；</li>
-</ul>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/24/Linux-Device-Driver-memory">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -370,7 +356,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#git-ref">
-    		git <span>1</span>
+    		git <span>2</span>
     	</a></li>
     
   

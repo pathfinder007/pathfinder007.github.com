@@ -1,0 +1,1331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+ <title>Hombo's Blog</title>
+ <link href="http://hombo.wang/" rel="self"/>
+ <link href="http://hombo.wang"/>
+ <updated>2015-03-12T18:02:01+08:00</updated>
+ <id>http://hombo.wang</id>
+ <author>
+   <name>Hombo Wang</name>
+   <email></email>
+ </author>
+
+ 
+ <entry>
+   <title>Android中关于图片压缩、截图、旋转的一些方法</title>
+   <link href="http://hombo.wang/android/2015/03/12/Android-about-pictures"/>
+   <updated>2015-03-12T00:00:00+08:00</updated>
+   <id>http://hombo.wang/android/2015/03/12/Android-about-pictures</id>
+   <content type="html">&lt;p&gt;最近做项目使用到了图片的各种处理，遇到了各种问题，经过研究和调试，在此总结一些关于图片处理的方法，以便今后使用。这些方法包括图片压缩、bitmap缩略图、图片旋转和截图。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;section&quot;&gt;1. 图片压缩&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;	// /图片压缩
+	public static Bitmap compressImage(Bitmap image) {
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		image.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+		int options = 90;
+		while (baos.toByteArray().length / 1024 &amp;gt; 100) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
+			baos.reset();// 重置baos即清空baos
+			image.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+			options -= 10;// 每次都减少10
+		}
+		ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());// 把压缩后的数据baos存放到ByteArrayInputStream中
+		Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);// 把ByteArrayInputStream数据生成图片
+		return bitmap;
+	}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;bitmap&quot;&gt;2. 从图片文件产生Bitmap缩略图&lt;/h3&gt;
+
+&lt;p&gt;有时候图片文件很大，加载到Bitmap，然后放置到控件上会发生OOM（内存溢出）错误，下面的方法通过先压缩的方式，避免了这个问题：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public static Bitmap compressBitmap(String filepath, Context context) {
+	BitmapFactory.Options opt = new BitmapFactory.Options();
+	opt.inJustDecodeBounds = true;
+	Bitmap bm = BitmapFactory.decodeFile(filepath, opt);
+
+	// 获取到这个图片的原始宽度和高度
+	int picHeight = opt.outHeight;
+
+	// 获取屏的宽度和高度
+	WindowManager windowManager = ((Activity) context).getWindowManager();
+	Display display = windowManager.getDefaultDisplay();
+	int screenHeight = display.getHeight();
+
+	int scale = picHeight/80;
+	
+	if (scale &amp;lt;= 0) {
+		scale = 1;
+	}
+	opt.inSampleSize = scale;
+	// 这次再真正地生成一个有像素的，经过缩放了的bitmap
+
+	opt.inJustDecodeBounds = false;
+	bm = BitmapFactory.decodeFile(filepath, opt);
+	return bm;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;3. 图片旋转调整&lt;/h3&gt;
+
+&lt;p&gt;有时候拍照后图片存储的方向不对，下面的两个方法可以对图片进行调整归正：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/**
+ * 通过ExifInterface类读取图片文件的被旋转角度
+ * 
+ * @param path
+ *            ： 图片文件的路径
+ * @return 图片文件的被旋转角度
+ */
+public static int readPicDegree(String path) {
+	int degree = 0;
+
+	// 读取图片文件信息的类ExifInterface
+	ExifInterface exif = null;
+	try {
+		exif = new ExifInterface(path);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
+	if (exif != null) {
+		int orientation = exif.getAttributeInt(
+				ExifInterface.TAG_ORIENTATION,
+				ExifInterface.ORIENTATION_NORMAL);
+		switch (orientation) {
+		case ExifInterface.ORIENTATION_ROTATE_90:
+			degree = 90;
+			break;
+
+		case ExifInterface.ORIENTATION_ROTATE_180:
+			degree = 180;
+			break;
+
+		case ExifInterface.ORIENTATION_ROTATE_270:
+			degree = 270;
+			break;
+		}
+	}
+
+	return degree;
+}
+
+/**
+ * 将图片纠正到正确方向
+ * 
+ * @param degree
+ *            ： 图片被系统旋转的角度
+ * @param bitmap
+ *            ： 需纠正方向的图片
+ * @return 纠向后的图片
+ */
+public static Bitmap rotateBitmap(int degree, Bitmap bitmap) {
+	Matrix matrix = new Matrix();
+	matrix.postRotate(degree);
+
+	Bitmap bm = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+			bitmap.getHeight(), matrix, true);
+	return bm;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;4. 图片剪裁&lt;/h3&gt;
+
+&lt;p&gt;下面这个方法会遍历系统的剪裁工具，然后实现图片的剪裁：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;private void doCrop(Uri uri) {
+	final ArrayList&amp;lt;CropOption&amp;gt; cropOptions = new ArrayList&amp;lt;CropOption&amp;gt;();
+
+	Intent intent = new Intent(&quot;com.android.camera.action.CROP&quot;);
+	intent.setType(&quot;image/*&quot;);
+
+	List&amp;lt;ResolveInfo&amp;gt; list = getPackageManager().queryIntentActivities(
+			intent, 0);
+
+	int size = list.size();
+
+	if (size == 0) {
+		Toast.makeText(this, &quot;Can not find image crop app&quot;,
+				Toast.LENGTH_SHORT).show();
+		return;
+	} else {
+		intent.setData(uri);
+
+        //剪裁的分辨率和长宽比
+		intent.putExtra(&quot;outputX&quot;, 300);
+		intent.putExtra(&quot;outputY&quot;, 300);
+		intent.putExtra(&quot;aspectX&quot;, 1);
+		intent.putExtra(&quot;aspectY&quot;, 1);
+		
+		intent.putExtra(&quot;scale&quot;, true);
+		intent.putExtra(&quot;noFaceDetection&quot;, true); // no face detection
+		intent.putExtra(&quot;return-data&quot;, false);
+		intent.putExtra(MediaStore.EXTRA_OUTPUT,
+				Uri.fromFile(new File(Environment
+						.getExternalStorageDirectory(), filename[index])));
+		intent.putExtra(&quot;outputFormat&quot;,
+				Bitmap.CompressFormat.JPEG.toString());
+
+		if (size == 1) {
+			Intent i = new Intent(intent);
+			ResolveInfo res = list.get(0);
+
+			i.setComponent(new ComponentName(res.activityInfo.packageName,
+					res.activityInfo.name));
+
+			startActivityForResult(i, CROP_FROM_CAMERA);
+		} else {
+			for (ResolveInfo res : list) {
+				final CropOption co = new CropOption();
+
+				co.title = getPackageManager().getApplicationLabel(
+						res.activityInfo.applicationInfo);
+				co.icon = getPackageManager().getApplicationIcon(
+						res.activityInfo.applicationInfo);
+				co.appIntent = new Intent(intent);
+
+				co.appIntent
+						.setComponent(new ComponentName(
+								res.activityInfo.packageName,
+								res.activityInfo.name));
+
+				cropOptions.add(co);
+			}
+
+			CropOptionAdapter adapter = new CropOptionAdapter(
+					getApplicationContext(), cropOptions);
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(&quot;Choose Crop App&quot;);
+			builder.setAdapter(adapter,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int item) {
+							startActivityForResult(
+									cropOptions.get(item).appIntent,
+									CROP_FROM_CAMERA);
+						}
+					});
+
+			builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialog) {
+
+					if (mImageCaptureUri[index] != null) {
+						getContentResolver().delete(
+								mImageCaptureUri[index], null, null);
+						mImageCaptureUri[index] = null;
+					}
+				}
+			});
+
+			AlertDialog alert = builder.create();
+
+			alert.show();
+		}
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Java 八种基本数据类型的表示范围</title>
+   <link href="http://hombo.wang/java/2015/03/10/Java-base-type-range"/>
+   <updated>2015-03-10T00:00:00+08:00</updated>
+   <id>http://hombo.wang/java/2015/03/10/Java-base-type-range</id>
+   <content type="html">&lt;p&gt;Java语言提供了八种基本类型。六种数字类型（四个整数型，两个浮点型），一种字符类型，还有一种布尔型。这几种基本类型的表示范围容易混淆，例如int和long的表示范围。下面对着八种类型进行区分：&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;byte&quot;&gt;byte&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;· byte数据类型是8位、有符号的，以二进制补码表示的整数；
+· 最小值是-128（-2^7）；
+· 最大值是127（2^7-1）；
+· 默认值是0；
+· byte类型用在大型数组中节约空间，主要代替整数，因为byte变量占用的空间只有int类型的四分之一；
+  例子：byte a = 100，byte b = -50。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;short&quot;&gt;short&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;· short数据类型是16位、有符号的以二进制补码表示的整数
+· 最小值是-32768（-2^15）；
+· 最大值是32767（2^15 - 1）；
+· Short数据类型也可以像byte那样节省空间。一个short变量是int型变量所占空间的二分之一；
+· 默认值是0；
+· 例子：short s = 1000，short r = -20000。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;int&quot;&gt;int&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;· int数据类型是32位、有符号的以二进制补码表示的整数；
+· 最小值是-2,147,483,648（-2^31）；
+· 最大值是2,147,485,647（2^31 - 1）；
+· 一般地整型变量默认为int类型；
+· 默认值是0；
+· 例子：int a = 100000, int b = -200000。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;long&quot;&gt;long&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;· long数据类型是64位、有符号的以二进制补码表示的整数；
+· 最小值是-9,223,372,036,854,775,808（-2^63）；
+· 最大值是9,223,372,036,854,775,807（2^63 -1）；
+· 这种类型主要使用在需要比较大整数的系统上；
+· 默认值是0L；
+· 例子： long a = 100000L，int b = -200000L。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;float&quot;&gt;float&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;· float数据类型是单精度、32位、符合IEEE 754标准的浮点数；
+· float在储存大型浮点数组的时候可节省内存空间；
+· 默认值是0.0f；
+· 浮点数不能用来表示精确的值，如货币；
+· 例子：float f1 = 234.5f。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;double&quot;&gt;double&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;· double数据类型是双精度、64位、符合IEEE 754标准的浮点数；
+· 浮点数的默认类型为double类型；
+· double类型同样不能表示精确的值，如货币；
+· 默认值是0.0f；
+· 例子：double d1 = 123.4。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;boolean&quot;&gt;boolean&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;· boolean数据类型表示一位的信息；
+· 只有两个取值：true和false；
+· 这种类型只作为一种标志来记录true/false情况；
+· 默认值是false；
+· 例子：boolean one = true。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;char&quot;&gt;char&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;· char类型是一个单一的16位Unicode字符；
+· 最小值是’\u0000’（即为0）；
+· 最大值是’\uffff’（即为65,535）；
+· char数据类型可以储存任何字符；
+· 例子：char letter = ‘A’。
+&lt;/code&gt;&lt;/pre&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Latex中加入空格</title>
+   <link href="http://hombo.wang/latex/2015/03/09/Latex-Spacing"/>
+   <updated>2015-03-09T00:00:00+08:00</updated>
+   <id>http://hombo.wang/latex/2015/03/09/Latex-Spacing</id>
+   <content type="html">&lt;p&gt;Latex中的空格符” “在编译的过程中会被忽略，在做自己简历的过程中，遇到了两种需要加空格的情况：一种是在句子中间加空格，另一种是在行首加空格，下面记录一下这两种加空格的方法。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;section&quot;&gt;句子中的空格&lt;/h3&gt;
+
+&lt;p&gt;方法很简单，就是用”\ “来表示一个空格，需要多少空格就加多少个”\ “，需要注意的是连续的两个‘\’表示的是回车换行（“\”），下面举一个代码例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;\cvitem{2013.9--2016.7}{\ \ \ 中国科学院\ \ \ \ \ \ \ 计算技术研究所\ \ \ \ \ \ \ \ \ \ \ \ \ 硕士} 
+\cvitem{2009.9--2013.7}{\ \ \ 华中科技大学\ \ \ \ 计算机科学与技术学院\ \ \  \ 学士}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;行首的空格&lt;/h3&gt;
+
+&lt;p&gt;行首不能直接用上面的方法来加入空格，因为也会被编译器忽略掉，在行首加入空格的方式是用&lt;code&gt;\hspace&lt;/code&gt;，举个列子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;\cvitem{2013.9--2016.7}{\ \ \ 中国科学院\ \ \ \ \ \ \ 计算技术研究所\ \ \ \ \ \ \ \ \ \ \ \ \ 硕士} 
+\cvitem{2009.9--2013.7}{\ \ \ 华中科技大学\ \ \ \ 计算机科学与技术学院\ \ \  \ 学士}
+\hspace{19ex}{GPA:  3.91\ \ \ \ \ \ \ \ \ 年级排名:  4/350} 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;其它加空格的方法&lt;/h3&gt;
+
+&lt;p&gt;下面是一些加空格的方法的总结：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;\documentclass{article}
+\begin{document}
+
+\noindent
+There are a number of horizontal spacing macros for LaTeX:
+
+\noindent\begin{tabular}{lp{5cm}}
+  \verb|a\,b| &amp;amp; a\,b \\
+  \verb|$a\,b$| &amp;amp; $a\,b$ \\
+  \verb|a\thinspace b| &amp;amp; a\thinspace b \\
+  \verb|$a\thinspace b$| &amp;amp; $a\thinspace b$ \\
+  \verb|$a\!b$| &amp;amp; $a\!b$ \\
+  \verb|$a\mkern-\thinmuskip b$| &amp;amp; $a\mkern-\thinmuskip b$ \\
+  \verb|$a\&amp;gt;b$| &amp;amp; $a\&amp;gt;b$ \\
+  \verb|$a\mkern\medmuskip b$| &amp;amp; $a\mkern\medmuskip b$ \\
+  \verb|$a\;b$| &amp;amp; $a\;b$ \\
+  \verb|$a\mkern\thickmuskip b$| &amp;amp; $a\mkern\thickmuskip b$ \\
+  \verb|$a\:b$| &amp;amp; $a\:b$ \\
+  \verb|$a\mkern\medmuskip b$| &amp;amp; $a\mkern\medmuskip b$ \\
+  \verb|a\enspace b| &amp;amp; a\enspace b \\
+  \verb|$a\enspace b$| &amp;amp; $a\enspace b$ \\
+  \verb|a\quad b| &amp;amp; a\quad b \\
+  \verb|$a\quad b$| &amp;amp; $a\quad b$ \\
+  \verb|a\qquad b| &amp;amp; a\qquad b \\
+  \verb|$a\qquad b$| &amp;amp; $a\qquad b$ \\
+  \verb|a\hskip 1em b| &amp;amp; a\hskip 1em b \\
+  \verb|$a\hskip 1em b$| &amp;amp; $a\hskip 1em b$ \\
+  \verb|a\kern 1pc b| &amp;amp; a\kern 1pc b \\
+  \verb|$a\kern 1pc b$| &amp;amp; $a\kern 1pc b$ \\
+  \verb|a\hspace{35pt}b| &amp;amp; a\hspace{35pt}b \\
+  \verb|$a\hspace{35pt}b$| &amp;amp; $a\hspace{35pt}b$ \\
+  \verb|axyzb| &amp;amp; axyzb \\
+  \verb|a\hphantom{xyz}b| &amp;amp; a\hphantom{xyz}b \\
+  \verb|$axyzb$| &amp;amp; $axyzb$ \\
+  \verb|$a\hphantom{xyz}b$| &amp;amp; $a\hphantom{xyz}b$ \\
+  \verb|a\ b| &amp;amp; a\ b \\
+  \verb|$a\ b$| &amp;amp; $a\ b$ \\
+  \verb|a~b| &amp;amp; a~b \\
+  \verb|$a~b$| &amp;amp; $a~b$ \\
+  \verb|a\hfill b| &amp;amp; a\hfill b \\
+  \verb|$a\hfill b$| &amp;amp; $a\hfill b$
+\end{tabular}
+\end{document}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;结果如下图：
+&lt;img src=&quot;http://i.stack.imgur.com/BQKUF.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>在onCreate中获取控件尺寸的方法</title>
+   <link href="http://hombo.wang/android/2015/03/08/Android-Get-View-Size-In-onCreate"/>
+   <updated>2015-03-08T00:00:00+08:00</updated>
+   <id>http://hombo.wang/android/2015/03/08/Android-Get-View-Size-In-onCreate</id>
+   <content type="html">&lt;p&gt;我们知道在activity绘制完成之后，获取控件尺寸的方式就是调用getWitdh和getHeight，但是在onCreate中调用这两个方法，获取到的宽高不正确，为0，这是因为，在调用oncreate()方法时，界面处于不可见状态，内存加载组件还没有绘制出来，你是无法获取它的尺寸。那怎么在onCreate中获取控件的大小呢？有下面三个方法：&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h4 id=&quot;section&quot;&gt;方法一&lt;/h4&gt;
+
+&lt;p&gt;在onCreate中加入对控件的测量代码，代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED); 
+int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED); 
+imageView.measure(w, h); 
+int height =imageView.getMeasuredHeight(); 
+int width =imageView.getMeasuredWidth(); 
+textView.append(&quot;\n&quot;+height+&quot;,&quot;+width);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这中方法可以获取到空间大小，但是获取的值有时候不太准确。&lt;/p&gt;
+
+&lt;h4 id=&quot;section-1&quot;&gt;方法二&lt;/h4&gt;
+
+&lt;p&gt;在onCreate中加入对整体布局的监听，代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ViewTreeObserver vto2 = imageView.getViewTreeObserver();   
+vto2.addOnGlobalLayoutListener(new OnGlobalLayoutListener() { 
+    @Override   
+    public void onGlobalLayout() { 
+        imageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);   
+        textView.append(&quot;\n\n&quot;+imageView.getHeight()+&quot;,&quot;+imageView.getWidth()); 
+    }   
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这种方法和方法一一样，有时候获取到的大小不太准确。&lt;/p&gt;
+
+&lt;h4 id=&quot;section-2&quot;&gt;方法三（准确方法）&lt;/h4&gt;
+
+&lt;p&gt;最准确获得控件大小的方式就是在onStart中加入绘制控件之前的监听，代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ViewTreeObserver vto = imageView.getViewTreeObserver(); 
+vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() { 
+    public boolean onPreDraw() { 
+        int height = imageView.getMeasuredHeight(); 
+        int width = imageView.getMeasuredWidth(); 
+        textView.append(&quot;\n&quot;+height+&quot;,&quot;+width); 
+        return true; 
+    } 
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个方法，我是实验了好久，才找到的，这是目前最好的获取控件尺寸大小的方法了！&lt;/p&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Volley duplicated post with slow request</title>
+   <link href="http://hombo.wang/android/2015/03/05/Volley-duplicated-post-with-slow-request"/>
+   <updated>2015-03-05T00:00:00+08:00</updated>
+   <id>http://hombo.wang/android/2015/03/05/Volley-duplicated-post-with-slow-request</id>
+   <content type="html">&lt;p&gt;最近做一个android的项目，遇到一个比较奇怪的问题：使用volley框架向服务器post几张图片，也就是图片的上传，当图片比较多或者比较大的时候，发现会触发好多次相同的post，现在记录一下问题的原因和解决方法。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h4 id=&quot;post&quot;&gt;出现多次post的原因&lt;/h4&gt;
+&lt;p&gt;volley的post有两个超时时间，一个是retry的阈值时间t1，一个是post的超时时间timeout，当post的超时时间timeout大于retry的阈值时间时，就会产生这种想象，也就是在第一个post由于传输量比较大而没有完成之前，产生了retry，也就会产生额外的post。&lt;/p&gt;
+
+&lt;h4 id=&quot;section&quot;&gt;解决方法1&lt;/h4&gt;
+&lt;p&gt;既然retry会造成这种错误，在传输量比较大的时候，我们干脆就不用retry，禁止掉retry的方式是设置retry的阈值为0，代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;	postRequest.setRetryPolicy(new DefaultRetryPolicy(
+			0, //设置retry的时间阈值
+			DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+			DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这种方式简单，但是禁止retry对功能上会产生一定的影响。&lt;/p&gt;
+
+&lt;h4 id=&quot;section-1&quot;&gt;解决方法2&lt;/h4&gt;
+&lt;p&gt;修改retry的阈值时间，使它大于post的timeout时间，这种方式比较合理，一般的设置方法是将retry的阈值时间扩大到默认时间的k倍，k值视具体情况而定。代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;	postRequest.setRetryPolicy(new DefaultRetryPolicy(
+			DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * k,
+			DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+			DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+&lt;/code&gt;&lt;/pre&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Fix the appcompat_v7 missing problem</title>
+   <link href="http://hombo.wang/android/2014/12/29/appcompat_v7-missing-problem"/>
+   <updated>2014-12-29T00:00:00+08:00</updated>
+   <id>http://hombo.wang/android/2014/12/29/appcompat_v7-missing-problem</id>
+   <content type="html">&lt;p&gt;在升级了最新版的android ADT后，发现每次建立一个工程都会多出一个appcompat_v7的工程，很是奇怪，今天不小心把这个工程删除了，然后自己的工程就各种报错误，仔细看看错误一般是关于资源的，这是因为一些文件中用到appcompat_v7的一些资源，下面来说明如何更正这些文件，从而摆脱appcompat_v7。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h4 id=&quot;section&quot;&gt;第一步&lt;/h4&gt;
+&lt;p&gt;到工程的Properties中的Android项中，把Library中的关于appcompat_v7的引用remove掉。如下图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://i.stack.imgur.com/ncXPr.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后再将appcompat_v7工程给删除掉，这时你的工程会出现一些R资源未定义的错误，接下来的三步可以纠正这个错误。&lt;/p&gt;
+
+&lt;h4 id=&quot;section-1&quot;&gt;第二步&lt;/h4&gt;
+&lt;p&gt;打开你的工程的res/values/styles.xml文件，将其中的&lt;code&gt;AppBaseTheme&lt;/code&gt;的&lt;code&gt;parent&lt;/code&gt;由&lt;code&gt;Theme.AppCompat.Light&lt;/code&gt; 改为&lt;code&gt;@android:style/Theme.Light&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;section-2&quot;&gt;第三步&lt;/h4&gt;
+&lt;p&gt;打开工程的res/values-v11/styles.xml文件，将其中的&lt;code&gt;AppBaseTheme&lt;/code&gt;的&lt;code&gt;parent&lt;/code&gt;由&lt;code&gt;Theme.AppCompat.Light&lt;/code&gt;改为&lt;code&gt;@android:style/Theme.Holo.Light&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;section-3&quot;&gt;第四步&lt;/h4&gt;
+&lt;p&gt;打开工程的rest/values-v14/styles.xml文件，将&lt;code&gt;AppBaseTheme&lt;/code&gt;的&lt;code&gt;parent&lt;/code&gt;由&lt;code&gt;Theme.AppCompat.Light.DarkActionBar&lt;/code&gt;改为&lt;code&gt;@android:style/Theme.Holo.Light.DarkActionBar&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这样，在完成了一起上四个步骤后，就可以删除appcompat_v7了，重新编译自己的工程，应该可以正常运行。&lt;/p&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Tabhost enable onResume</title>
+   <link href="http://hombo.wang/android/2014/12/28/TabhostActivity-Enable-onResume"/>
+   <updated>2014-12-28T00:00:00+08:00</updated>
+   <id>http://hombo.wang/android/2014/12/28/TabhostActivity-Enable-onResume</id>
+   <content type="html">&lt;p&gt;我们知道tabhost包含的子activiy的生命周期和正常的activity的生命周期不太一样，tabhost中的activiy屏蔽掉了onResume()，onPause()等方法，那怎么让这些方法去除屏蔽呢，下面的例子，显示了使能onResume和onPause的方式。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h4 id=&quot;localactivitymanager&quot;&gt;重点是利用LocalActivityManager&lt;/h4&gt;
+&lt;p&gt;在tabhost的主activity中建立一个LocalActivityManager变量，然后重写onResume()，onPause()两个方法：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Override
+protected void onResume() {
+	super.onResume();
+	mLocalActivityManager.dispatchResume();
+}
+
+@Override
+protected void onPause() {
+	super.onPause();
+	mLocalActivityManager.dispatchPause(isFinishing());
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在onResume中调用LocalActiviManager的dispatchResume()方法，在onPause中调用LocalActiviManager的dispatchPause()方法，然后在切换tab时，调用&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mLocalActivityManager.dispatchPause(isFinishing());
+mLocalActivityManager.dispatchResume();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这样就可以让子activiy的onResume()，onPause()使能。&lt;/p&gt;
+
+&lt;p&gt;具体实例代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//  tabhost enable onResume and onPause
+ 
+package com.example.ikteacher.activity;
+
+import com.example.ikteacher.R;
+import com.example.ikteacher.R.anim;
+import com.example.ikteacher.R.id;
+import com.example.ikteacher.R.layout;
+
+import android.app.Activity;
+import android.app.LocalActivityManager;
+import android.app.TabActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TabHost;
+
+public class HomeInteractActivity extends TabActivity {
+
+	TabHost tabHost;
+
+	ImageButton btn_tab_message, btn_tab_contacts;
+	ImageButton btn_title_back, btn_tile_add;
+	LocalActivityManager mLocalActivityManager;
+
+	@SuppressWarnings(&quot;deprecation&quot;)
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_home_interact);
+		
+		mLocalActivityManager = new LocalActivityManager(this, false);
+
+		btn_title_back = (ImageButton) findViewById(R.id.btn_title_back);
+		btn_title_back.setOnClickListener(new Button.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				HomeInteractActivity.this.finish();
+			}
+		});
+
+		btn_tab_message = (ImageButton) findViewById(R.id.btn_tab_message);
+		btn_tab_contacts = (ImageButton) findViewById(R.id.btn_tab_contacts);
+
+		btn_tab_message.setSelected(true);
+		
+		tabHost = getTabHost();
+		tabHost.addTab(tabHost.newTabSpec(&quot;message&quot;).setIndicator(&quot;Message&quot;)
+				.setContent(new Intent(this, MessageActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)));
+		tabHost.addTab(tabHost.newTabSpec(&quot;contacts&quot;).setIndicator(&quot;Contacts&quot;)
+				.setContent(new Intent(this, ContactsActivity.class)));
+
+		tabHost.setCurrentTabByTag(&quot;message&quot;);
+	}
+
+	/**
+	 * tab点击事件
+	 * 
+	 * @param view
+	 */
+	public void onTabClicked(View view) {
+		switch (view.getId()) {
+		case R.id.btn_tab_message:
+			btn_tab_contacts.setSelected(false);
+			btn_tab_message.setSelected(true);
+			tabHost.setCurrentTabByTag(&quot;message&quot;);
+			mLocalActivityManager.dispatchPause(isFinishing());
+			mLocalActivityManager.dispatchResume();
+			break;
+		case R.id.btn_tab_contacts:
+			btn_tab_message.setSelected(false);
+			btn_tab_contacts.setSelected(true);
+			tabHost.setCurrentTabByTag(&quot;contacts&quot;);
+			mLocalActivityManager.dispatchPause(isFinishing());
+			mLocalActivityManager.dispatchResume();
+			break;
+		}
+	}
+
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		super.finish();
+		this.overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
+	}
+	
+	@SuppressWarnings(&quot;deprecation&quot;)
+	@Override
+    protected void onResume() {
+		super.onResume();
+		mLocalActivityManager.dispatchResume();
+    }
+
+    @Override
+    protected void onPause() {
+    	super.onPause();
+    	mLocalActivityManager.dispatchPause(isFinishing());
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>RoundedNetworkImageView</title>
+   <link href="http://hombo.wang/android/2014/12/26/RoundedNetWorkImageView"/>
+   <updated>2014-12-26T00:00:00+08:00</updated>
+   <id>http://hombo.wang/android/2014/12/26/RoundedNetWorkImageView</id>
+   <content type="html">&lt;p&gt;将Volley的NetworkImageView的方形显示图片改为圆形显示，方法非常好，在此记录一下代码，方便自己和其他人今后使用！&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h4 id=&quot;imageviewondrawgetcroppedbitmap&quot;&gt;将方形改成圆形的核心思想是重写ImageView的onDraw和getCroppedBitmap两个方法。&lt;/h4&gt;
+
+&lt;p&gt;代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//  RoundedNetworkImageView
+ 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+ 
+import com.android.volley.toolbox.NetworkImageView;
+ 
+ 
+public class RoundedNetworkImageView extends NetworkImageView {
+    private int borderColor = 0xffffffff;
+    private int borderWidth = 10;
+ 
+    public RoundedNetworkImageView(Context context) {
+        super(context);
+    }
+ 
+    public RoundedNetworkImageView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+ 
+    public RoundedNetworkImageView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+ 
+    public void setBorderColor(int resourceID) {
+        borderColor = resourceID;
+    }
+ 
+    public void setBorderWidth(int border) {
+        borderWidth = border;
+    }
+ 
+    public int getBorderWidth() {
+        return borderWidth;
+    }
+ 
+    @Override
+    protected void onDraw(Canvas canvas) {
+        Drawable drawable = getDrawable();
+ 
+        if (drawable == null || getWidth() == 0 || getHeight() == 0)
+            return;
+ 
+        Bitmap b = ((BitmapDrawable) drawable).getBitmap();
+        if (b != null) {
+            Bitmap bitmap = b.copy(Bitmap.Config.ARGB_8888, true);
+ 
+            int radius = (getWidth() &amp;lt; getHeight()) ? getWidth() / 2 : getHeight() / 2;
+ 
+            Bitmap roundBitmap = getCroppedBitmap(bitmap, radius);
+            canvas.drawBitmap(roundBitmap, 0, 0, null);
+        }
+    }
+ 
+    public Bitmap getCroppedBitmap(Bitmap bmp, int radius) {
+        Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, radius * 2, radius * 2, false);
+        Bitmap output = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+ 
+        final Paint paint = new Paint();
+ 
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+        canvas.drawARGB(0, 0, 0, 0);
+ 
+        // Draws a circle to create the border
+        paint.setColor(borderColor);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius, paint);
+ 
+        // Draws the image subtracting the border width
+        BitmapShader s = new BitmapShader(scaledBmp, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        paint.setShader(s);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, radius - borderWidth - 0.5f, paint);
+ 
+        return output;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Leetcode Unique Binary Search Trees</title>
+   <link href="http://hombo.wang/leetcode/2014/10/10/unique-binary-search-tree"/>
+   <updated>2014-10-10T00:00:00+08:00</updated>
+   <id>http://hombo.wang/leetcode/2014/10/10/unique-binary-search-tree</id>
+   <content type="html">&lt;p&gt;这道题是一道关于BST树的问题，也就是二叉排序树，题目的意思是给出n个结点，每个结点的值从1到n，问这n个结点组成的二叉排序树有多少种？题目其实不难，用dp可以在O(n^2)下解决，但这里有一个更快的的方法——卡特兰数（Catalan number）。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;原文题目：&lt;/h2&gt;
+
+&lt;p&gt;Given n, how many structurally unique BST’s (binary search trees) that store values 1…n?&lt;/p&gt;
+
+&lt;p&gt;For example,&lt;/p&gt;
+
+&lt;p&gt;Given n = 3, there are a total of 5 unique BST’s.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1         3     3      2      1
+\       /     /      / \      \
+3     2     1      1   3      2
+/     /       \                 \
+2     1         2                 3
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;分析:&lt;/h2&gt;
+
+&lt;p&gt;这道题是一道组合问题，如果测试数据足够强，复杂度不能超过O(n^2)才能AC，如果采用模拟二叉排序树的建立过程，即采用递归的方法将会超时。&lt;/p&gt;
+
+&lt;p&gt;如果我们仔细观察规律，可以发现这个问题可以用dp来解，假设现在n=0,n=1,n=2,….,n=k的解已经求出来，那么对于k+1来说，它的解是什么？我们可以想一下二叉排序数的性质，一个结点左边的儿子分支肯定都小于这个结点，右边的儿子分支肯定都大于这个结点，我们可以把n=k+1的结果看作下面这样组成：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1         2          3          4                k         k+1
+\        / \        / \        / \     .....   /   \      /
+2~k+1   1  3~k+1  1~2 4~k+1  1~3 5~k+1      1~k-1  k+1  1~k
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我们可以把儿子子树看成一个新的相同的问题，如果儿子子树有m个结点，那这个子树的组合情况就是n=m的解，由此，我们可以得到一个递推公式：&lt;/p&gt;
+
+&lt;p&gt;dp[n] = Σ dp[i-1]*dp[n-i]  (i = 1,2,3,….,n)&lt;/p&gt;
+
+&lt;p&gt;为了能让递推顺利，我们假设dp[0] = 1 .&lt;/p&gt;
+
+&lt;p&gt;如果上面的解递推公式理解了，那就可以很容易的写出代码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class Solution {
+public:
+    int numTrees(int n) {
+        vector&amp;lt;int&amp;gt; dp(n+1,0);
+        if(n&amp;lt;=1) return n;
+        dp[0] = 1;
+        for(int i = 1 ; i &amp;lt;= n ; ++i){
+            for(int j = 1 ; j &amp;lt;=i ; ++j) dp[i] += dp[j-1]*dp[i-j];
+        }
+        return dp[n];
+    }
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;从代码中可以看出时间复杂度是O(n^2),由于用到了vector&lt;int&gt;来存储dp，空间复杂度就是O(n)；&lt;/int&gt;&lt;/p&gt;
+
+&lt;p&gt;如果到这里就认为这是最佳解法，你就错了！其实还有O(n)的解法！！那就是用&lt;a href=&quot;http://en.wikipedia.org/wiki/Catalan_number&quot;&gt;卡特兰数&lt;/a&gt;的变换公式。&lt;/p&gt;
+
+&lt;p&gt;我这里简单介绍一下卡特兰数：&lt;/p&gt;
+
+&lt;p&gt;卡特兰数是满足下面递推公式的数：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload.wikimedia.org/math/2/f/1/2f17435a71394ce667ab694b27341560.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;也可以用下面的递推公式表示：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload.wikimedia.org/math/8/a/4/8a49332e4a46b3a2c7accec81160f5e3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;第一个递推公式和我们这道题的dp的递推一模一样，而第二个是卡特兰数的变换递推公式，如果我们用这个公式，显然更简单，而且可以在O(n)时间和O(1)空间下解决问题。代码很简单，就是用第二个递推公式，从n＝1开始，求到n。代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class Solution {
+public:
+    int numTrees(int n) {
+        long long ans = 1;
+        for(int i = 1; i &amp;lt;= n; ++ i)
+            ans  = ans * 2 * (2 * i - 1) / (i + 1);
+        return (int) ans;
+    }
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Leetcode Surrounded Regions</title>
+   <link href="http://hombo.wang/leetcode/2014/10/06/surrounded-regions"/>
+   <updated>2014-10-06T00:00:00+08:00</updated>
+   <id>http://hombo.wang/leetcode/2014/10/06/surrounded-regions</id>
+   <content type="html">&lt;p&gt;这是一道图搜索题，关键在于用DFS或BFS搜索时，处理好边界条件和其他限制条件，例如遇到&lt;code&gt;‘X’&lt;/code&gt;就停止这条路的搜索。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;原文题目：&lt;/h2&gt;
+
+&lt;p&gt;Given a 2D board containing &lt;code&gt;&#39;X&#39;&lt;/code&gt; and &lt;code&gt;&#39;O&#39;&lt;/code&gt;, capture all regions surrounded by &lt;code&gt;&#39;X&#39;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;A region is captured by flipping all ‘O’s into &lt;code&gt;&#39;X&#39;&lt;/code&gt;s in that surrounded region.&lt;/p&gt;
+
+&lt;p&gt;For example,&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;X X X X
+X O O X
+X X O X
+X O X X
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After running your function, the board should be:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;X X X X
+X X X X
+X X X X
+X O X X
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;分析：&lt;/h2&gt;
+
+&lt;p&gt;题目的意思是说把这个2D board中完全被&lt;code&gt;&#39;X&#39;&lt;/code&gt;包住的&lt;code&gt;&#39;O&#39;&lt;/code&gt;的区域全部替换为&lt;code&gt;&#39;X&#39;&lt;/code&gt;，就像上面给出的一个例子，内部的三个&lt;code&gt;&#39;O&#39;&lt;/code&gt;被替换了，而边界的&lt;code&gt;&#39;O&#39;&lt;/code&gt;由于没有被包住而不需要替换。&lt;/p&gt;
+
+&lt;p&gt;这道题其实就是一个图的搜索问题，可以把这个2D board看成由几个连通子图构成的，连通子图由全&lt;code&gt;O&lt;/code&gt;或者全&lt;code&gt;X&lt;/code&gt;构成&lt;/p&gt;
+
+&lt;p&gt;搜索的过程是这样的：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1. 从头开始遍历这个2D board， 如果遇到一个`O` ，就从这个`O` 开始进行DFS或者BFS遍历它的连通子图，边界条件就是遇到`X`或者board的边界停止。我们知道连通子图之间是没有路径的，这样就不会对其他子图产生影响。
+
+2. 在遍历的过程中，不断判断是否有`O`在board的边界，如果有，就标记这个子图为`需要替换为‘X’的子图`，在遍历结束后将这个子图中的元素全部替换成`X`。子图的存储可以用一个vector实现。
+
+3. 然后继续在board中往后找没有被访问过的`O`，继续上面的过程，直至结束。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这样我们就完成了题目的要求。&lt;/p&gt;
+
+&lt;p&gt;这里用&lt;code&gt;DFS&lt;/code&gt;和&lt;code&gt;BFS&lt;/code&gt;都行，时间复杂度是O(n)，由于要借助一定空间来做标记和存储子图，所以空间复杂度是O(n)&lt;/p&gt;
+
+&lt;p&gt;这个只给出用&lt;code&gt;DFS&lt;/code&gt;AC的代码，&lt;code&gt;BFS&lt;/code&gt;的实现方式把stack换成queue就行了。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class Solution {
+public:
+    void solve(vector&amp;lt;vector&amp;lt;char&amp;gt;&amp;gt; &amp;amp;board) {
+        if(board.size()&amp;lt;=2||board[0].size()&amp;lt;=2) return;
+        stack&amp;lt;pair&amp;lt;int,int&amp;gt;&amp;gt; s; //DFS stack
+        int xsize = board.size(), ysize = board[0].size();
+        vector&amp;lt;vector&amp;lt;bool&amp;gt;&amp;gt; record(xsize,vector&amp;lt;bool&amp;gt;(ysize,false)); // 访问标记
+        vector&amp;lt;pair&amp;lt;int,int&amp;gt;&amp;gt; canlist; //存储连通子图
+        bool can = true;
+        for(int i = 1 ; i &amp;lt; xsize-1 ; ++i){
+            for(int j = 1 ; j &amp;lt; ysize-1 ; ++j){ //遍历所有未访问的‘O’
+                if(board[i][j] == &#39;O&#39;&amp;amp;&amp;amp;!record[i][j]){
+                    can = true;
+                    s.push(make_pair(i,j));
+                    canlist.push_back(make_pair(i,j));
+                    record[i][j] = true;
+                    while(!s.empty()){ //DFS
+                        pair&amp;lt;int,int&amp;gt; p = s.top();
+                        s.pop();
+                        if(can&amp;amp;&amp;amp;(p.first==0||p.first==xsize-1||p.second==0||p.second==ysize-1))
+                            can = false;
+                        if((p.first&amp;gt;0)&amp;amp;&amp;amp;board[p.first-1][p.second]==&#39;O&#39;&amp;amp;&amp;amp;!record[p.first-1][p.second]){
+                            s.push(make_pair(p.first-1,p.second));
+                            record[p.first-1][p.second] = true;
+                            canlist.push_back(make_pair(p.first-1,p.second));
+                        }
+                        if((p.first&amp;lt;xsize-1)&amp;amp;&amp;amp;board[p.first+1][p.second]==&#39;O&#39;&amp;amp;&amp;amp;!record[p.first+1][p.second]){
+                            s.push(make_pair(p.first+1,p.second));
+                            record[p.first+1][p.second] = true;
+                            canlist.push_back(make_pair(p.first+1,p.second));
+                        }
+                        if((p.second&amp;gt;0)&amp;amp;&amp;amp;board[p.first][p.second-1]==&#39;O&#39;&amp;amp;&amp;amp;!record[p.first][p.second-1]){
+                            s.push(make_pair(p.first,p.second-1));
+                            record[p.first][p.second-1] = true;
+                            canlist.push_back(make_pair(p.first,p.second-1));
+                        }
+                        if((p.second&amp;lt;ysize-1)&amp;amp;&amp;amp;board[p.first][p.second+1]==&#39;O&#39;&amp;amp;&amp;amp;!record[p.first][p.second+1]){
+                            s.push(make_pair(p.first,p.second+1));
+                            record[p.first][p.second+1] = true;
+                            canlist.push_back(make_pair(p.first,p.second+1));
+                        }
+                    }
+                    if(can){ //改变连通子图中的&#39;O&#39;为‘X’
+                        for(int w = 0 ; w &amp;lt; canlist.size() ; ++w)
+                            board[canlist[w].first][canlist[w].second] = &#39;X&#39;;
+                    }
+                    canlist.clear();
+                }
+            }
+        }
+    }
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Sum Root to Leaf Numbers</title>
+   <link href="http://hombo.wang/leetcode/2014/10/06/sum-root-to-leaf-numbers"/>
+   <updated>2014-10-06T00:00:00+08:00</updated>
+   <id>http://hombo.wang/leetcode/2014/10/06/sum-root-to-leaf-numbers</id>
+   <content type="html">&lt;p&gt;leetcode上比较简单的一道题了，一个二叉树，结点用0～9的数表示，让你求所有从根到叶的连起来的数的加和。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;原文题目：&lt;/h2&gt;
+
+&lt;p&gt;Given a binary tree containing digits from &lt;code&gt;0-9&lt;/code&gt; only, each &lt;code&gt;root-to-leaf&lt;/code&gt; path could represent a number.&lt;/p&gt;
+
+&lt;p&gt;An example is the root-to-leaf path &lt;code&gt;1-&amp;gt;2-&amp;gt;3&lt;/code&gt; which represents the number &lt;code&gt;123&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Find the total sum of all &lt;code&gt;root-to-leaf&lt;/code&gt; numbers.&lt;/p&gt;
+
+&lt;p&gt;For example,&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    1
+   / \
+  2   3
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The root-to-leaf path &lt;code&gt;1-&amp;gt;2&lt;/code&gt; represents the number &lt;code&gt;12&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The root-to-leaf path &lt;code&gt;1-&amp;gt;3&lt;/code&gt; represents the number &lt;code&gt;13&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Return the &lt;code&gt;sum = 12 + 13 = 25&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;分析：&lt;/h2&gt;
+
+&lt;p&gt;要想得到全部的root到leaf的值的总和，我们需要用一个全局的变量sum来保存加和的结果，并且需要父结点向儿子结点传递当前&lt;code&gt;前缀值&lt;/code&gt;，做到这两点，用一次DFS就行了，只需要对树进行一次遍历即可，如果遍历到叶结点，就将这条路径值加到sum。&lt;/p&gt;
+
+&lt;p&gt;AC的代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int sum;
+    int sumNumbers(TreeNode *root) {
+        sum = 0;
+        if(root == NULL) return 0;
+        travel(root,0);
+        return sum;
+    }
+    void travel(TreeNode *node,int pre){
+        if(node-&amp;gt;left == NULL &amp;amp;&amp;amp; node-&amp;gt;right == NULL)
+            sum += pre*10+node-&amp;gt;val;
+        else{
+            if(node-&amp;gt;left != NULL) travel(node-&amp;gt;left,pre*10+node-&amp;gt;val);
+            if(node-&amp;gt;right != NULL) travel(node-&amp;gt;right,pre*10+node-&amp;gt;val);
+        }
+    }
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Longest Consecutive Sequence</title>
+   <link href="http://hombo.wang/leetcode/2014/10/06/longest-consecutive-sequence"/>
+   <updated>2014-10-06T00:00:00+08:00</updated>
+   <id>http://hombo.wang/leetcode/2014/10/06/longest-consecutive-sequence</id>
+   <content type="html">&lt;p&gt;Given an unsorted array of integers, find the length of the longest consecutive elements sequence. For example,&lt;/p&gt;
+
+&lt;p&gt;Given &lt;code&gt;[100, 4, 200, 1, 3, 2]&lt;/code&gt;,&lt;/p&gt;
+
+&lt;p&gt;The longest consecutive elements sequence is &lt;code&gt;[1, 2, 3, 4]&lt;/code&gt;. Return its length: &lt;code&gt;4&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Your algorithm should run in &lt;code&gt;O(n)&lt;/code&gt; complexity.&lt;/p&gt;
+
+&lt;p&gt;此题可以用hashmap在&lt;code&gt;O(n)&lt;/code&gt; 时间复杂度解决。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;一看是无需数组，又要求&lt;code&gt;O(n)&lt;/code&gt;复杂度实现，很自然的可以想到用hashmap。&lt;/p&gt;
+
+&lt;p&gt;具体方法就是将数组全部hash了，然后在对数组的每个元素进行一边查找，&lt;/p&gt;
+
+&lt;p&gt;例如对于数组的第i个数，我们不断判断&lt;code&gt;num[i]+1&lt;/code&gt;是否在hash表里，如果在说明数组存在比&lt;code&gt;num[i]&lt;/code&gt;大1的数，然后继续判断&lt;code&gt;num[i]+2&lt;/code&gt;……直到&lt;code&gt;num[i]+k&lt;/code&gt;不再hash表里位置，在这个过程中需要记录长度。&lt;/p&gt;
+
+&lt;p&gt;只用上面的算法不能保证是&lt;code&gt;O(n)&lt;/code&gt;的，看下面的例子&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;数组是 `[7,6,5,4,3]`
+
+查找过程是： 
+
+7: `7`
+6: `6,7`
+5: `5,6,7`
+4: `4,5,6,7`
+3: `3,4,5,6,7`
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;显然复杂度最坏未为&lt;code&gt;O(n^2)&lt;/code&gt;, 了保证算法是&lt;code&gt;O(n)&lt;/code&gt;的，我们要用一些小技巧，让数组中已经被判断过的数不再去判断，其实很简单，就是加一个标示，表示这个数是否在前面的数里面判断过了，我们还可以将每次判断出来的长度存在这次判断最开始的那个数的hashmap中，这样下次如果加到这个数的时候，可以直接用这个长度值，而不需要往后遍历了，例如&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;5: 5,6,7   把长度3存在hashmap : &amp;lt;5,3&amp;gt;
+4: 4,5,6,7 当4 上加到5的时候，可以从&amp;lt;5,3&amp;gt;直到5后面连续的长度是3，就不用再遍历了。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这样就可以保证算法是O(n)的了，空间复杂度是hash表大小。&lt;/p&gt;
+
+&lt;p&gt;AC代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class Solution {
+public:
+    int longestConsecutive(vector&amp;lt;int&amp;gt; &amp;amp;num) {
+        unordered_map&amp;lt;int,int&amp;gt; hash;
+        int max = 0,count,j;
+        unordered_map&amp;lt;int,int&amp;gt;::iterator it;
+        for(int i = 0 ; i &amp;lt; num.size(); ++i) hash.insert({num[i],-1});
+        for(int i = 0 ; i &amp;lt; num.size(); ++i){
+            if(hash.find(num[i])-&amp;gt;second!=-1) continue;
+            count = 1;
+            j = num[i]+1;
+            while((it=hash.find(j++))!=hash.end()){
+                if(it-&amp;gt;second &amp;gt; 0){
+                    count += it-&amp;gt;second;
+                    break;
+                }
+                it-&amp;gt;second = 0;
+                ++count;
+            }
+            hash.find(num[i])-&amp;gt;second = count;
+            if(max &amp;lt; count) max = count;
+        }
+        return max;
+    }
+    
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;另外，还有一种算法是同时从num[i]的两边不断判断，并标记已经判断过的的数，这种方法可以省去一些长度的记录。&lt;/p&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>无私分享一个翻墙的好方法</title>
+   <link href="http://hombo.wang/hosts/2014/10/06/hosts"/>
+   <updated>2014-10-06T00:00:00+08:00</updated>
+   <id>http://hombo.wang/hosts/2014/10/06/hosts</id>
+   <content type="html">&lt;p&gt;这个翻墙方法是我认为最好的一种，可以随意上facebook，Twitter，Google+等被墙的网站，而且速度非常快，简单易操作。&lt;/p&gt;
+
+&lt;!--more--&gt;
+&lt;p&gt;方法就是：点击此&lt;a href=&quot;http://pan.baidu.com/s/1hqDuVHE&quot;&gt;hosts&lt;/a&gt;文件，然后下载，把下载的hosts文件替换系统的hosts，不同系统更换hosts的方法不同，下面列出不同系统的hosts文件位置。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Mac OS X : &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;/private/etc/hosts&lt;/code&gt; &lt;/p&gt;
+
+&lt;p&gt;最好在shell下用vi来修改，需要用户权限。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Windows XP/Windows 7/Windows 8 : &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;C:\WINDOWS\system32\drivers\etc\hosts&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Linux :&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;/etc/hosts&lt;/code&gt; &lt;/p&gt;
+
+&lt;p&gt;需要用户权限，建议用vi+sudo来修改&lt;/p&gt;
+
+&lt;p&gt;替换了系统的hosts文件后就可以用你的浏览器翻墙了！&lt;/p&gt;
+
+&lt;h3 id=&quot;https&quot;&gt;注意！！上国外的网站时一定要记得在网站前面加&lt;code&gt;https://&lt;/code&gt;&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;例如：https://www.facebook.com&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这个hosts文件我会定期更新，敬请关注！&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>swap两个int指针指向的数</title>
+   <link href="http://hombo.wang/algorithm/2014/10/05/swap-two-int"/>
+   <updated>2014-10-05T00:00:00+08:00</updated>
+   <id>http://hombo.wang/algorithm/2014/10/05/swap-two-int</id>
+   <content type="html">&lt;p&gt;这是一道最近的面试题，感谢斌哥的奉献！
+题目是： 填写下面的函数，实现a和b指针指向的两个数的交换。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void swap(int *a , int *b){
+    a = ________ ;
+    b = ________ ;
+    a = ________ ;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;分析:&lt;/h2&gt;
+
+&lt;p&gt;我们知道对于两个数a,b的交换，如果不借助其他变量，也是可以实现的，方法有下面几种：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;用加减法:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;利用加减法的 &lt;code&gt;交换律&lt;/code&gt; 和 &lt;code&gt;结合律&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void swap(int a , int b){
+    a = a + b;
+    b = a - b; //b = a + b - b = a 
+    a = a - b; //a = a + b - a = b
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;用乘除法:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;注意，这个方法需要满足 &lt;code&gt;a*b != 0&lt;/code&gt; &lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void swap(int a , int b){
+    a = a * b;
+    b = a / b; //b = a * b / b = a 
+    a = a / b; //a = a * b / a = b
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其实这个方法用到了乘除法的 &lt;code&gt;分配率&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;用异或运算：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;利用异或的性质: &lt;code&gt;交换律&lt;/code&gt; , &lt;code&gt;结合律&lt;/code&gt;  , &lt;code&gt;a ^ a = 0&lt;/code&gt; , &lt;code&gt;0 ^ a = a&lt;/code&gt; &lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void swap(int a , int b){
+    a = a ^ b;
+    b = a ^ b; //b = a ^ b ^ b = a ^ 0 = a 
+    a = a ^ b; //a = a ^ b ^ a = a ^ a ^ b = 0 ^ b = b
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;而本题给的是指针，而且等式左边都是指针，也就是说没办法直接改变指针指向的内存位置的值，那怎么办呢？&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;解决方法:&lt;/h2&gt;
+
+&lt;p&gt;虽然等式左边没有给出&lt;a href=&quot;http://baike.baidu.com/view/836474.htm?fr=aladdin&quot;&gt;左值&lt;/a&gt;,但我们可以在等式右边加入左值，也就是说可以写成这种形式：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;*a = *a + *b
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;为了不改变指针的值，还需要用点小技巧，就是用“,”来分割语句，可以写成下面这种形式：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;a = (*a = *a + *b , a )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这是因为用“,”分割的语句，语句的返回值是最后一个子语句，这里就是a。现在应该明白了吧！那本题的一种解法如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void swap(int *a , int *b){
+    a = (*a = *a + *b , a);
+    b = (*b = *a - *b , b); //*b = *a + *b - *b = *a 
+    a = (*a = *a - *b , a); //*a = *a + *b - *a = *b
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;也可以用乘除法和异或运算来实现，大同小异，这里不再给出。&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Leetcode TwoSum</title>
+   <link href="http://hombo.wang/leetcode/2014/10/05/Two-Sum"/>
+   <updated>2014-10-05T00:00:00+08:00</updated>
+   <id>http://hombo.wang/leetcode/2014/10/05/Two-Sum</id>
+   <content type="html">&lt;p&gt;这是一道基本的数组查找问题，需要O(n)的时间复杂度才能AC，有两种解答方法，一种是用排序和双指针，另一种是用hash表，下面具体来说。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;原文题目：&lt;/h2&gt;
+
+&lt;p&gt;Given an array of integers, find two numbers such that they add up to a specific target number.&lt;/p&gt;
+
+&lt;p&gt;The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.&lt;/p&gt;
+
+&lt;p&gt;You may assume that each input would have exactly one solution.&lt;/p&gt;
+
+&lt;p&gt;Input: numbers={2, 7, 11, 15}, target=9
+Output: index1=1, index2=2&lt;/p&gt;
+
+&lt;h2 id=&quot;hash&quot;&gt;hash表解法:&lt;/h2&gt;
+
+&lt;p&gt;这种解法很简单，就是建立 &amp;lt;numbers[i],i&amp;gt; 这一对索引，遍历一遍numbers， 然后用target-numbers[i] 去找hash 表 ，如果存在 ，取出i，搞定!&lt;/p&gt;
+
+&lt;p&gt;时间复杂度是O(n), 空间复杂度是hash表的大小。&lt;/p&gt;
+
+&lt;p&gt;AC代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vector&amp;lt;int&amp;gt; twoSum(vector&amp;lt;int&amp;gt; &amp;amp;numbers, int target){
+    unordered_map&amp;lt;int, int&amp;gt; hash;
+    vector&amp;lt;int&amp;gt; result;
+    for (int i = 0; i &amp;lt; numbers.size(); i++{
+        int numberToFind = target - numbers[i];
+        if (hash.find(numberToFind) != hash.end()) {
+            result.push_back(hash[numberToFind] + 1);
+            result.push_back(i + 1);            
+            return result;
+        }
+        hash[numbers[i]] = i;
+    }
+    return result;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;快速排序+双指针解法：&lt;/h2&gt;
+
+&lt;p&gt;先将numbers数组从小到大进行快速排序，然后一个index i 从numbers[0]开始，另一个index j 从numbers的结束开始，往中间靠拢。在这个靠拢过程中，如果numbers[i] + numbers[j] &amp;lt; target 说明加和的值还不够，需要继续增加，那只能增大i了（因为numbers从小到大排序），如果numbers[i] + numbers[j] &amp;gt; target 说明加和的值大了，需要减小点，那也只能减小j了，如果numbers[i] + numbers[j] == target , 那说明我们找到了答案。由于题目要求给出原来数组中的位置，并且第一个数位置为1（而不是0），因此我们需要一个额外的数组暂存原来的数组，然后找到在原始数组中的位置。&lt;/p&gt;
+
+&lt;p&gt;算法的时间复杂度是：快排O(nlogn) + 双指针O(n) + 找位置 O(n)  = O(nlogn) ，由于用到了一个额外数组，空间复杂度是O(n)。&lt;/p&gt;
+
+&lt;p&gt;AC的代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class Solution {
+public:
+    vector&amp;lt;int&amp;gt; twoSum(vector&amp;lt;int&amp;gt; &amp;amp;numbers, int target) {
+        vector&amp;lt;int&amp;gt; result,tmp = numbers;
+        int a = 0,b = 0;
+        sort(tmp.begin(),tmp.end());
+        int i = 0 ,j = tmp.size()-1;
+        while(i&amp;lt;j){
+            if(tmp[i]+tmp[j] == target) break;
+            else if (tmp[i]+tmp[j] &amp;gt; target) --j;
+            else ++i;
+        }
+        for(int w = 0 ; (!a||!b)&amp;amp;&amp;amp;w &amp;lt; numbers.size();++w){
+            if((!a)&amp;amp;&amp;amp;numbers[w] == tmp[i]) a = w+1;
+            else if(numbers[w] == tmp[j]) b = w+1;
+        }
+        result.push_back(a&amp;lt;b?a:b);
+        result.push_back(a&amp;gt;b?a:b);
+        return result;
+    }
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+</content>
+ </entry>
+ 
+ 
+</feed>

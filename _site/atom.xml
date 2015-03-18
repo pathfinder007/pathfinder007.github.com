@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
  
  <title>Hombo's Blog</title>
- <link href="http://hombo.wang/" rel="self"/>
- <link href="http://hombo.wang"/>
- <updated>2015-03-12T18:02:01+08:00</updated>
- <id>http://hombo.wang</id>
+ <link href="http://lambda.hk/" rel="self"/>
+ <link href="http://lambda.hk"/>
+ <updated>2015-03-18T15:13:13+08:00</updated>
+ <id>http://lambda.hk</id>
  <author>
    <name>Hombo Wang</name>
    <email></email>
@@ -14,9 +14,9 @@
  
  <entry>
    <title>Android中关于图片压缩、截图、旋转的一些方法</title>
-   <link href="http://hombo.wang/android/2015/03/12/Android-about-pictures"/>
+   <link href="http://lambda.hk/android/2015/03/12/Android-about-pictures"/>
    <updated>2015-03-12T00:00:00+08:00</updated>
-   <id>http://hombo.wang/android/2015/03/12/Android-about-pictures</id>
+   <id>http://lambda.hk/android/2015/03/12/Android-about-pictures</id>
    <content type="html">&lt;p&gt;最近做项目使用到了图片的各种处理，遇到了各种问题，经过研究和调试，在此总结一些关于图片处理的方法，以便今后使用。这些方法包括图片压缩、bitmap缩略图、图片旋转和截图。&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -237,9 +237,9 @@ public static Bitmap rotateBitmap(int degree, Bitmap bitmap) {
  
  <entry>
    <title>Java 八种基本数据类型的表示范围</title>
-   <link href="http://hombo.wang/java/2015/03/10/Java-base-type-range"/>
+   <link href="http://lambda.hk/java/2015/03/10/Java-base-type-range"/>
    <updated>2015-03-10T00:00:00+08:00</updated>
-   <id>http://hombo.wang/java/2015/03/10/Java-base-type-range</id>
+   <id>http://lambda.hk/java/2015/03/10/Java-base-type-range</id>
    <content type="html">&lt;p&gt;Java语言提供了八种基本类型。六种数字类型（四个整数型，两个浮点型），一种字符类型，还有一种布尔型。这几种基本类型的表示范围容易混淆，例如int和long的表示范围。下面对着八种类型进行区分：&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -325,9 +325,9 @@ public static Bitmap rotateBitmap(int degree, Bitmap bitmap) {
  
  <entry>
    <title>Latex中加入空格</title>
-   <link href="http://hombo.wang/latex/2015/03/09/Latex-Spacing"/>
+   <link href="http://lambda.hk/latex/2015/03/09/Latex-Spacing"/>
    <updated>2015-03-09T00:00:00+08:00</updated>
-   <id>http://hombo.wang/latex/2015/03/09/Latex-Spacing</id>
+   <id>http://lambda.hk/latex/2015/03/09/Latex-Spacing</id>
    <content type="html">&lt;p&gt;Latex中的空格符” “在编译的过程中会被忽略，在做自己简历的过程中，遇到了两种需要加空格的情况：一种是在句子中间加空格，另一种是在行首加空格，下面记录一下这两种加空格的方法。&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -406,9 +406,9 @@ There are a number of horizontal spacing macros for LaTeX:
  
  <entry>
    <title>在onCreate中获取控件尺寸的方法</title>
-   <link href="http://hombo.wang/android/2015/03/08/Android-Get-View-Size-In-onCreate"/>
+   <link href="http://lambda.hk/android/2015/03/08/Android-Get-View-Size-In-onCreate"/>
    <updated>2015-03-08T00:00:00+08:00</updated>
-   <id>http://hombo.wang/android/2015/03/08/Android-Get-View-Size-In-onCreate</id>
+   <id>http://lambda.hk/android/2015/03/08/Android-Get-View-Size-In-onCreate</id>
    <content type="html">&lt;p&gt;我们知道在activity绘制完成之后，获取控件尺寸的方式就是调用getWitdh和getHeight，但是在onCreate中调用这两个方法，获取到的宽高不正确，为0，这是因为，在调用oncreate()方法时，界面处于不可见状态，内存加载组件还没有绘制出来，你是无法获取它的尺寸。那怎么在onCreate中获取控件的大小呢？有下面三个方法：&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -465,9 +465,9 @@ vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
  
  <entry>
    <title>Volley duplicated post with slow request</title>
-   <link href="http://hombo.wang/android/2015/03/05/Volley-duplicated-post-with-slow-request"/>
+   <link href="http://lambda.hk/android/2015/03/05/Volley-duplicated-post-with-slow-request"/>
    <updated>2015-03-05T00:00:00+08:00</updated>
-   <id>http://hombo.wang/android/2015/03/05/Volley-duplicated-post-with-slow-request</id>
+   <id>http://lambda.hk/android/2015/03/05/Volley-duplicated-post-with-slow-request</id>
    <content type="html">&lt;p&gt;最近做一个android的项目，遇到一个比较奇怪的问题：使用volley框架向服务器post几张图片，也就是图片的上传，当图片比较多或者比较大的时候，发现会触发好多次相同的post，现在记录一下问题的原因和解决方法。&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -500,9 +500,9 @@ vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
  
  <entry>
    <title>Fix the appcompat_v7 missing problem</title>
-   <link href="http://hombo.wang/android/2014/12/29/appcompat_v7-missing-problem"/>
+   <link href="http://lambda.hk/android/2014/12/29/appcompat_v7-missing-problem"/>
    <updated>2014-12-29T00:00:00+08:00</updated>
-   <id>http://hombo.wang/android/2014/12/29/appcompat_v7-missing-problem</id>
+   <id>http://lambda.hk/android/2014/12/29/appcompat_v7-missing-problem</id>
    <content type="html">&lt;p&gt;在升级了最新版的android ADT后，发现每次建立一个工程都会多出一个appcompat_v7的工程，很是奇怪，今天不小心把这个工程删除了，然后自己的工程就各种报错误，仔细看看错误一般是关于资源的，这是因为一些文件中用到appcompat_v7的一些资源，下面来说明如何更正这些文件，从而摆脱appcompat_v7。&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -530,9 +530,9 @@ vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
  
  <entry>
    <title>Tabhost enable onResume</title>
-   <link href="http://hombo.wang/android/2014/12/28/TabhostActivity-Enable-onResume"/>
+   <link href="http://lambda.hk/android/2014/12/28/TabhostActivity-Enable-onResume"/>
    <updated>2014-12-28T00:00:00+08:00</updated>
-   <id>http://hombo.wang/android/2014/12/28/TabhostActivity-Enable-onResume</id>
+   <id>http://lambda.hk/android/2014/12/28/TabhostActivity-Enable-onResume</id>
    <content type="html">&lt;p&gt;我们知道tabhost包含的子activiy的生命周期和正常的activity的生命周期不太一样，tabhost中的activiy屏蔽掉了onResume()，onPause()等方法，那怎么让这些方法去除屏蔽呢，下面的例子，显示了使能onResume和onPause的方式。&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -674,9 +674,9 @@ public class HomeInteractActivity extends TabActivity {
  
  <entry>
    <title>RoundedNetworkImageView</title>
-   <link href="http://hombo.wang/android/2014/12/26/RoundedNetWorkImageView"/>
+   <link href="http://lambda.hk/android/2014/12/26/RoundedNetWorkImageView"/>
    <updated>2014-12-26T00:00:00+08:00</updated>
-   <id>http://hombo.wang/android/2014/12/26/RoundedNetWorkImageView</id>
+   <id>http://lambda.hk/android/2014/12/26/RoundedNetWorkImageView</id>
    <content type="html">&lt;p&gt;将Volley的NetworkImageView的方形显示图片改为圆形显示，方法非常好，在此记录一下代码，方便自己和其他人今后使用！&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -777,9 +777,9 @@ public class RoundedNetworkImageView extends NetworkImageView {
  
  <entry>
    <title>Leetcode Unique Binary Search Trees</title>
-   <link href="http://hombo.wang/leetcode/2014/10/10/unique-binary-search-tree"/>
+   <link href="http://lambda.hk/leetcode/2014/10/10/unique-binary-search-tree"/>
    <updated>2014-10-10T00:00:00+08:00</updated>
-   <id>http://hombo.wang/leetcode/2014/10/10/unique-binary-search-tree</id>
+   <id>http://lambda.hk/leetcode/2014/10/10/unique-binary-search-tree</id>
    <content type="html">&lt;p&gt;这道题是一道关于BST树的问题，也就是二叉排序树，题目的意思是给出n个结点，每个结点的值从1到n，问这n个结点组成的二叉排序树有多少种？题目其实不难，用dp可以在O(n^2)下解决，但这里有一个更快的的方法——卡特兰数（Catalan number）。&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -864,9 +864,9 @@ public:
  
  <entry>
    <title>Leetcode Surrounded Regions</title>
-   <link href="http://hombo.wang/leetcode/2014/10/06/surrounded-regions"/>
+   <link href="http://lambda.hk/leetcode/2014/10/06/surrounded-regions"/>
    <updated>2014-10-06T00:00:00+08:00</updated>
-   <id>http://hombo.wang/leetcode/2014/10/06/surrounded-regions</id>
+   <id>http://lambda.hk/leetcode/2014/10/06/surrounded-regions</id>
    <content type="html">&lt;p&gt;这是一道图搜索题，关键在于用DFS或BFS搜索时，处理好边界条件和其他限制条件，例如遇到&lt;code&gt;‘X’&lt;/code&gt;就停止这条路的搜索。&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -973,9 +973,9 @@ public:
  
  <entry>
    <title>Sum Root to Leaf Numbers</title>
-   <link href="http://hombo.wang/leetcode/2014/10/06/sum-root-to-leaf-numbers"/>
+   <link href="http://lambda.hk/leetcode/2014/10/06/sum-root-to-leaf-numbers"/>
    <updated>2014-10-06T00:00:00+08:00</updated>
-   <id>http://hombo.wang/leetcode/2014/10/06/sum-root-to-leaf-numbers</id>
+   <id>http://lambda.hk/leetcode/2014/10/06/sum-root-to-leaf-numbers</id>
    <content type="html">&lt;p&gt;leetcode上比较简单的一道题了，一个二叉树，结点用0～9的数表示，让你求所有从根到叶的连起来的数的加和。&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -1041,9 +1041,9 @@ public:
  
  <entry>
    <title>Longest Consecutive Sequence</title>
-   <link href="http://hombo.wang/leetcode/2014/10/06/longest-consecutive-sequence"/>
+   <link href="http://lambda.hk/leetcode/2014/10/06/longest-consecutive-sequence"/>
    <updated>2014-10-06T00:00:00+08:00</updated>
-   <id>http://hombo.wang/leetcode/2014/10/06/longest-consecutive-sequence</id>
+   <id>http://lambda.hk/leetcode/2014/10/06/longest-consecutive-sequence</id>
    <content type="html">&lt;p&gt;Given an unsorted array of integers, find the length of the longest consecutive elements sequence. For example,&lt;/p&gt;
 
 &lt;p&gt;Given &lt;code&gt;[100, 4, 200, 1, 3, 2]&lt;/code&gt;,&lt;/p&gt;
@@ -1120,9 +1120,9 @@ public:
  
  <entry>
    <title>无私分享一个翻墙的好方法</title>
-   <link href="http://hombo.wang/hosts/2014/10/06/hosts"/>
+   <link href="http://lambda.hk/hosts/2014/10/06/hosts"/>
    <updated>2014-10-06T00:00:00+08:00</updated>
-   <id>http://hombo.wang/hosts/2014/10/06/hosts</id>
+   <id>http://lambda.hk/hosts/2014/10/06/hosts</id>
    <content type="html">&lt;p&gt;这个翻墙方法是我认为最好的一种，可以随意上facebook，Twitter，Google+等被墙的网站，而且速度非常快，简单易操作。&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -1162,9 +1162,9 @@ public:
  
  <entry>
    <title>swap两个int指针指向的数</title>
-   <link href="http://hombo.wang/algorithm/2014/10/05/swap-two-int"/>
+   <link href="http://lambda.hk/algorithm/2014/10/05/swap-two-int"/>
    <updated>2014-10-05T00:00:00+08:00</updated>
-   <id>http://hombo.wang/algorithm/2014/10/05/swap-two-int</id>
+   <id>http://lambda.hk/algorithm/2014/10/05/swap-two-int</id>
    <content type="html">&lt;p&gt;这是一道最近的面试题，感谢斌哥的奉献！
 题目是： 填写下面的函数，实现a和b指针指向的两个数的交换。&lt;/p&gt;
 
@@ -1251,9 +1251,9 @@ public:
  
  <entry>
    <title>Leetcode TwoSum</title>
-   <link href="http://hombo.wang/leetcode/2014/10/05/Two-Sum"/>
+   <link href="http://lambda.hk/leetcode/2014/10/05/Two-Sum"/>
    <updated>2014-10-05T00:00:00+08:00</updated>
-   <id>http://hombo.wang/leetcode/2014/10/05/Two-Sum</id>
+   <id>http://lambda.hk/leetcode/2014/10/05/Two-Sum</id>
    <content type="html">&lt;p&gt;这是一道基本的数组查找问题，需要O(n)的时间复杂度才能AC，有两种解答方法，一种是用排序和双指针，另一种是用hash表，下面具体来说。&lt;/p&gt;
 
 &lt;!--more--&gt;

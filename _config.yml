@@ -29,7 +29,7 @@ contact :
 # Links showed on the footer
 #
 links :
-  Hombo's Blog : http://hombo.wang
+  Hombo's Blog : http://lambda.hk
 
 # The search engine. Only support google custom search engine.
 #
@@ -69,7 +69,7 @@ auto_loadmore : true
 # Else if you are pushing to username.github.io, replace with your username.
 # Finally if you are pushing to a GitHub project page, include the project name at the end.
 #
-production_url : http://hombo.wang
+production_url : http://lambda.hk
 
 # All Jekyll-Bootstrap specific configurations are namespaced into this hash
 #

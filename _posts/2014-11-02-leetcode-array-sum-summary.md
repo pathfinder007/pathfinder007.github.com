@@ -14,6 +14,8 @@ share: true
 ### 题目含义.
 &emsp;&emsp;Leetcode 的Array相关题目，Two Sum，3Sum，3Sum Closet，4Sum。都是给定一个整形数组(以vector形式给出)，给定一个target number。在数组里找出若干个数，使得和为target number，或者最接近target number。返回满足条件的数组元素或者元素索引。
 
+<!--more-->
+
 ### Two Sum
 * 给一个整形数组，一个target，找两个元素，使得和为target，返回这两个元素的位置。
 * 输入：numbers = {2, 7, 11, 15}, target = 9

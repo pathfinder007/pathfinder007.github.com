@@ -15,6 +15,8 @@ share: true
 ### 写在前面
 &emsp;&emsp;这段时间由于工作需要，研究了一下ASPLOS'14的Best Paper，"Dianao: A Small-Footprint High-Throughput Accelerator for Ubiquitous Machine-Learning." 这是中国大陆的学者首次获得 CCF 推荐的体系结构领域 A 类会议的最佳论文奖。而此前,ASPLOS 最佳论文 奖一直被美国卡耐基梅隆大学、德州大学奥斯丁分校、微软等 8 个欧美著名研究机构所垄断。写两篇博文，纪录一下可以深度学习硬件协处理器的相关内容。本文先介绍从浅层学习到深度学习，以及由此引起的硬件瓶颈问题，以及各种搭建神经网络运算平台的解决方案的劣势。
 
+<!--more-->
+
 ### 从浅层学习到深度学习.
 &emsp;&emsp;机器学习，即通过算法，使得机器能从大量历史数据中学习规律，从而对新的样本做智能识别或对未来做预测。从1980年代末期以来，机器学习的发展大致经历了两次浪潮：浅层学习（Shallow Learning）和深度学习（Deep Learning）。
 

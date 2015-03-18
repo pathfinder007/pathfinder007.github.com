@@ -21,6 +21,8 @@ share: true
 *  前16MB。
 * kmalloc和__get_free_pages返回的内存地址是虚拟地址，实际物理地址寻址仍然由MMU管理；
 
+<!--more-->
+
 ### vmalloc：
 * 在虚拟内存空间分配一块连续内存区，尽管这些页在物理内存不连续，内核将其看作连续的地址范围；使用alloc_page调用获得每个页；
 * vmalloc分配的地址只有在处理器的MMU之上才有意义，当驱动需要一个真正的物理地址时，无法使用vmalloc；只有在为一个大的只存在于软件中的顺序缓冲分配内存时，调用vmalloc，vmalloc比__get_free_pages开销更大，因为必须获取内存并建立页表；

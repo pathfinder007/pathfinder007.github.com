@@ -14,6 +14,8 @@ share: true
 ### TLD简介.
 &emsp;&emsp;TLD是一个可以实现在线学习、适应长时追踪的系统，这是英国萨里大学的捷克学生Zdenek Kalal在其攻读博士学位期间提出的一种新的单目标长时间跟踪算法，当时和尹叔两个人，借着作者在2010年发表的CVPR Best Paper "P-N Learning: Bootstrapping Binary Classifiers by Structural Constraints", ZK关于TLD这个长时追踪系统，发了好几篇顶会，在作者 [主页](http://personal.ee.surrey.ac.uk/Personal/Z.Kalal/) 上可以寻得。参照CSDN上, [zouxy09](http://blog.csdn.net/zouxy09/article/details/7893011) 等人的博客，借着作者开放的 [Matlab && C++ 混编](https://github.com/zk00006/OpenTLD) 源代码，深入研究了一下这个框架。当时几乎把全部源码注释了一下，本着作者开放源代码的精神，将TLD的实现过程，简要记录一下。
 
+<!--more-->
+
 ### Bounding Box Scan
 &emsp;&emsp;首先，在第一帧，在图像上圈出要追踪的物体，然后进行全图像的一个扫描，代码中选取了21种尺度，每种尺度均进行上下左右10%的平移，在图像上打网格，用一个6xn的数组存储所有的样本，每一列6个参数，前4个为样本左上角以及右下角的4个坐标，后两个参数分别为样本所处的尺度特征的指针以及该尺度下每一行样本的数目。在我们的实验中，我的摄像头设置为640x480px，圈出的物体为52x132px. 我们一共得到121841个样本。
 

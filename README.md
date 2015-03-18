@@ -1,6 +1,7 @@
-kingmacrobo.github.com
 ======================
 
-my personal blog
+Mushsen's Blog.
 
-PLEASE DON'T FORK!
+## License
+
+[MIT](http://opensource.org/licenses/MIT)

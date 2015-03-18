@@ -1,0 +1,445 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	
+	<title>Linux Device Driver——内存分配</title>
+    <meta name="description" content="Linux Device Driver 3rd阅读笔记（关于内存分配）">
+	
+	<meta name="author" content="Hombo Wang">
+	
+	<link rel="stylesheet" href="/assets/themes/Snail/css/jquery.fancybox.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/main.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/pages/journal.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/team.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/static.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/errors.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/google-code-prettify/prettify.css">
+	
+	<link rel="shortcut icon" href="/assets/themes/Snail/img/favicon.ico">
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/jquery.min.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/auto_loadmore.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/google-code-prettify/prettify.js"></script>
+	
+	<script type="text/javascript">
+	  $(function(){
+		$("pre code").addClass("prettyprint linenums");
+		prettyPrint();
+	  });
+	</script>
+	
+<!--[if lt IE 9]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+</head>
+<body>
+	<noscript>
+		&amp;lt;div id="no-js"&amp;gt;Please enable JavaScript in your browser to experience / fully&amp;lt;/div&amp;gt;
+	</noscript>
+    <div id="page-container">
+		<div>
+            <div style="margin:2px 0px 2px 805px;width:340px; height:25px;">
+                <img src="http://counter6.statcounterfree.com/private/freecounterstat.php?c=586cbed92fda4763cc77bf3587fbe134" border="0" title="free website counter" alt="free website counter"></td>
+            </div>
+			<nav>
+	<div id="nav-l">
+	</div>
+	<div id="nav-c">
+		<ul id="nav-list" style="width: 700px;">
+			<li id="home"><a href="/">Home</a></li>
+			
+			
+			
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "About Me"><a href="/about.html">About Me</a></li>
+					
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Archive"><a href="/archive.html">Archive</a></li>
+					
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Categories"><a href="/categories.html">Categories</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Tags"><a href="/tags.html">Tags</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+			 
+				
+			 
+			
+			
+		</ul>
+		<form id="nav-search" method="GET" action="/search.html">
+			<div id="search-right-pix">
+				<div id="search-left-pix">
+					<div id="search-center-pix">
+						<div id="search-icon-pix"></div>
+						<input name="query" type="text" placeholder="Search">
+					</div>
+				</div>
+			</div>
+		</form>
+		
+		
+	</div>
+	<div id="nav-r">
+	</div>
+</nav>
+			<div id="page-content">
+				
+<div id="page-content">
+	<div class="cont932">
+	<div id="journal-articles-block">
+		<div class="journal-article">
+			<div class="journal-post-info">
+				<div class="journal-cat-box">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
+	linux_kernel
+
+</a>
+</div>
+				
+				</div>
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title">Linux Device Driver——内存分配<span class="author"></span>
+				</h1>
+				<span class="the-article">
+				<h3 id="kmalloc">kmalloc：</h3>
+<ul>
+  <li>不清零获得的内存，分配的区在物理内存中连续；void *kmalloc(size_t size, int flags);size为分配块的大小，flags为分配标志；</li>
+  <li>flags：GFP_KERNEL 分配代表运行在内核空间的进程进行，意味着调用函数代表一个进程执行一个系统调用，能够使当前进程在少内存情况下睡眠等待一页；内部通过调用__get_free_pages进行；</li>
+  <li>如果一个模块需要分配大块内存，最好使用面向页的技术；__get_free_page(unsigned int flags);返回一个指向新页的指针，不清零该页；</li>
+  <li>flags：GFP_ATOMIC kmalloc从一个进程上下文外部调用时，当前进程不被睡眠，内核试图保持一些空闲页满足原子的分配；</li>
+  <li>Linux内核内存区：支持DMA操作内存区、普通内存、高端内存；</li>
+  <li>支持DMA操作内存区位于一个优先的地址范围，外设可以在此进行DMA存取，大部分健全平台，所有内存都在该区，在x86，DMA区在RAM的</li>
+  <li>前16MB。</li>
+  <li>kmalloc和__get_free_pages返回的内存地址是虚拟地址，实际物理地址寻址仍然由MMU管理；</li>
+</ul>
+
+<!--more-->
+
+<h3 id="vmalloc">vmalloc：</h3>
+<ul>
+  <li>在虚拟内存空间分配一块连续内存区，尽管这些页在物理内存不连续，内核将其看作连续的地址范围；使用alloc_page调用获得每个页；</li>
+  <li>vmalloc分配的地址只有在处理器的MMU之上才有意义，当驱动需要一个真正的物理地址时，无法使用vmalloc；只有在为一个大的只存在于软件中的顺序缓冲分配内存时，调用vmalloc，vmalloc比__get_free_pages开销更大，因为必须获取内存并建立页表；</li>
+  <li>ioremap建立新页表，实际上不分配任何内存；返回值是一个特殊的虚拟地址，可以存取特定物理地址范围；虚拟地址最终通过iounmap释放；</li>
+  <li>ioremap对于映射一个PCI缓冲的物理地址到虚拟内核空间；</li>
+</ul>
+
+<h3 id="section">获得大空间的缓冲区：</h3>
+<ul>
+  <li>大量连续内存缓冲区的分配容易失败，系统内存长时间会碎片化，常常出现真正的大内存区不可得；</li>
+  <li>如果需要一个物理上连续的大空间内存缓冲区，最好启动时请求内存进行分配，只有直接链接到内核的驱动可以这样做；</li>
+</ul>
+
+<h3 id="section-1">与硬件通讯：</h3>
+<ul>
+  <li>驱动是软件概念和硬件电路之间的抽象层，需要存取I/O端口和I/O内存；</li>
+  <li>数字I/O是一个输入/输出打开的最简单形式，写到设备的数据出现在输出管脚，处理器可以直接存取到输入管脚上的电平；</li>
+  <li>PC通过读写外设的寄存器进行控制操作；一个设备的若干寄存器位于连续地址；</li>
+  <li>硬件级别上，内存区域和I/O区域没有概念上的区别，都通过在地址总线和控制总线发出信号来存取；</li>
+  <li>大部分PCI设备映射寄存器到一个内存地址区域，这种I/O存取内存更加有效；</li>
+</ul>
+
+<h3 id="io">使用I/O端口：</h3>
+<ul>
+  <li>I/O端口是驱动跟设备通讯的方法，内核提供注册接口以允许去东莞声明需要的端口；接口中核心函数是request_region;</li>
+  <li>struct resource *request_region(unsigned long first, unsigned long n, const char *name);</li>
+  <li>该函数告诉内核，要使用n个端口，从first开始，name参数是设备名，分配成功则返回非NULL；</li>
+  <li>驱动为硬件请求了需要使用的I/O端口范围之后，必须读/写到这些端口，</li>
+</ul>
+
+<h3 id="io-1">使用I/O内存：</h3>
+<ul>
+  <li>尽管I/O端口在x86世界流行，但设备通讯的主要机制是通过寄存器和设备内存的映射实现，即I/O内存，寄存器和内存之间的区别对软件透明；</li>
+  <li>I/O内存是一个RAM区域，处理器使用I/O内存跨过总线存取设备；     </li>
+  <li>当处理器通过页表存取I/O内存，内核必须首先安排驱动可见的物理地址，即I/O操作之前调用ioremap做映射；</li>
+  <li>使用I/O内存区之前进行分配：struct resource *request_mem_region(unsigned long start, unsigned long len, char *name);</li>
+  <li>该函数分配一个len字节内存区；使用完毕调用release_mem_region进行释放；</li>
+  <li>不能直接引用从ioremap返回返回的地址指针，应当使用内核提供的存取函数进行I/O内存的存取：I/O读：unsigned int ioread8(void *addr); ioread16; ioread32; addr是从ioremap获得的地址，返回值从给定I/O内存读取；I/O写：void iowrite8(u8 value, void *addr); iowrite16; iowrite32;</li>
+</ul>
+
+<h3 id="section-2">中断处理：</h3>
+<ul>
+  <li>驱动只需要为其设备注册一个中断处理函数，中断到来时进行正确处理；</li>
+  <li>中断线资源有限，一个模块需要注册中断通道，不使用时进行释放；int request_irq(unsigned int irq, irqreturn_t (*handle)(int, void *, struct pt_regs *), unsigned long flags, const char *dev_name, void *dev_id);</li>
+</ul>
+
+<h3 id="section-3">可移植性：</h3>
+<ul>
+  <li>通常的C数据类型如int、long，在不同体系上大小不同；内核中经常使用的数据类型有自己的typedef语句，阻止了任何可移植性的问题；</li>
+  <li>使用内存时，一个内存页应该是PAGE_SIZE字节，不是4KB，页大小根据平台有4KB~64KB的可能性；</li>
+</ul>
+
+				</span>
+				<div class="journal-date">Published 24 November 2014</div>
+				<div class="journal-tags">
+				
+				
+	 
+		<a class="tag-cont" href="/tags.html#Linux_Kernel-ref">
+			<div class="tag-l"></div>
+			<div class="tag-c">Linux_Kernel</div>
+			<div class="tag-r"></div>
+		</a>
+	
+
+
+
+				</div>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+	</div>
+</div>
+	<div class="clearboth"></div>
+	
+
+
+  <!-- 多说评论框 start -->
+<div id="comments">
+    <div class="ds-thread" data-thread-key="/linux_kernel/2014/11/24/Linux-Device-Driver-memory"  data-title="Linux Device Driver——内存分配 - Mushsen's Blog"></div>
+</div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"hombo"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+	<div class="clearboth"></div>
+</div>
+
+			</div>
+			<div class="clearboth pagebottom"></div>
+		</div>
+	</div>
+    <a class="bshareDiv" href="http://www.bshare.cn/share">分享按钮</a><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#uuid=&amp;style=5&amp;fs=4&amp;bgcolor=Orange"></script>
+
+	<footer>
+	<div class="footer-940">
+		<div class="footer-general-info">
+			© 2014 Hombo Wang.<br><br>
+			Content licensed under:<br>
+			<a class="cc" href="http://creativecommons.org/licenses/by-sa/3.0/">c a b</a><br>
+			<a href = "/about.html">About Me</a><br>
+		</div>
+		<div class="footer-col-cont">
+			<div class="footer-nav-col">
+				<h4><a>Categories</a></h4>
+				<ul>
+					
+					
+
+
+  
+     
+    	<li><a href="/categories.html#algorithm-ref">
+    		algorithm <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#cv-ref">
+    		cv <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#machine_learning-ref">
+    		machine_learning <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#c++-ref">
+    		c++ <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#leetcode-ref">
+    		leetcode <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#linux_kernel-ref">
+    		linux_kernel <span>7</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#git-ref">
+    		git <span>1</span>
+    	</a></li>
+    
+  
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Pages</a></h4>
+				<ul>
+					
+					
+					
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/about.html">About Me</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+    
+  
+    
+  
+    
+  
+
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Feed</a></h4>
+				<ul>
+					<li><a href="/atom.xml">Atom Feed</a></li>
+					<li><a href="/rss.xml">RSS Feed</a></li>
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Links</a></h4>
+				<ul>
+				 
+					<li><a href = "http://lambda.hk">Mushsen's Blog</a></li>
+				
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a href = "/about.html">About Me</a></h4>
+				<ul>
+				 
+					<li><a href = "mailto:mohuansheng@ict.ac.cn">e-mail</a></li>
+				 
+					<li><a href = "https://github.com/pathfinder007">Github</a></li>
+				
+				</ul>
+			</div>
+			<div class="clearboth"></div>
+		</div>
+		<div class="clearboth"></div>
+	</div>
+	<div class="clearboth"></div>
+</footer>
+	
+</body>
+</html>
+

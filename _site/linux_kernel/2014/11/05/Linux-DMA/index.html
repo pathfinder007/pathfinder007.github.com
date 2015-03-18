@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	
+	<title>Linux下PCIe驱动以及DMA机制</title>
+    <meta name="description" content="Linux下PCIe驱动以及DMA数据传输机制相关知识点">
+	
+	<meta name="author" content="Hombo Wang">
+	
+	<link rel="stylesheet" href="/assets/themes/Snail/css/jquery.fancybox.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/main.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/pages/journal.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/team.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/static.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/errors.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/google-code-prettify/prettify.css">
+	
+	<link rel="shortcut icon" href="/assets/themes/Snail/img/favicon.ico">
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/jquery.min.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/auto_loadmore.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/google-code-prettify/prettify.js"></script>
+	
+	<script type="text/javascript">
+	  $(function(){
+		$("pre code").addClass("prettyprint linenums");
+		prettyPrint();
+	  });
+	</script>
+	
+<!--[if lt IE 9]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+</head>
+<body>
+	<noscript>
+		&amp;lt;div id="no-js"&amp;gt;Please enable JavaScript in your browser to experience / fully&amp;lt;/div&amp;gt;
+	</noscript>
+    <div id="page-container">
+		<div>
+            <div style="margin:2px 0px 2px 805px;width:340px; height:25px;">
+                <img src="http://counter6.statcounterfree.com/private/freecounterstat.php?c=586cbed92fda4763cc77bf3587fbe134" border="0" title="free website counter" alt="free website counter"></td>
+            </div>
+			<nav>
+	<div id="nav-l">
+	</div>
+	<div id="nav-c">
+		<ul id="nav-list" style="width: 700px;">
+			<li id="home"><a href="/">Home</a></li>
+			
+			
+			
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "About Me"><a href="/about.html">About Me</a></li>
+					
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Archive"><a href="/archive.html">Archive</a></li>
+					
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Categories"><a href="/categories.html">Categories</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Tags"><a href="/tags.html">Tags</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+			 
+				
+			 
+			
+			
+		</ul>
+		<form id="nav-search" method="GET" action="/search.html">
+			<div id="search-right-pix">
+				<div id="search-left-pix">
+					<div id="search-center-pix">
+						<div id="search-icon-pix"></div>
+						<input name="query" type="text" placeholder="Search">
+					</div>
+				</div>
+			</div>
+		</form>
+		
+		
+	</div>
+	<div id="nav-r">
+	</div>
+</nav>
+			<div id="page-content">
+				
+<div id="page-content">
+	<div class="cont932">
+	<div id="journal-articles-block">
+		<div class="journal-article">
+			<div class="journal-post-info">
+				<div class="journal-cat-box">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
+	linux_kernel
+
+</a>
+</div>
+				
+				</div>
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title">Linux下PCIe驱动以及DMA机制<span class="author"></span>
+				</h1>
+				<span class="the-article">
+				<h3 id="section">1. 驱动程序作用：</h3>
+<ul>
+  <li>设备驱动程序向应用程序屏蔽了硬件在实现上的细节，使得应用程序可以像操作普通文件一样操作外部设备。Linux操作系统抽象了对硬件的处理，可以使用和操作文件相同的，标准的系统调用接口来完成打开，关闭，读写喝I/O控制操作，而驱动程序主要任务也就是实现这些系统调用函数。</li>
+</ul>
+
+<!--more-->
+<ul>
+  <li>每个设备文件对应两个设备号，其中主设备号标识设备种类，也标识了设备所使用的驱动程序；次设备号标识使用同一设备驱动程序的不同硬件设备。设备文件的主设备号必须与设备驱动程序在登陆该设备时申请的主设备号一致，否则用户进程无法访问到设备驱动程序。</li>
+</ul>
+
+<h3 id="section-1">2. 块设备与字符设备的区别：</h3>
+<ul>
+  <li>二者之间区别仅仅在于内核与驱动程序之间的软件接口上，块设备利用一块系统内存作为缓冲区，当用户进程对设备进行读写请求时，驱动程序先查看缓冲区的内容，如果能满足用户要求，则返回相应数据，否则调用相应请求函数进行实际I/O操作。</li>
+</ul>
+
+<h3 id="dma">3. DMA循环缓冲区的分配与实现：</h3>
+<ul>
+  <li>对于高速数据信号的采集处理，需要在驱动程序的初始化模块（probe）中申请大量的DMA循环缓冲区，申请的大小直接关系着能否实时对高速数据处理的成败。直接内存访问（DMA）是一种硬件机制，允许外围设备和主内存直接直接传输I/O数据，避免了大量的计算开销。</li>
+</ul>
+
+<h3 id="linux">4. Linux内核的内存分区段：</h3>
+<ul>
+  <li>三个区段，可用于DMA的内存，常规内存以及高端内存。</li>
+  <li>通常的内存分配发生在常规内存区，但是通过设置内存标识也可以请求在其他区段中分配。可用于DMA的内存指存在于特别地址范围内的内存，外设可以利用这些内存执行DMA访问，进行数据通信传输。</li>
+  <li>DMA循环缓冲区的分配要求：物理连续，DMA可以访问，足够大。</li>
+</ul>
+
+<h3 id="linux-1">5. Linux内存分配函数：</h3>
+<ul>
+  <li>Linux系统使用虚拟地址，内存分配函数提供的都是虚拟地址，通过virt_to_bus转换才能得到物理地址。</li>
+  <li>分配内核内存空间的函数：kmalloc实现小于128KB的内核内存申请，申请空间物理连续；__get_free_pages实现最大4MB的内存申请，以页为单位，所申请空间物理连续；vmalloc分配的虚拟地址空间连续，但在物理上可能不连续。</li>
+  <li>Linux内核中专门提供了用于PCI设备申请内核内存的函数pci_alloc_consistent，支持按字节长度申请，该函数调用__get_free_pages，故一次最大为4MB。</li>
+</ul>
+
+<h3 id="dma-1">6. DMA数据传输的方式：</h3>
+<ul>
+  <li>一种是软件发起的数据请求（例如通过read函数调用），另一种是硬件异步将数据传给系统。对于数据采集设备，即便没有进程去读取数据，也要不断写入，随时等待进程调用，因此驱动程序应该维护一个环形缓冲区，当read调用时可以随时返回给用户空间需要的数据。</li>
+</ul>
+
+<h3 id="pciecpu">7. PCIe中向CPU发起中断请求的方式：</h3>
+<ul>
+  <li>消息信号中断（MSI），INTx中断。</li>
+  <li>在MSI中断方式下，设备通过向OS预先分配的主存空间写入特定数据的方式请求CPU的中断服务，为PCIe系统首选的中断信号机制，对于PCIe到PCI/PCI-X的桥接设备和不能使用MSI机制的传统端点设备，采用INTx虚拟中断机制。</li>
+  <li>PCIe设备注册中断时使用共享中断方式，Linux系统通过request_irq实现中断处理程序的注册，调用位置在设备第一次打开，硬件产生中断之前；同样，free_irq时机在最后一次关闭设备，硬件不用中断处理器之后。</li>
+  <li>中断处理函数的功能是将有关中断接收的信息反馈给设备，并对数据进行相应读写。中断信号到来，系统调用相应的中断处理函数，函数判断中断号是否匹配，若是，则清除中断寄存器相应的位，即在驱动程序发起新的DMA之前设备不会产生其他中断，然后进行相应处理。</li>
+</ul>
+
+<h3 id="ioctl">8. 数据读写和ioctl控制：</h3>
+<ul>
+  <li>数据读写：应用进程不需要数据时，驱动程序动态维护DMA环形缓冲区，当应用进程请求数据，驱动程序通过Linux内核提供copy_from_user()/copy_to_user()实现内核态和用户态之间的数据拷贝。</li>
+  <li>硬件控制：用户空间经常回去请求设备锁门，报告错误信息，设置寄存器等，这些操作都通过ioctl支持，可以对PCIe卡给定的寄存器空间进行配置。</li>
+</ul>
+
+<h3 id="section-2">9. 中断处理程序的注册：</h3>
+<ul>
+  <li>中断号在BIOS初始化阶段分配并写入设备配置空间，然后Linux在建立pci_dev时从配置空间中读出该中断号并写入pci_dev的irq成员中，所以注册中断程序时直接从pci_dev中读取就行。</li>
+  <li>当设备发生中断，8259A将中断号发给CPU，CPU根据中断号找到中断处理程序，执行。</li>
+</ul>
+
+<h3 id="dma-2">10. DMA数据传输机制的产生：</h3>
+<ul>
+  <li>传统经典过程：数据到达网卡 -&gt; 网卡产生一个中断给内核 -&gt; 内核使用 I/O 指令，从网卡I/O区域中去读取数据。这种方式，当大流量数据到来时，网卡会产生大量中断，内核在中断上下文中，会浪费大量资源处理中断本身。</li>
+  <li>改进：NAPI，即轮询，即内核屏蔽中断，隔一定时间去问网卡，是否有数据。则在数据量小的情况下，这种方式会浪费大量资源。</li>
+  <li>另一个问题，CPU到网卡的I/O区域，包括I/O寄存器和I/O内存中读取，再放到系统物理内存，都占用大量CPU资源，做改进，即有了DMA，让网卡直接从主内存之间读写自己的I/O数据。 </li>
+  <li>首先，内核在主内存中为收发数据建立一个环形的缓冲队列（DMA环形缓冲区），内核将这个缓冲区通过DMA映射，将这个队列交给网卡；网卡收到数据，直接放进环形缓冲区，即直接放到主内存，然后向系统产生中断；</li>
+  <li>内核收到中断，取消DMA映射，可以直接从主内存中读取数据。</li>
+</ul>
+
+
+				</span>
+				<div class="journal-date">Published 05 November 2014</div>
+				<div class="journal-tags">
+				
+				
+	 
+		<a class="tag-cont" href="/tags.html#Linux_Kernel-ref">
+			<div class="tag-l"></div>
+			<div class="tag-c">Linux_Kernel</div>
+			<div class="tag-r"></div>
+		</a>
+	
+
+
+
+				</div>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+	</div>
+</div>
+	<div class="clearboth"></div>
+	
+
+
+  <!-- 多说评论框 start -->
+<div id="comments">
+    <div class="ds-thread" data-thread-key="/linux_kernel/2014/11/05/Linux-DMA"  data-title="Linux下PCIe驱动以及DMA机制 - Mushsen's Blog"></div>
+</div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"hombo"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+	<div class="clearboth"></div>
+</div>
+
+			</div>
+			<div class="clearboth pagebottom"></div>
+		</div>
+	</div>
+    <a class="bshareDiv" href="http://www.bshare.cn/share">分享按钮</a><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#uuid=&amp;style=5&amp;fs=4&amp;bgcolor=Orange"></script>
+
+	<footer>
+	<div class="footer-940">
+		<div class="footer-general-info">
+			© 2014 Hombo Wang.<br><br>
+			Content licensed under:<br>
+			<a class="cc" href="http://creativecommons.org/licenses/by-sa/3.0/">c a b</a><br>
+			<a href = "/about.html">About Me</a><br>
+		</div>
+		<div class="footer-col-cont">
+			<div class="footer-nav-col">
+				<h4><a>Categories</a></h4>
+				<ul>
+					
+					
+
+
+  
+     
+    	<li><a href="/categories.html#algorithm-ref">
+    		algorithm <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#cv-ref">
+    		cv <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#machine_learning-ref">
+    		machine_learning <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#c++-ref">
+    		c++ <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#leetcode-ref">
+    		leetcode <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#linux_kernel-ref">
+    		linux_kernel <span>7</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#git-ref">
+    		git <span>1</span>
+    	</a></li>
+    
+  
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Pages</a></h4>
+				<ul>
+					
+					
+					
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/about.html">About Me</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+    
+  
+    
+  
+    
+  
+
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Feed</a></h4>
+				<ul>
+					<li><a href="/atom.xml">Atom Feed</a></li>
+					<li><a href="/rss.xml">RSS Feed</a></li>
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Links</a></h4>
+				<ul>
+				 
+					<li><a href = "http://lambda.hk">Mushsen's Blog</a></li>
+				
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a href = "/about.html">About Me</a></h4>
+				<ul>
+				 
+					<li><a href = "mailto:mohuansheng@ict.ac.cn">e-mail</a></li>
+				 
+					<li><a href = "https://github.com/pathfinder007">Github</a></li>
+				
+				</ul>
+			</div>
+			<div class="clearboth"></div>
+		</div>
+		<div class="clearboth"></div>
+	</div>
+	<div class="clearboth"></div>
+</footer>
+	
+</body>
+</html>
+

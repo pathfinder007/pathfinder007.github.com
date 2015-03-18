@@ -1,0 +1,460 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	
+	<title>PCI Express基本概念</title>
+    <meta name="description" content="PCI Express体系结构导读阅读笔记（PCIe基本概念）">
+	
+	<meta name="author" content="Hombo Wang">
+	
+	<link rel="stylesheet" href="/assets/themes/Snail/css/jquery.fancybox.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/main.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/pages/journal.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/team.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/static.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/errors.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/google-code-prettify/prettify.css">
+	
+	<link rel="shortcut icon" href="/assets/themes/Snail/img/favicon.ico">
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/jquery.min.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/auto_loadmore.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/google-code-prettify/prettify.js"></script>
+	
+	<script type="text/javascript">
+	  $(function(){
+		$("pre code").addClass("prettyprint linenums");
+		prettyPrint();
+	  });
+	</script>
+	
+<!--[if lt IE 9]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+</head>
+<body>
+	<noscript>
+		&amp;lt;div id="no-js"&amp;gt;Please enable JavaScript in your browser to experience / fully&amp;lt;/div&amp;gt;
+	</noscript>
+    <div id="page-container">
+		<div>
+            <div style="margin:2px 0px 2px 805px;width:340px; height:25px;">
+                <img src="http://counter6.statcounterfree.com/private/freecounterstat.php?c=586cbed92fda4763cc77bf3587fbe134" border="0" title="free website counter" alt="free website counter"></td>
+            </div>
+			<nav>
+	<div id="nav-l">
+	</div>
+	<div id="nav-c">
+		<ul id="nav-list" style="width: 700px;">
+			<li id="home"><a href="/">Home</a></li>
+			
+			
+			
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "About Me"><a href="/about.html">About Me</a></li>
+					
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Archive"><a href="/archive.html">Archive</a></li>
+					
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Categories"><a href="/categories.html">Categories</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Tags"><a href="/tags.html">Tags</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+			 
+				
+			 
+			
+			
+		</ul>
+		<form id="nav-search" method="GET" action="/search.html">
+			<div id="search-right-pix">
+				<div id="search-left-pix">
+					<div id="search-center-pix">
+						<div id="search-icon-pix"></div>
+						<input name="query" type="text" placeholder="Search">
+					</div>
+				</div>
+			</div>
+		</form>
+		
+		
+	</div>
+	<div id="nav-r">
+	</div>
+</nav>
+			<div id="page-content">
+				
+<div id="page-content">
+	<div class="cont932">
+	<div id="journal-articles-block">
+		<div class="journal-article">
+			<div class="journal-post-info">
+				<div class="journal-cat-box">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
+	linux_kernel
+
+</a>
+</div>
+				
+				</div>
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title">PCI Express基本概念<span class="author"></span>
+				</h1>
+				<span class="the-article">
+				<h3 id="pciebar">PCIe设备BAR空间的初始化：</h3>
+<ul>
+  <li>PCIe设备进行数据传输之前，系统软件需要初始化BAR0~5寄存器，使用DFS算法遍历并完成寄存器初始化，即分配这些设备在PCI总线域的地址空间，当寄存器都初始化完毕后，PCI设备可以使用PCI总线地址进行数据传递；</li>
+  <li>BAR0~5寄存器保存的都是PCI设备的地址空间，x86处理器中，没有存储器域和PCI总线域地址空间的转换机制，两个域的地址相等，也是一种简单映射，地址隔离的概念仍然存在；</li>
+  <li>假设在一个32位处理器中，其存储器域的0xF000-0000~0xF7FF-FFFF总共128M的物理地址空间与PCI总线的地址空间映射；当处理器访问这段存储器地址空间，HOST主桥认领这个存储器访问，并将其使用的物理地址空间转换为PCI总线地址空间，并与PCI总线地址空间0xF000-0000~0xF7FF-FFFF对应；</li>
+</ul>
+
+<!--more-->
+<ul>
+  <li>当PCI设备使用DMA机制访问存储器域地址空间，处理器同样需要将存储器域地址空间反向映射；假设一个处理器系统中，主存储器大小为2GB，其在存储器域的地址范围为0x0000-0000~0x7FFF-FFFF，而这段地址在PCI总线域中对应的“PCI总线地址空间”为0x8000-0000~0xFFFF-FFFF。则PCI设备进行DMA操作时，必须使用0x8000-0000~0xFFFF-FFFF这段PCI总线域的地址，HOST主桥才能认领这个PCI总线事务；</li>
+  <li>实际处理器系统中，两个地址空间域的映射采用“简单相等”的方法；</li>
+  <li>PCI设备的BAR寄存器中，包含该设备使用的PCI总线域的地址范围，6个BAR寄存器，因此一个PCI设备最多可以使用6组32位的PCI总线地址空间，或者33组64位的PCI总线地址空间；这些BAR空间保存PCI总线域的存储器地址空间或者I/O地址空间；大多数设备仅使用存储器地址空间，而通常一个设备使用2~3个BAR寄存器就足够；</li>
+</ul>
+
+<h3 id="pcie">PCIe设备的数据传递：</h3>
+<ul>
+  <li>地址译码方式，存储器读写总线事务到达PCI总线时，在这条总线上的所有PCI设备将进行地址译码，如果当前总线事务使用的地址在某个PCI设备的BAR空间中时，该PCI设备将使能DEVSEL#信号，认领这个总线事务；</li>
+  <li>处理器到PCI设备的数据传送：</li>
+  <li>PCI设备11在PCI总线域的地址范围是0x7300-0000~0x73FF-FFFF，在存储器域中对应的地址范围是0xF300-0000~0xF3FF-FFFF；我们假设处理器使用存储器写指令，访问0xF300-0008这个存储器地址；</li>
+  <li>存储器域将0xF300-0008这个地址发向HOST主桥，0xF000-0000~0xF7FF-FFFF这段地址已经由HOST主桥映射到PCI总线域地址空间，所以HOST主桥认为这是一个对PCI设备的访问。因此HOST主桥将首先接管这个存储器写请求；</li>
+  <li>HOST主桥将存储器域的地址0xF300-0008转换为PCI总线域的地址0x7300-0008，并通过总线仲裁获得PCI总线0的使用权，启动PCI存储器写周期，并将这个存储器写总线事务发送到PCI总线0上；</li>
+  <li>PCI总线0的PCI桥1发现0x7300-0008在自己管理的地址范围内，接管这个存储器写请求，并通过总线仲裁逻辑获得PCI总线1的使用权，将请求转发到PCI总线1上；PCI总线1的PCI设备11发现0x7300-0008在自己的BAR0寄存器中命中，接收这个PCI写请求，并完成存储器写总线事务；</li>
+  <li>假定PCI设备11需要将一组数据，发送到0x1000-0000~0x1000-FFFF这段存储器域的地址空间中；</li>
+  <li>PCI设备11需要对PCI总线域的地址空间0x9000-0000~0x9000-FFFF进行写操作；</li>
+  <li>PCI设备11通过总线仲裁逻辑获得PCI总线1的使用权，将存储器写总线事务发送到PCI总线1上；值得注意的是，这个存储器写总线事务的目的地址是PCI总线域的地址空间0x9000-0000~0x9000-FFFF，这个地址是主存储器在PCI总线域的地址映像；</li>
+  <li>PCI总线1上的设备，包括PCI桥2和PCI桥1，进行地址译码，确定这个写请求是不是发送到自己的BAR空间；</li>
+  <li>PCI桥1发现自己并不能处理当前这个存储器写总线事务，首先通过总线仲裁逻辑获得PCI总线0的使用权后，然后将这个总线事务转发到上游；</li>
+  <li>HOST主桥发现0x9000-0000~0x9000-FFFF这段PCI总线地址空间与存储器域的存储器地址空间0x1000-0000~0x1000-FFFF对应，于是将这段PCI总线地址空间转换成为存储器域的存储器地址空间，并完成对这段存储器的写操作；</li>
+  <li>存储器控制器将从HOST主桥接收数据，并将其写入到主存储器；</li>
+</ul>
+
+<h3 id="pcie-1">PCIe概述：</h3>
+<ul>
+  <li>PCIe总线由包括事务层、数据链路层、物理层组成，使用数据报文进行数据传递；使用硬件实现了交换、路由、仲裁机制的协议栈；</li>
+  <li>PCIe体系结构中出现的RC(Root Complex)，RC主要功能与PCI总线中的HOST主桥类似，但增加了很多功能；</li>
+  <li>Intel没有使用PCIe总线控制器，而是RC管理PCIe总线；x86中，RC除了管理PCIe设备的数据访问，还包括访问控制、错误处理、虚拟化等；</li>
+  <li>在互连领域，使用高速差分总线代替并行总线，与单端并行总线相比，可以使用更高的时钟频率，从而减少信号线，提高总线带宽；</li>
+  <li>每一条PCIe链路只能连接两个设备，端到端的连接方式，两个设备互为发送端和接收端；两端都含有TX(发送逻辑)和RX(接收逻辑)；</li>
+  <li>PCIe总线物理链路的一个数据通路(lane)中，由两组差分信号，共4根信号线组成；一个PCIe链路可以包涵多个lane；</li>
+  <li>目前PCIe链路可以由多个lane组成，x1、x2、x4、x8、x12、x16、x32，每一个lane使用的频率与PCIe总线使用的版本相关；</li>
+  <li>PCIe各个规范的总线频率: 1.x - 1.25GHz; 2.x - 2.5GHz; 3.0 - 4GHz; 单Lane峰值带宽：1.x - 2.5GT/s; 2.x - 5GT/s; 3.0 - 8GT/s; 编码方式：1.x - 8/10b编码; 2.x - 8/10b编码; 3.0 - 128/130b编码；即PCIe链路上，130bit含有128bit有效数据；</li>
+  <li>PCIe链路能够提供的峰值带宽：x1 - 5GT/s; x2 - 10GT/s; x4 - 20GT/s; x8 - 40GT/s; x12 - 60GT/s; x16 - 80GT/s; x32 - 160GT/s; GT计算PCIe链路的峰值带宽：GT(Gigatransfer) = 总线频率 x 数据位宽 x 2；</li>
+  <li>PCIe的延时严重：芯片内外的串并转换、数据报文经过多层模型；</li>
+  <li>处理器系统中，一般提供x16的PCIe插槽，即16对差分信号组成发送链路，16对差分信号组成接收链路；</li>
+  <li>PCIe设备之间的数据传输：PCIe Device A -&gt; Transaction Layer -&gt; Data Link Layer -&gt; Physical Layer -RX/TX -&gt; Physical Layer -&gt; Data Link Layer -&gt; Transaction Layer -&gt; PCIe Device B;</li>
+  <li>事务层：封装来自PCIe设备核心的数据成TLP包，发送给数据链路层；从数据链路层接收报文，转发给设备核心；数据链路层：来自事务层的数据到来，被添加Sequence Number前缀和CRC后缀，使用ACK/NAK协议保证报文的可靠传递；物理层：定义了LTSSM状态机，管理链路状态，并进行链路训练、链路恢复和电源管理；</li>
+  <li>PCIe链路必须使用Switch才能连接多个设备，Switch由1个上游端口和2~n个下游端口组成，RC端口位于上方，下游端口一般和EP相连；</li>
+</ul>
+
+<h3 id="pcie-2">PCIe组成部件：</h3>
+<ul>
+  <li>大多数处理器系统，都使用了RC、Switch、PCIe-to-PCIe 桥这些基本模块连接PCIe和PCI设备；基于PCIe总线的设备，称为EP(Endpoint);</li>
+  <li>之前介绍的PCI设备基本配置空间由64Bytes组成，地址范围为0x00~0x3F，这是PCI设备必须支持的；PCIe设备还拓展了0x40~0xFF这段配置空间，主要存放与MSI中断机制和电源管理相关的Capabilities结构，可以提交中断请求的PCIe设备，必须支持MSI Capabilities结构；</li>
+  <li>PCIe设备还支持0x100~0xFFF这段扩展配置空间，PCIe总线的扩展配置空间中，存放PCIe设备独有的一些Capabilities结构；</li>
+  <li>x86中，使用CONFIG_ADDRESS寄存器和CONFIG_DATA寄存器访问PCIe的0x00~0xFF，使用ECAM方式访问0x100 ~ 0xFFF;</li>
+</ul>
+
+<h3 id="tlp">TLP的路由：</h3>
+<ul>
+  <li>TLP的路由指TLP通过Switch或者PCIe桥片时采用哪条路径，最终到达EP或者RC的方法；PCIe总线定义了三种路由方法：基于地址、基于ID和隐性路由；</li>
+  <li>存储器I/O读写采用基于地址的路由方式；配置读写报文采用基于ID的路由方式；</li>
+</ul>
+
+<h3 id="msi">MSI中断机制：</h3>
+<ul>
+  <li>PCIe总线中，PCIe设备必须支持MSI/MSI-X中断请求机制，可以不支持INTx中断信息；</li>
+  <li>MSI中断机制使用存储器写请求TLP向处理器提交中断请求；</li>
+  <li>PCIe设备提交MSI中断请求时，向MSI Capabilities结构中的Message Address结构写Message Data数据，从而组成存储器写TLP，向处理器提交中断请求；</li>
+  <li>目前大多数PCIe设备使用MSI或者MSI-X中断机制提交中断请求，其中MSI中断机制最多支持32个中断请求，并且要求中断向量连续；而MSI-X中断机制可以支持更多中断请求，并且不要求中断向量连续；MSI-X中断机制更合理；</li>
+  <li>Message Address和Message Data寄存器应该是位于PCIe设备的配置空间中；而MSI-X机制使用的这两寄存器位于BAR空间，因此可以由用户决定使用MSI-X中断请求的数目；</li>
+</ul>
+
+<h3 id="message-addressmessage-data">Message Address和Message Data字段：</h3>
+<ul>
+  <li>PCIe设备使用Message Address字段保存PCI总线域地址，其中[31:20]存放FSB Interrupt存储器空间基地址，值为0xFEE，PCIe设备向0xFEEX-XXXX这段“PCI总线域”地址空间进行写操作，首先进行PCI总线域到存储器域的地址转换，之后写操作翻译成FSB总线的Interrupt Message总线事务，从而向CPU内核提交中断请求；</li>
+  <li>FSB总线事务提交PCIe设备使用的中断向量，从而CPU不需要使用中断响应周期从寄存器获得中断向量；</li>
+  <li>Message Data的[7:0]为Vector字段，表示中断请求使用的中断向量，FSB将中断向量也通知处理器；</li>
+  <li>PCIe设备发送MSI/MSI-X中断请求之前，系统软件需要合理设置PCIe设备的MSI/MSI-X Capabilities寄存器，使得Message Address寄存器的值为0xFEExx00y(什么意思？)，同时设置Message Data寄存器的Vector字段；Message Address寄存器在存储器域和PCI总线域中的地址都为0xFEC00020;</li>
+  <li>PCI设备使用的irq号存放在pdev-&gt;irq中，该参数在Linux设备驱动程序初始化时，由pci_enable_device函数设置；irq号给系统软件使用，之后PCI设备的驱动程序可以使用request_irq函数将中断服务例程与irq号建立映射关系；</li>
+  <li>PCIe设备需要使用MSI中断机制时，将调用pci_enable_msi函数，该函数返回值为0时，表示成功返回，此时函数更新pci_dev -&gt; irq参数；函数在纯软件层面进行一些全局变量的参数检查，硬件层面上检查上游的PCI桥等是否支持MSI报文的转发，PCI设备是否具有Capabilities表等；</li>
+</ul>
+
+				</span>
+				<div class="journal-date">Published 28 November 2014</div>
+				<div class="journal-tags">
+				
+				
+	 
+		<a class="tag-cont" href="/tags.html#Linux_Kernel-ref">
+			<div class="tag-l"></div>
+			<div class="tag-c">Linux_Kernel</div>
+			<div class="tag-r"></div>
+		</a>
+	
+
+
+
+				</div>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+	</div>
+</div>
+	<div class="clearboth"></div>
+	
+
+
+  <!-- 多说评论框 start -->
+<div id="comments">
+    <div class="ds-thread" data-thread-key="/linux_kernel/2014/11/28/pcie-arch"  data-title="PCI Express基本概念 - Mushsen's Blog"></div>
+</div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"hombo"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+	<div class="clearboth"></div>
+</div>
+
+			</div>
+			<div class="clearboth pagebottom"></div>
+		</div>
+	</div>
+    <a class="bshareDiv" href="http://www.bshare.cn/share">分享按钮</a><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#uuid=&amp;style=5&amp;fs=4&amp;bgcolor=Orange"></script>
+
+	<footer>
+	<div class="footer-940">
+		<div class="footer-general-info">
+			© 2014 Hombo Wang.<br><br>
+			Content licensed under:<br>
+			<a class="cc" href="http://creativecommons.org/licenses/by-sa/3.0/">c a b</a><br>
+			<a href = "/about.html">About Me</a><br>
+		</div>
+		<div class="footer-col-cont">
+			<div class="footer-nav-col">
+				<h4><a>Categories</a></h4>
+				<ul>
+					
+					
+
+
+  
+     
+    	<li><a href="/categories.html#algorithm-ref">
+    		algorithm <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#cv-ref">
+    		cv <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#machine_learning-ref">
+    		machine_learning <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#c++-ref">
+    		c++ <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#leetcode-ref">
+    		leetcode <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#linux_kernel-ref">
+    		linux_kernel <span>7</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#git-ref">
+    		git <span>1</span>
+    	</a></li>
+    
+  
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Pages</a></h4>
+				<ul>
+					
+					
+					
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/about.html">About Me</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+    
+  
+    
+  
+    
+  
+
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Feed</a></h4>
+				<ul>
+					<li><a href="/atom.xml">Atom Feed</a></li>
+					<li><a href="/rss.xml">RSS Feed</a></li>
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Links</a></h4>
+				<ul>
+				 
+					<li><a href = "http://lambda.hk">Mushsen's Blog</a></li>
+				
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a href = "/about.html">About Me</a></h4>
+				<ul>
+				 
+					<li><a href = "mailto:mohuansheng@ict.ac.cn">e-mail</a></li>
+				 
+					<li><a href = "https://github.com/pathfinder007">Github</a></li>
+				
+				</ul>
+			</div>
+			<div class="clearboth"></div>
+		</div>
+		<div class="clearboth"></div>
+	</div>
+	<div class="clearboth"></div>
+</footer>
+	
+</body>
+</html>
+

@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	
+	<title>Mushsen's Blog</title>
+    
+	
+	<meta name="author" content="Hombo Wang">
+	
+	<link rel="stylesheet" href="/assets/themes/Snail/css/jquery.fancybox.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/main.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/pages/journal.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/team.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/static.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/errors.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/google-code-prettify/prettify.css">
+	
+	<link rel="shortcut icon" href="/assets/themes/Snail/img/favicon.ico">
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/jquery.min.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/auto_loadmore.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/google-code-prettify/prettify.js"></script>
+	
+	<script type="text/javascript">
+	  $(function(){
+		$("pre code").addClass("prettyprint linenums");
+		prettyPrint();
+	  });
+	</script>
+	
+<!--[if lt IE 9]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+</head>
+<body>
+	<noscript>
+		&amp;lt;div id="no-js"&amp;gt;Please enable JavaScript in your browser to experience / fully&amp;lt;/div&amp;gt;
+	</noscript>
+    <div id="page-container">
+		<div>
+            <div style="margin:2px 0px 2px 805px;width:340px; height:25px;">
+                <img src="http://counter6.statcounterfree.com/private/freecounterstat.php?c=586cbed92fda4763cc77bf3587fbe134" border="0" title="free website counter" alt="free website counter"></td>
+            </div>
+			<nav>
+	<div id="nav-l">
+	</div>
+	<div id="nav-c">
+		<ul id="nav-list" style="width: 700px;">
+			<li id="home"><a href="/">Home</a></li>
+			
+			
+			
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "About Me"><a href="/about.html">About Me</a></li>
+					
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Archive"><a href="/archive.html">Archive</a></li>
+					
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Categories"><a href="/categories.html">Categories</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Tags"><a href="/tags.html">Tags</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+			 
+				
+			 
+			
+			
+		</ul>
+		<form id="nav-search" method="GET" action="/search.html">
+			<div id="search-right-pix">
+				<div id="search-left-pix">
+					<div id="search-center-pix">
+						<div id="search-icon-pix"></div>
+						<input name="query" type="text" placeholder="Search">
+					</div>
+				</div>
+			</div>
+		</form>
+		
+		
+	</div>
+	<div id="nav-r">
+	</div>
+</nav>
+			<div id="page-content">
+				
+<div class="page-title-inline">
+	
+	<h1>Mushsen's Blog </h1>
+	
+	
+</div>
+<div class="cont932">
+	<hr style="margin-top: 0;">
+	<div id="journal-articles-block">
+	
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
+	linux_kernel
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-spinlock">Linux Device Driver——并发和竞争</a><span class="author"></span></h1>
+				
+				<span class="teaser"><h3 id="section">并发和竞争</h3>
+<ul>
+  <li>实际产生竞争的情况</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_pos</span><span class="p">])</span> <span class="p">{</span>
+              <span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_ops</span><span class="p">]</span> <span class="o">=</span> <span class="n">kmalloc</span><span class="p">(</span><span class="n">quantum</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
+              <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_pos</span><span class="p">])</span>
+                   <span class="k">goto</span> <span class="n">out</span><span class="p">;</span>
+         <span class="p">}</span></code></pre></div>
+
+<ul>
+  <li>假设两个进程（A，B）独立地试图写入同一个设备的相同偏移，进程同时到达if测试，如果被测试指针为NULL，每个进程都会决定分配内存且复制给dptr -&gt; data[s_ops]，显然只会有一个赋值可以成功；</li>
+  <li>如果A先赋值，则将被B覆盖，结果指针指向B分配的内存，而A分配的内存被丢掉，但是并没有返回给系统，产生了内存泄漏；</li>
+  <li>并发源：多个用户空间进程的运行；SMP系统能够同时在多个处理器上执行代码；内核代码抢占，驱动代码可能在任何时间失去处理器；设备中断，内核中延迟代码执行的机制等；</li>
+  <li>竞争来自对资源的共享存取，驱动设计时，应该避免共享的资源，比如全局变量的使用；</li>
+</ul>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-spinlock">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
+	linux_kernel
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-module">Linux Device Driver——模块相关</a><span class="author"></span></h1>
+				
+				<span class="teaser"><h3 id="section">1. 驱动编写策略：</h3>
+<ul>
+  <li>编写内核代码存取硬件，但是不能强加不同策略给用户；驱动应该做到使硬件可用，将所有关于如何使用硬件的事情交给应用程序；</li>
+  <li>单个设备可能由不同程序并发使用，驱动有完全自由决定如何处理并发性；</li>
+</ul>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-module">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/leetcode/2014/11/05/leetcode-matrix-area">Leetcode:Maximal Rectangle</a><span class="author"></span></h1>
+				
+				<span class="teaser"><h3 id="maximal-rectangle">Maximal Rectangle</h3>
+<ul>
+  <li>给一个二维数组，用0，1填充，找出包含1的矩形的最大面积。</li>
+</ul>
+
+<h3 id="section">思路</h3>
+<ul>
+  <li>开始想到的思路是，比较好的时间复杂度应该是n方，动态规划（似乎看到二维数组，首先就想到DP，估计跟最近做的几个二维DP的题目有关，还是得好好总结，建立方法论）。即f[i][j]纪录以matrix[i][j]为右下顶点的矩形的最大面积。但是这样出现了一个问题，到f[i][j]的转移方程没法写，无法从f[i-1][j]/f[i][j-1]得到，思维还是存在漏洞。</li>
+  <li>正确思路：这个题目应该跟一维数组时，求最大能够容纳的水容量，或者是两根柱子组成的面积最大，连续整数的最大长度这些题一个类型，只是把数组从一维变成了二维。这样的话，按照原来两遍夹逼的思路。两个全局的数组L，R，对每一列都适用，即纪录当前行位置，第j列的最大允许的左边界以及右边界。两个局部的指针left，right，纪录当前行每个位置的左边界与右边界。并且通过left与right去更新L，R数组。</li>
+</ul>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/leetcode/2014/11/05/leetcode-matrix-area">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/leetcode/2014/11/05/leetcode-bucket_sort">Leetcode:First Missing Positive(Bucket Sort)</a><span class="author"></span></h1>
+				
+				<span class="teaser"><h3 id="first-missing-positive">First Missing Positive</h3>
+<ul>
+  <li>给一个未排序的整形数组，找出缺失的第一个正整数。算法需要满足O(n)的时间复杂度以及使用恒定的空间。</li>
+  <li>输入：A[] = {1, 2, 0}, n = 3 return 3.</li>
+  <li>输出：A[] = {3, 4, -1, 1}, n = 4 return 2.</li>
+</ul>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/leetcode/2014/11/05/leetcode-bucket_sort">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
+	linux_kernel
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/linux_kernel/2014/11/05/Linux-DMA">Linux下PCIe驱动以及DMA机制</a><span class="author"></span></h1>
+				
+				<span class="teaser"><h3 id="section">1. 驱动程序作用：</h3>
+<ul>
+  <li>设备驱动程序向应用程序屏蔽了硬件在实现上的细节，使得应用程序可以像操作普通文件一样操作外部设备。Linux操作系统抽象了对硬件的处理，可以使用和操作文件相同的，标准的系统调用接口来完成打开，关闭，读写喝I/O控制操作，而驱动程序主要任务也就是实现这些系统调用函数。</li>
+</ul>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/linux_kernel/2014/11/05/Linux-DMA">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+	</div>
+	
+	<div id="journal-arrows-cont">
+			<a href="/3" class="journal-arrow ja-forward"></a>
+	</div>
+	
+	<div class="clearboth"></div>
+	<div id="journal-loadmore">Load More…</div>
+	<div class="clearboth"></div>
+</div>
+<div class="clearboth"></div>
+			</div>
+			<div class="clearboth pagebottom"></div>
+		</div>
+	</div>
+    <a class="bshareDiv" href="http://www.bshare.cn/share">分享按钮</a><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#uuid=&amp;style=5&amp;fs=4&amp;bgcolor=Orange"></script>
+
+	<footer>
+	<div class="footer-940">
+		<div class="footer-general-info">
+			© 2014 Hombo Wang.<br><br>
+			Content licensed under:<br>
+			<a class="cc" href="http://creativecommons.org/licenses/by-sa/3.0/">c a b</a><br>
+			<a href = "/about.html">About Me</a><br>
+		</div>
+		<div class="footer-col-cont">
+			<div class="footer-nav-col">
+				<h4><a>Categories</a></h4>
+				<ul>
+					
+					
+
+
+  
+     
+    	<li><a href="/categories.html#algorithm-ref">
+    		algorithm <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#cv-ref">
+    		cv <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#machine_learning-ref">
+    		machine_learning <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#c++-ref">
+    		c++ <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#leetcode-ref">
+    		leetcode <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#linux_kernel-ref">
+    		linux_kernel <span>7</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#git-ref">
+    		git <span>1</span>
+    	</a></li>
+    
+  
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Pages</a></h4>
+				<ul>
+					
+					
+					
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/about.html">About Me</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+    
+  
+    
+  
+    
+  
+
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Feed</a></h4>
+				<ul>
+					<li><a href="/atom.xml">Atom Feed</a></li>
+					<li><a href="/rss.xml">RSS Feed</a></li>
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Links</a></h4>
+				<ul>
+				 
+					<li><a href = "http://lambda.hk">Mushsen's Blog</a></li>
+				
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a href = "/about.html">About Me</a></h4>
+				<ul>
+				 
+					<li><a href = "mailto:mohuansheng@ict.ac.cn">e-mail</a></li>
+				 
+					<li><a href = "https://github.com/pathfinder007">Github</a></li>
+				
+				</ul>
+			</div>
+			<div class="clearboth"></div>
+		</div>
+		<div class="clearboth"></div>
+	</div>
+	<div class="clearboth"></div>
+</footer>
+	
+</body>
+</html>
+

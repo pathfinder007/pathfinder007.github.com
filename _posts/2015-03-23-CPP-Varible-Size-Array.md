@@ -14,21 +14,21 @@ tags: C++
 unsigned buf_size = 1024;
 int ia[buf_size];
 int ia[get_size()];
-{%  endhighelight %}  
+{% endhighelight %}  
 
 &emsp;&emsp;但是可以通过指针来动态申请空间实现动数组长度的变量赋值，在栈中分配的内存，大小都是编译时就确定好的，如果想在运行时来动态计算使用内存的大小的话，就要用new这样的动态分配函数，来达到更高的灵活性。c++ 用new分配空间以后，不用的时候要记得delete释放内存，不然会有内存泄露问题。  
 
-{% Highlight C++ %}
+{% highlight C++ %}
 int length = 10;
 int * varArray;
 varArray = new int[length];
-{%  endHighelight %} 
+{%  endhighelight %} 
 
 ### C99规范对变长数组的支持
 &emsp;&emsp;C99规范中增加了对变长数组的支持，即可以使用C++语法规范中非法的方法来定义变长的数组，如此，对于支持C99规范不太好的平台来说，比如VC，就有可能出现很多的问题，应该尽量使用变量定义数组长度的C99规范支持的写法，在C99规范中，使用cin输入的整数作为数组长度，也是可行的。看样子C99规范中是使用动态数组的方式，支持了变长数组的定义，如下写法，也并不会出现数组越界访问的错误。
-{% Highlight C++ %}
+{% highlight C++ %}
 int n = 10;
 int a[n];
 a[100] = 9;
-{%  endHighelight %}  
+{%  endhighelight %}  
 

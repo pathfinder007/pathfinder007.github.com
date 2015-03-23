@@ -39,5 +39,3 @@ const int n = 10;
 int a[n];
 a[100] = 9;
 {%  endhighelight %} 
-
-

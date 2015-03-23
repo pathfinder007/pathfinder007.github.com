@@ -12,7 +12,16 @@ http://lambda.hk/tags.html
 http://lambda.hk/2/index.html
 http://lambda.hk/3/index.html
 http://lambda.hk/4/index.html
+http://lambda.hk/5/index.html
+http://lambda.hk/6/index.html
 
+http://lambda.hk/c++/2015/03/23/Vector-String-Array
+http://lambda.hk/c++/2015/03/23/CPP-Varible-Size-Array
+http://lambda.hk/algorithm/2015/03/21/test
+http://lambda.hk/algorithm/2015/03/21/sting-2-int
+http://lambda.hk/c++/2015/03/21/CPP-builtin-data-type
+http://lambda.hk/interview/2015/03/18/string-count
+http://lambda.hk/interview/2015/03/18/ali_interview
 http://lambda.hk/git/2015/03/18/Git-Operate
 http://lambda.hk/git/2015/03/18/Git-Change-Account
 http://lambda.hk/linux_kernel/2014/11/28/pcie-arch

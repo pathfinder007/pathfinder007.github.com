@@ -118,6 +118,10 @@
 			 
 				
 			 
+				
+			 
+				
+			 
 			
 			
 		</ul>
@@ -155,22 +159,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#git-ref" title="git">
-	git
+<a href="/categories.html#c++-ref" title="c++">
+	c++
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/git/2015/03/18/Git-Operate">Git中基本操作</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/c++/2015/03/23/Vector-String-Array">Vector与String数组的转换</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  前两天看王神面实习的简历，简历上面清晰地标出每个项目的tag似是一个很好的办法，既给面试官重点突出的感觉，也便于将面试中心集中，方便自己准备，而作为大型软件的开发，版本控制必不可少，将Git与SVN相关的东西做一个小总结。</p>
+				<span class="teaser"><p>  读入一组 string 类型的数据,并将它们存储在 vector 中。接着,把该 vector 对象复制给一个字符指针数组。为 vector 中的 每个元素创建一个新的字符数组,并把该 vector 元素的数据复制到相应的字符 数组中,最后把指向该数组的指针插入字符指针数组。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/git/2015/03/18/Git-Operate">Read More</a></span>
+				<span class="readmore"><a href="/c++/2015/03/23/Vector-String-Array">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -181,22 +185,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#git-ref" title="git">
-	git
+<a href="/categories.html#c++-ref" title="c++">
+	c++
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/git/2015/03/18/Git-Change-Account">Git操作中切换本地账户</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/c++/2015/03/23/CPP-Varible-Size-Array">C++中变量做数组维数</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  前段时间由于项目需要，一直往oschina上面的私有空间提交代码，懒得新建账户，就将本地的Git账户切换成了oschina上面团队的公共账号。今天在整Blog，才发现当时把本地的global设置给改了。而oschina和github，用的是一套机制。提交代码到github时，显示的不是自己账户提交，很不爽。翻了下资料，把本地的git设置给改了回来，留个备忘。</p>
+				<span class="teaser"><p>  记得C/C++语法规范中，不能使用变量定义数组维数，因为数组维数的确定，需要在编译阶段完成。要想在程序实行阶段确定数组维数，应该使用new/malloc去动态分配；但是试验了一下，由于g++对C99的支持，使得使用变量定义数组维数也是可行的(在Linux系统下)，但是如此方法，在VC下会报错，即这并不是符合C++语法规范的写法，在很大程度上会限制代码的平台兼容性，应该避免这种写法，以此备忘。 </p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/git/2015/03/18/Git-Change-Account">Read More</a></span>
+				<span class="readmore"><a href="/c++/2015/03/23/CPP-Varible-Size-Array">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -207,23 +211,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
+<a href="/categories.html#algorithm-ref" title="algorithm">
+	algorithm
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/28/pcie-arch">PCI Express基本概念</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/algorithm/2015/03/21/test">相关操作</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="pciebar">1. PCIe设备BAR空间的初始化：</h3>
-<p>   PCIe设备进行数据传输之前，系统软件使用DFS算法遍历并完成BAR0~BAR5寄存器初始化，即分配这些设备在PCI总线域的地址空间，之后，PCI设备可以使用PCI总线地址进行数据传递；BAR0~5寄存器保存的都是PCI设备的地址空间，x86处理器中，没有存储器域和PCI总线域地址空间的转换机制，两个域的地址相等，也是一种简单映射，地址隔离的概念仍然存在；假设在一个32位处理器中，其存储器域的0xF000-0000~0xF7FF-FFFF总共128M的物理地址空间与PCI总线的地址空间映射；当处理器访问这段存储器地址空间，HOST主桥认领这个存储器访问，并将其使用的物理地址空间转换为PCI总线地址空间，并与PCI总线地址空间0xF000-0000~0xF7FF-FFFF对应；</p>
+				<span class="teaser"><p>  在做Leetcode的Compare Version Numbers；涉及到string子串的比较，而子串全为数字，当时直接拿string来比较，没考虑到两个子串长度不同的情况，即”01”与”1”，应该是相等的。C语言中，使用atoi可以将string转换成int，而atoi的参数为<code>const char *nptr</code>，故在C++中，不能直接对string进行操作，可以先通过<code>c_str</code>返回一个指向正规C字符串的指针，再通过<code>atoi</code>进行转换;</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/28/pcie-arch">Read More</a></span>
+				<span class="readmore"><a href="/algorithm/2015/03/21/test">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -234,26 +237,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
+<a href="/categories.html#algorithm-ref" title="algorithm">
+	algorithm
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/28/pci-arch">PCI基本概念</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/algorithm/2015/03/21/sting-2-int">string与int转换相关</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="pci">1. PCI体系结构：</h3>
-<ul>
-  <li>PCI为局部总线，系统总线的延伸，用于连接外设；</li>
-  <li>PCI Express总线：PCIe总线；PCI-to-PCI桥：PCI桥；PCI Express-to-PCI桥：PCIe桥；Host-to-PCI主桥：HOST桥，也称为PCI主桥或者PCI总线控制器；</li>
-</ul>
+				<span class="teaser"><p>  在做Leetcode的Compare Version Numbers；涉及到string子串的比较，而子串全为数字，当时直接拿string来比较，没考虑到两个子串长度不同的情况，即”01”与”1”，应该是相等的。C语言中，使用atoi可以将string转换成int，而atoi的参数为<code>const char *nptr</code>，故在C++中，不能直接对string进行操作，可以先通过<code>c_str</code>返回一个指向正规C字符串的指针，再通过<code>atoi</code>进行转换;</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/28/pci-arch">Read More</a></span>
+				<span class="readmore"><a href="/algorithm/2015/03/21/sting-2-int">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -264,34 +263,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
+<a href="/categories.html#c++-ref" title="c++">
+	c++
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/24/Linux-Device-Driver-pci">Linux Device Driver——PCI基础</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/c++/2015/03/21/CPP-builtin-data-type">C++中各种内置数据类型的长度以及表示范围</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="pci">1. PCI接口：</h3>
-<ul>
-  <li>PCI总线通过使用比ISA更高的时钟频率，获得更好的性能；时钟设置运行在25或者33MHz、66MHz甚至133MHz；</li>
-  <li>PCI对接口板自动探测，没有跳线，并且在系统启动时自动配置；设备驱动必须能够存取设备中的配置信息以便完成初始化；</li>
-  <li>每个PCI外设有一个总线号、一个设备号、一个功能号标识，PCI规范允许单个系统占用多达256根总线，每个总线占用32个设备，每个设备可以</li>
-  <li>是一个最多具有8个功能的多功能卡，每个功能在硬件层次被一个16位地址标识；</li>
-  <li>如果需要多个PCI总线，可以通过PCI桥实现，PCI系统的实现是树状分布；和PCI外设相关的16-位硬件地址，隐藏在<code>struct pci_dev</code>结构中；</li>
-  <li>PCI总线的I/O空间使用一个32位地址总线，而内存空间可以使用32位或者64位地址存取；系统启动时BIOS固件初始化PCI硬件，映射每个区到</li>
-  <li>不同地址来避免冲突，被映射的地址可以从配置空间读出，因此Linux驱动不需要使用探测读取设备，根据配置寄存器信息安全存取相应硬件；</li>
-  <li>每个设备的PCI(包括PCI Express设备)配置空间包含256Bytes，每个功能有4KB配置空间，配置空间排布标准化；配置空间的4个字节含有唯一</li>
-  <li>功能ID，因此驱动可以识别设备；即通过物理寻址找到设备的配置寄存器，根据寄存器信息进行正常的I/O存取；</li>
-  <li>PCI接口标准相对ISA创新之处在于配置地址空间；</li>
-</ul>
+				<span class="teaser"><p>  关于各种内置数据类型的size，一直以来都记得不是特别明确，这段时间都在写比较底层的OS直接操作硬件的C代码，倒也习惯了u8、u16、u32各种为满足操作系统平台移植性要求定义的数据类型;想起两年半以前在skyroam时候，看着GMate的系统代码，这是啥，这特么又是啥，那个迷茫的夏天。两年多的时间，收获了太多，不管是coding 上，还是其他。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/24/Linux-Device-Driver-pci">Read More</a></span>
+				<span class="readmore"><a href="/c++/2015/03/21/CPP-builtin-data-type">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -332,7 +319,7 @@
   
      
     	<li><a href="/categories.html#algorithm-ref">
-    		algorithm <span>1</span>
+    		algorithm <span>3</span>
     	</a></li>
      
     	<li><a href="/categories.html#cv-ref">
@@ -344,7 +331,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#c++-ref">
-    		c++ <span>2</span>
+    		c++ <span>5</span>
     	</a></li>
      
     	<li><a href="/categories.html#leetcode-ref">
@@ -357,6 +344,10 @@
      
     	<li><a href="/categories.html#git-ref">
     		git <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#interview-ref">
+    		interview <span>2</span>
     	</a></li>
     
   
@@ -425,6 +416,10 @@
       	<li><a href="/tags.html">Tags</a></li>
       	
       
+    
+  
+    
+  
     
   
     

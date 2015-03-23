@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	
+	<title>C++中各种内置数据类型的长度以及表示范围</title>
+    
+	
+	<meta name="author" content="Hombo Wang">
+	
+	<link rel="stylesheet" href="/assets/themes/Snail/css/jquery.fancybox.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/main.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/pages/journal.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/team.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/static.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/errors.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/google-code-prettify/prettify.css">
+	
+	<link rel="shortcut icon" href="/assets/themes/Snail/img/favicon.ico">
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/jquery.min.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/auto_loadmore.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/google-code-prettify/prettify.js"></script>
+	
+	<script type="text/javascript">
+	  $(function(){
+		$("pre code").addClass("prettyprint linenums");
+		prettyPrint();
+	  });
+	</script>
+	
+<!--[if lt IE 9]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+</head>
+<body>
+	<noscript>
+		&amp;lt;div id="no-js"&amp;gt;Please enable JavaScript in your browser to experience / fully&amp;lt;/div&amp;gt;
+	</noscript>
+    <div id="page-container">
+		<div>
+            <div style="margin:2px 0px 2px 805px;width:340px; height:25px;">
+                <img src="http://counter6.statcounterfree.com/private/freecounterstat.php?c=586cbed92fda4763cc77bf3587fbe134" border="0" title="free website counter" alt="free website counter"></td>
+            </div>
+			<nav>
+	<div id="nav-l">
+	</div>
+	<div id="nav-c">
+		<ul id="nav-list" style="width: 700px;">
+			<li id="home"><a href="/">Home</a></li>
+			
+			
+			
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "About Me"><a href="/about.html">About Me</a></li>
+					
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Archive"><a href="/archive.html">Archive</a></li>
+					
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Categories"><a href="/categories.html">Categories</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Tags"><a href="/tags.html">Tags</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+			 
+				
+			 
+				
+			 
+				
+			 
+			
+			
+		</ul>
+		<form id="nav-search" method="GET" action="/search.html">
+			<div id="search-right-pix">
+				<div id="search-left-pix">
+					<div id="search-center-pix">
+						<div id="search-icon-pix"></div>
+						<input name="query" type="text" placeholder="Search">
+					</div>
+				</div>
+			</div>
+		</form>
+		
+		
+	</div>
+	<div id="nav-r">
+	</div>
+</nav>
+			<div id="page-content">
+				
+<div id="page-content">
+	<div class="cont932">
+	<div id="journal-articles-block">
+		<div class="journal-article">
+			<div class="journal-post-info">
+				<div class="journal-cat-box">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#c++-ref" title="c++">
+	c++
+
+</a>
+</div>
+				
+				</div>
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title">C++中各种内置数据类型的长度以及表示范围<span class="author"></span>
+				</h1>
+				<span class="the-article">
+				<p>  关于各种内置数据类型的size，一直以来都记得不是特别明确，这段时间都在写比较底层的OS直接操作硬件的C代码，倒也习惯了u8、u16、u32各种为满足操作系统平台移植性要求定义的数据类型;想起两年半以前在skyroam时候，看着GMate的系统代码，这是啥，这特么又是啥，那个迷茫的夏天。两年多的时间，收获了太多，不管是coding 上，还是其他。</p>
+
+<!--more-->
+
+<h3 id="int">有关int</h3>
+<p>  int类型比较特殊，具体的字节数同机器字长和编译器有关。例如：在32为平台上（所谓32位平台是指通用寄存器的数据宽度是32）编写代码，int 类型分配4个字节，而在16位平台是则分配2个字节，那么在16位上编译出来的可执行文件，其中是为int分配2字节，而在32位平台上运行时，会按照4个字节来解析，显然会出错误的。 而对于非int，目前为止，所有的类型分配的字节数都是兼容的，即不同平台对于同一个类型分配相同的字节数。在代码中尽量避免使用int类型，根据不同的
+需要可以用short,long,unsigned int 等代替。 </p>
+
+<table>
+  <thead>
+    <tr>
+      <th>数据类型名称</th>
+      <th style="text-align: center">字节数</th>
+      <th style="text-align: right">取值范围</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>int</td>
+      <td style="text-align: center">*</td>
+      <td style="text-align: right">由操作系统决定，即与操作系统的＂字长＂有关</td>
+    </tr>
+    <tr>
+      <td>unsigned int</td>
+      <td style="text-align: center">*</td>
+      <td style="text-align: right">由操作系统决定，即与操作系统的＂字长＂有关</td>
+    </tr>
+    <tr>
+      <td>__int8</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: right">–128 到 127</td>
+    </tr>
+    <tr>
+      <td>__int16</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: right">–32,768 到 32,767</td>
+    </tr>
+    <tr>
+      <td>__int32</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: right">–2,147,483,648 到 2,147,483,647</td>
+    </tr>
+    <tr>
+      <td>__int64</td>
+      <td style="text-align: center">8</td>
+      <td style="text-align: right">–9,223,372,036,854,775,808 到 9,223,372,036,854,775,807</td>
+    </tr>
+    <tr>
+      <td>bool</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: right">false 或 true</td>
+    </tr>
+    <tr>
+      <td>char</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: right">–128 到 127</td>
+    </tr>
+    <tr>
+      <td>unsigned char</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: right">0 到 255</td>
+    </tr>
+    <tr>
+      <td>short</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: right">–32,768 到 32,767</td>
+    </tr>
+    <tr>
+      <td>unsigned short</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: right">0 到 65,535</td>
+    </tr>
+    <tr>
+      <td>long</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: right">–2,147,483,648 到 2,147,483,647</td>
+    </tr>
+    <tr>
+      <td>long long</td>
+      <td style="text-align: center">8</td>
+      <td style="text-align: right">–9,223,372,036,854,775,808 到 9,223,372,036,854,775,807</td>
+    </tr>
+    <tr>
+      <td>unsigned long</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: right">0 到 4,294,967,295</td>
+    </tr>
+    <tr>
+      <td>enum</td>
+      <td style="text-align: center">*</td>
+      <td style="text-align: right">由操作系统决定，即与操作系统的＂字长＂有关</td>
+    </tr>
+    <tr>
+      <td>float</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: right">3.4E +/- 38 (7 digits)</td>
+    </tr>
+    <tr>
+      <td>double</td>
+      <td style="text-align: center">8</td>
+      <td style="text-align: right">1.7E +/- 308 (15 digits)</td>
+    </tr>
+    <tr>
+      <td>long double</td>
+      <td style="text-align: center">8</td>
+      <td style="text-align: right">1.7E +/- 308 (15 digits)</td>
+    </tr>
+  </tbody>
+</table>
+
+				</span>
+				<div class="journal-date">Published 21 March 2015</div>
+				<div class="journal-tags">
+				
+				
+	 
+		<a class="tag-cont" href="/tags.html#C++-ref">
+			<div class="tag-l"></div>
+			<div class="tag-c">C++</div>
+			<div class="tag-r"></div>
+		</a>
+	
+
+
+
+				</div>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+	</div>
+</div>
+	<div class="clearboth"></div>
+	
+
+
+  <!-- 多说评论框 start -->
+<div id="comments">
+    <div class="ds-thread" data-thread-key="/c++/2015/03/21/CPP-builtin-data-type"  data-title="C++中各种内置数据类型的长度以及表示范围 - Mushsen's Blog"></div>
+</div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"mushsen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+	<div class="clearboth"></div>
+</div>
+
+			</div>
+			<div class="clearboth pagebottom"></div>
+		</div>
+	</div>
+    <a class="bshareDiv" href="http://www.bshare.cn/share">分享按钮</a><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#uuid=&amp;style=5&amp;fs=4&amp;bgcolor=Orange"></script>
+
+	<footer>
+	<div class="footer-940">
+		<div class="footer-general-info">
+			© 2014 Hombo Wang.<br><br>
+			Content licensed under:<br>
+			<a class="cc" href="http://creativecommons.org/licenses/by-sa/3.0/">c a b</a><br>
+			<a href = "/about.html">About Me</a><br>
+		</div>
+		<div class="footer-col-cont">
+			<div class="footer-nav-col">
+				<h4><a>Categories</a></h4>
+				<ul>
+					
+					
+
+
+  
+     
+    	<li><a href="/categories.html#algorithm-ref">
+    		algorithm <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#cv-ref">
+    		cv <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#machine_learning-ref">
+    		machine_learning <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#c++-ref">
+    		c++ <span>5</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#leetcode-ref">
+    		leetcode <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#linux_kernel-ref">
+    		linux_kernel <span>7</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#git-ref">
+    		git <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#interview-ref">
+    		interview <span>2</span>
+    	</a></li>
+    
+  
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Pages</a></h4>
+				<ul>
+					
+					
+					
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/about.html">About Me</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Feed</a></h4>
+				<ul>
+					<li><a href="/atom.xml">Atom Feed</a></li>
+					<li><a href="/rss.xml">RSS Feed</a></li>
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Links</a></h4>
+				<ul>
+				 
+					<li><a href = "http://lambda.hk">Mushsen's Blog</a></li>
+				
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a href = "/about.html">About Me</a></h4>
+				<ul>
+				 
+					<li><a href = "mailto:mohuansheng@ict.ac.cn">e-mail</a></li>
+				 
+					<li><a href = "https://github.com/pathfinder007">Github</a></li>
+				
+				</ul>
+			</div>
+			<div class="clearboth"></div>
+		</div>
+		<div class="clearboth"></div>
+	</div>
+	<div class="clearboth"></div>
+</footer>
+	
+</body>
+</html>
+

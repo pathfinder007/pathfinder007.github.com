@@ -1,0 +1,422 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	
+	<title>C++中变量做数组维数</title>
+    
+	
+	<meta name="author" content="Hombo Wang">
+	
+	<link rel="stylesheet" href="/assets/themes/Snail/css/jquery.fancybox.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/main.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/pages/journal.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/team.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/static.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/css/errors.css">
+	<link rel="stylesheet" href="/assets/themes/Snail/google-code-prettify/prettify.css">
+	
+	<link rel="shortcut icon" href="/assets/themes/Snail/img/favicon.ico">
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/jquery.min.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/js/auto_loadmore.js"></script>
+	
+	<script type="text/javascript" src="/assets/themes/Snail/google-code-prettify/prettify.js"></script>
+	
+	<script type="text/javascript">
+	  $(function(){
+		$("pre code").addClass("prettyprint linenums");
+		prettyPrint();
+	  });
+	</script>
+	
+<!--[if lt IE 9]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+</head>
+<body>
+	<noscript>
+		&amp;lt;div id="no-js"&amp;gt;Please enable JavaScript in your browser to experience / fully&amp;lt;/div&amp;gt;
+	</noscript>
+    <div id="page-container">
+		<div>
+            <div style="margin:2px 0px 2px 805px;width:340px; height:25px;">
+                <img src="http://counter6.statcounterfree.com/private/freecounterstat.php?c=586cbed92fda4763cc77bf3587fbe134" border="0" title="free website counter" alt="free website counter"></td>
+            </div>
+			<nav>
+	<div id="nav-l">
+	</div>
+	<div id="nav-c">
+		<ul id="nav-list" style="width: 700px;">
+			<li id="home"><a href="/">Home</a></li>
+			
+			
+			
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "About Me"><a href="/about.html">About Me</a></li>
+					
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Archive"><a href="/archive.html">Archive</a></li>
+					
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Categories"><a href="/categories.html">Categories</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+				
+			 
+				
+				  
+					
+					<li id = "Tags"><a href="/tags.html">Tags</a></li>
+					
+				  
+				
+			 
+				
+			 
+				
+			 
+				
+			 
+				
+			 
+				
+			 
+			
+			
+		</ul>
+		<form id="nav-search" method="GET" action="/search.html">
+			<div id="search-right-pix">
+				<div id="search-left-pix">
+					<div id="search-center-pix">
+						<div id="search-icon-pix"></div>
+						<input name="query" type="text" placeholder="Search">
+					</div>
+				</div>
+			</div>
+		</form>
+		
+		
+	</div>
+	<div id="nav-r">
+	</div>
+</nav>
+			<div id="page-content">
+				
+<div id="page-content">
+	<div class="cont932">
+	<div id="journal-articles-block">
+		<div class="journal-article">
+			<div class="journal-post-info">
+				<div class="journal-cat-box">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#c++-ref" title="c++">
+	c++
+
+</a>
+</div>
+				
+				</div>
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title">C++中变量做数组维数<span class="author"></span>
+				</h1>
+				<span class="the-article">
+				<p>  记得C/C++语法规范中，不能使用变量定义数组维数，因为数组维数的确定，需要在编译阶段完成。要想在程序实行阶段确定数组维数，应该使用new/malloc去动态分配；但是试验了一下，由于g++对C99的支持，使得使用变量定义数组维数也是可行的(在Linux系统下)，但是如此方法，在VC下会报错，即这并不是符合C++语法规范的写法，在很大程度上会限制代码的平台兼容性，应该避免这种写法，以此备忘。 </p>
+
+<!--more-->
+
+<h3 id="c">C++语法中关于变长数组的规范</h3>
+<p>  无论使用变量，还是函数表达式定义数组的长度，都是非法的只能使用常量表达式进行定义，即以下写法都是非法的。但是当对buf_size的定义加上const修饰符，则是合法的定义。</p>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">unsigned</span> <span class="n">buf_size</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">ia</span><span class="p">[</span><span class="n">buf_size</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">ia</span><span class="p">[</span><span class="n">get_size</span><span class="p">()];</span></code></pre></div>
+
+<p>  但是可以通过指针来动态申请空间实现动数组长度的变量赋值，在栈中分配的内存，大小都是编译时就确定好的，如果想在运行时来动态计算使用内存的大小的话，就要用new这样的动态分配函数，来达到更高的灵活性。c++ 用new分配空间以后，不用的时候要记得delete释放内存，不然会有内存泄露问题。  </p>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="kt">int</span> <span class="o">*</span> <span class="n">varArray</span><span class="p">;</span>
+<span class="n">varArray</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[</span><span class="n">length</span><span class="p">];</span></code></pre></div>
+
+<h3 id="c99">C99规范对变长数组的支持</h3>
+<p>  C99规范中增加了对变长数组的支持，即可以使用C++语法规范中非法的方法来定义变长的数组，如此，对于支持C99规范不太好的平台来说，比如VC，就有可能出现很多的问题，应该尽量使用变量定义数组长度的C99规范支持的写法，在C99规范中，使用cin输入的整数作为数组长度，也是可行的。看样子C99规范中是使用动态数组的方式，支持了变长数组的定义，如下写法，也并不会出现数组越界访问的错误。</p>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span></code></pre></div>
+
+<h3 id="section">一个比较奇葩的现象</h3>
+<p>  证明了C++中，使用变量定义数组长度时，是使用动态数组实现，因此不存在数组访问越界的问题；而使用常量定义数组时，会出现数组访问越界。下面的代码，会产生数组越界的报错。</p>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">const</span> <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span></code></pre></div>
+
+
+				</span>
+				<div class="journal-date">Published 23 March 2015</div>
+				<div class="journal-tags">
+				
+				
+	 
+		<a class="tag-cont" href="/tags.html#C++-ref">
+			<div class="tag-l"></div>
+			<div class="tag-c">C++</div>
+			<div class="tag-r"></div>
+		</a>
+	
+
+
+
+				</div>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+	</div>
+</div>
+	<div class="clearboth"></div>
+	
+
+
+  <!-- 多说评论框 start -->
+<div id="comments">
+    <div class="ds-thread" data-thread-key="/c++/2015/03/23/CPP-Varible-Size-Array"  data-title="C++中变量做数组维数 - Mushsen's Blog"></div>
+</div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"mushsen"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+	<div class="clearboth"></div>
+</div>
+
+			</div>
+			<div class="clearboth pagebottom"></div>
+		</div>
+	</div>
+    <a class="bshareDiv" href="http://www.bshare.cn/share">分享按钮</a><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#uuid=&amp;style=5&amp;fs=4&amp;bgcolor=Orange"></script>
+
+	<footer>
+	<div class="footer-940">
+		<div class="footer-general-info">
+			© 2014 Hombo Wang.<br><br>
+			Content licensed under:<br>
+			<a class="cc" href="http://creativecommons.org/licenses/by-sa/3.0/">c a b</a><br>
+			<a href = "/about.html">About Me</a><br>
+		</div>
+		<div class="footer-col-cont">
+			<div class="footer-nav-col">
+				<h4><a>Categories</a></h4>
+				<ul>
+					
+					
+
+
+  
+     
+    	<li><a href="/categories.html#algorithm-ref">
+    		algorithm <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#cv-ref">
+    		cv <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#machine_learning-ref">
+    		machine_learning <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#c++-ref">
+    		c++ <span>5</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#leetcode-ref">
+    		leetcode <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#linux_kernel-ref">
+    		linux_kernel <span>7</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#git-ref">
+    		git <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#interview-ref">
+    		interview <span>2</span>
+    	</a></li>
+    
+  
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Pages</a></h4>
+				<ul>
+					
+					
+					
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/about.html">About Me</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+
+
+
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Feed</a></h4>
+				<ul>
+					<li><a href="/atom.xml">Atom Feed</a></li>
+					<li><a href="/rss.xml">RSS Feed</a></li>
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a>Links</a></h4>
+				<ul>
+				 
+					<li><a href = "http://lambda.hk">Mushsen's Blog</a></li>
+				
+				</ul>
+			</div>
+			<div class="footer-nav-col">
+				<h4><a href = "/about.html">About Me</a></h4>
+				<ul>
+				 
+					<li><a href = "mailto:mohuansheng@ict.ac.cn">e-mail</a></li>
+				 
+					<li><a href = "https://github.com/pathfinder007">Github</a></li>
+				
+				</ul>
+			</div>
+			<div class="clearboth"></div>
+		</div>
+		<div class="clearboth"></div>
+	</div>
+	<div class="clearboth"></div>
+</footer>
+	
+</body>
+</html>
+

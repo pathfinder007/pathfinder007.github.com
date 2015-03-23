@@ -30,5 +30,14 @@ varArray = new int[length];
 int n = 10;
 int a[n];
 a[100] = 9;
-{%  endhighelight %}  
+{%  endhighelight %} 
+
+### 一个比较奇葩的现象
+&emsp;&emsp;证明了C++中，使用变量定义数组长度时，是使用动态数组实现，因此不存在数组访问越界的问题；而使用常量定义数组时，会出现数组访问越界。下面的代码，会产生数组越界的报错。
+{% highlight C++ %}
+const int n = 10;
+int a[n];
+a[100] = 9;
+{%  endhighelight %} 
+
 

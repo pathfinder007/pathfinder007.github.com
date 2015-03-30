@@ -43,6 +43,7 @@ void main()
 
 
 #### 2.3 类的非静态成员函数可以调用静态成员函数
+{% highlight C++ %}
 class A
 {
 public:
@@ -67,6 +68,7 @@ void main()
 ### 3. 静态成员变量
 
 #### 3.1 静态成员函数中不能使用类的非静态成员变量
+{% highlight C++ %}
 class A
 {
 public:
@@ -87,6 +89,7 @@ void main()
 {% endhighlight %}
 
 #### 3.2 使用类的静态成员变量必须先初始化再使用
+{% highlight C++ %}
 class A
 {
 public:

@@ -87,7 +87,7 @@ private:
 };
 {% endhighlight %}
 
-&emsp;&emsp; 在32位平台，`sizeof(A)`为12，有虚函数的时候，有一个指向vptr的指针，在32位系统分配的指针大小为4Byte.
+&emsp;&emsp; 在32位平台，`sizeof(A)`为12，有虚函数的时候，该类型会生成一个虚函数表，并在该类型的每一个实例中添加一个指向需函数表的指针，在32位系统分配的指针大小为4Byte.
 
 
 ### 4. 有虚函数类的继承
@@ -103,4 +103,21 @@ private:
 };
 {% endhighlight %}
 
-&emsp;&emsp; 在32位平台，`sizeof(B)`为16，即子类的大小为基类成员变量大小加上子类的大小。
+&emsp;&emsp; 在32位平台，`sizeof(B)`为16，即子类的大小为基类成员变量大小加上子类的大小。对于普通继承，子类和基类共享虚函数指针。
+
+### 5. 虚继承
+
+{% highlight C++ %}
+class A
+{
+	int a;
+}
+
+class B : public virtual A
+{
+	int b;
+	virtual void foo(){};
+};
+{% endhighlight %}
+
+&emsp;&emsp; 虚继承时，派生类会生成一个指向虚基类表的指针，如果还有虚函数，不增加额外指针大小空间。在32位平台上，类B大小为12Byte，由于virtual的存在，额外增加一个4Byte的指针大小。

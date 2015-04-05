@@ -5,15 +5,16 @@
         <description>Mushsen's Blog - Hombo Wang</description>
         <link>http://lambda.hk</link>
         <link>http://lambda.hk</link>
-        <lastBuildDate>2015-04-05T20:00:31+08:00</lastBuildDate>
-        <pubDate>2015-04-05T20:00:31+08:00</pubDate>
+        <lastBuildDate>2015-04-05T20:03:05+08:00</lastBuildDate>
+        <pubDate>2015-04-05T20:03:05+08:00</pubDate>
         <ttl>1800</ttl>
 
 
         <item>
                 <title>iOS工程中添加pch文件</title>
-                <description>&lt;p&gt;  最近在改版华商名人堂的iOS客户端，顺便把之前iOS开发中涉及到的一些东西整理一下。
-  将整个共工程都广泛使用的头文件包含在该文件下，编译器会自动将头文件添加到所有源文件，使用相应类时不需要import;可以把UIKit/UIKit.h, Foundation/Foundation.h等框架头文件, 以及包含NSLog开关的头文件放在该文件中。&lt;/p&gt;
+                <description>&lt;p&gt;  最近在改版华商名人堂的iOS客户端，顺便把之前iOS开发中涉及到的一些东西整理一下。 &lt;/p&gt;
+
+&lt;p&gt;  将整个共工程都广泛使用的头文件包含在该文件下，编译器会自动将头文件添加到所有源文件，使用相应类时不需要import;可以把UIKit/UIKit.h, Foundation/Foundation.h等框架头文件, 以及包含NSLog开关的头文件放在该文件中。&lt;/p&gt;
 
 &lt;!--more--&gt;
 

@@ -4,7 +4,7 @@
  <title>Mushsen's Blog</title>
  <link href="http://lambda.hk/" rel="self"/>
  <link href="http://lambda.hk"/>
- <updated>2015-04-05T20:00:31+08:00</updated>
+ <updated>2015-04-05T20:03:05+08:00</updated>
  <id>http://lambda.hk</id>
  <author>
    <name>Hombo Wang</name>
@@ -17,8 +17,9 @@
    <link href="http://lambda.hk/ios-dev/2015/04/05/iOS-pch"/>
    <updated>2015-04-05T00:00:00+08:00</updated>
    <id>http://lambda.hk/ios-dev/2015/04/05/iOS-pch</id>
-   <content type="html">&lt;p&gt;  最近在改版华商名人堂的iOS客户端，顺便把之前iOS开发中涉及到的一些东西整理一下。
-  将整个共工程都广泛使用的头文件包含在该文件下，编译器会自动将头文件添加到所有源文件，使用相应类时不需要import;可以把UIKit/UIKit.h, Foundation/Foundation.h等框架头文件, 以及包含NSLog开关的头文件放在该文件中。&lt;/p&gt;
+   <content type="html">&lt;p&gt;  最近在改版华商名人堂的iOS客户端，顺便把之前iOS开发中涉及到的一些东西整理一下。 &lt;/p&gt;
+
+&lt;p&gt;  将整个共工程都广泛使用的头文件包含在该文件下，编译器会自动将头文件添加到所有源文件，使用相应类时不需要import;可以把UIKit/UIKit.h, Foundation/Foundation.h等框架头文件, 以及包含NSLog开关的头文件放在该文件中。&lt;/p&gt;
 
 &lt;!--more--&gt;
 

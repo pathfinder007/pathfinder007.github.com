@@ -171,6 +171,48 @@
 				
 			</div>
 			<div class="journal-body">
+				<h1 class="journal-title"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-spinlock">Linux Device Driver——并发和竞争</a><span class="author"></span></h1>
+				
+				<span class="teaser"><h3 id="section">1. 并发和竞争</h3>
+<ul>
+  <li>实际产生竞争的情况</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_pos</span><span class="p">])</span> <span class="p">{</span>
+              <span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_ops</span><span class="p">]</span> <span class="o">=</span> <span class="n">kmalloc</span><span class="p">(</span><span class="n">quantum</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
+              <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_pos</span><span class="p">])</span>
+                   <span class="k">goto</span> <span class="n">out</span><span class="p">;</span>
+         <span class="p">}</span></code></pre></div>
+
+<ul>
+  <li>假设两个进程（A，B）独立地试图写入同一个设备的相同偏移，进程同时到达if测试，如果被测试指针为NULL，每个进程都会决定分配内存且复制给dptr -&gt; data[s_ops]，显然只会有一个赋值可以成功；</li>
+  <li>如果A先赋值，则将被B覆盖，结果指针指向B分配的内存，而A分配的内存被丢掉，但是并没有返回给系统，产生了内存泄漏；</li>
+  <li>并发源：多个用户空间进程的运行；SMP系统能够同时在多个处理器上执行代码；内核代码抢占，驱动代码可能在任何时间失去处理器；设备中断，内核中延迟代码执行的机制等；</li>
+  <li>竞争来自对资源的共享存取，驱动设计时，应该避免共享的资源，比如全局变量的使用；</li>
+</ul>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-spinlock">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
+	linux_kernel
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
 				<h1 class="journal-title"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-module">Linux Device Driver——模块相关</a><span class="author"></span></h1>
 				
 				<span class="teaser"><h3 id="section">1. 驱动编写策略：</h3>
@@ -282,33 +324,6 @@
 		</div>
 		<div class="clearboth"></div>
 		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#leetcode-ref" title="leetcode">
-	leetcode
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2014/11/02/leetcode-array-sum-summary">Leetcode:2Sum, 3Sum, 3Sum, 3Sum Closet 4Sum</a><span class="author"></span></h1>
-				
-				<span class="teaser"><h3 id="section">题目含义.</h3>
-<p>  Leetcode 的Array相关题目，Two Sum，3Sum，3Sum Closet，4Sum。都是给定一个整形数组(以vector形式给出)，给定一个target number。在数组里找出若干个数，使得和为target number，或者最接近target number。返回满足条件的数组元素或者元素索引。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/leetcode/2014/11/02/leetcode-array-sum-summary">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
 	</div>
 	
 	<div id="journal-arrows-cont">
@@ -382,6 +397,10 @@
      
     	<li><a href="/categories.html#shell-ref">
     		shell <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#ios-dev-ref">
+    		ios-dev <span>1</span>
     	</a></li>
     
   

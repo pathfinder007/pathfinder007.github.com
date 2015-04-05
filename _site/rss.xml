@@ -5,10 +5,46 @@
         <description>Mushsen's Blog - Hombo Wang</description>
         <link>http://lambda.hk</link>
         <link>http://lambda.hk</link>
-        <lastBuildDate>2015-04-05T18:50:35+08:00</lastBuildDate>
-        <pubDate>2015-04-05T18:50:35+08:00</pubDate>
+        <lastBuildDate>2015-04-05T20:00:31+08:00</lastBuildDate>
+        <pubDate>2015-04-05T20:00:31+08:00</pubDate>
         <ttl>1800</ttl>
 
+
+        <item>
+                <title>iOS工程中添加pch文件</title>
+                <description>&lt;p&gt;  最近在改版华商名人堂的iOS客户端，顺便把之前iOS开发中涉及到的一些东西整理一下。
+  将整个共工程都广泛使用的头文件包含在该文件下，编译器会自动将头文件添加到所有源文件，使用相应类时不需要import;可以把UIKit/UIKit.h, Foundation/Foundation.h等框架头文件, 以及包含NSLog开关的头文件放在该文件中。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;pch&quot;&gt;1. pch文件的添加&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;iOS -&amp;gt; other -&amp;gt; PCH file&lt;/code&gt;创建pch文件；&lt;/li&gt;
+  &lt;li&gt;修改配置文件，&lt;code&gt;build setting -&amp;gt; Apple LLVM 6.0 - Language -&amp;gt; Precompile Prefix Header&lt;/code&gt;，对于debug和release，添加PCH file路径; 即&lt;code&gt;Prefix Header&lt;/code&gt; 下Debug、Release中，添加“$(SRCROOT)/项目名称/pch文件名”，例如&lt;code&gt;$(SRCROOT)/LotteryFile/Lottery-Prefix.pch&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;nslog&quot;&gt;2. 使用自定义NSLog文件&lt;/h3&gt;
+
+&lt;p&gt;  可以自定义CLog文件，在任何源文件中使用CLog宏输出日志，预处理命令会自动判断当前的编译配置，如果是Debug，则输出，否则，不输出；&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;设置编译的是Debug还是Release版本：Run按钮右侧，点击工程名，Manage Schemes，Edit…，info页；&lt;/li&gt;
+  &lt;li&gt;设置DEBUG开关是否为1: Build Settings -&amp;gt; Apple LLVM 6.0 - Preprocessing -&amp;gt; Preprocessing Marcos下设置；默认为1；&lt;/li&gt;
+  &lt;li&gt;自定义的CLog文件如下：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-objective-c&quot; data-lang=&quot;objective-c&quot;&gt;&lt;span class=&quot;cp&quot;&gt;# ifdef DEBUG&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;# define CLog(format, …) NSLog(format, ##__VA_ARGS__)&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;# else&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;# define CLog(format, ...)&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;# endif&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+</description>
+                <link>http://lambda.hk/ios-dev/2015/04/05/iOS-pch</link>
+                <guid>http://lambda.hk/ios-dev/2015/04/05/iOS-pch</guid>
+                <pubDate>2015-04-05T00:00:00+08:00</pubDate>
+        </item>
 
         <item>
                 <title>Python Multiprocessing多进程操作</title>

@@ -122,6 +122,10 @@
 			 
 				
 			 
+				
+			 
+				
+			 
 			
 			
 		</ul>
@@ -159,26 +163,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
+<a href="/categories.html#python-ref" title="python">
+	python
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/28/pci-arch">PCI基本概念</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/python/2015/03/24/Python-Shell">Python中执行shell命令</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="pci">1. PCI体系结构：</h3>
-<ul>
-  <li>PCI为局部总线，系统总线的延伸，用于连接外设；</li>
-  <li>PCI Express总线：PCIe总线；PCI-to-PCI桥：PCI桥；PCI Express-to-PCI桥：PCIe桥；Host-to-PCI主桥：HOST桥，也称为PCI主桥或者PCI总线控制器；</li>
-</ul>
+				<span class="teaser"><p>  早上在测试wget从EC2上面下载文件的速度，忘了在python中执行shell命令的方法，顺手查了查，做下备忘。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/28/pci-arch">Read More</a></span>
+				<span class="readmore"><a href="/python/2015/03/24/Python-Shell">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -189,34 +189,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
+<a href="/categories.html#c++-ref" title="c++">
+	c++
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/24/Linux-Device-Driver-pci">Linux Device Driver——PCI基础</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/c++/2015/03/23/Vector-String-Array">Vector与String数组的转换</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="pci">1. PCI接口：</h3>
-<ul>
-  <li>PCI总线通过使用比ISA更高的时钟频率，获得更好的性能；时钟设置运行在25或者33MHz、66MHz甚至133MHz；</li>
-  <li>PCI对接口板自动探测，没有跳线，并且在系统启动时自动配置；设备驱动必须能够存取设备中的配置信息以便完成初始化；</li>
-  <li>每个PCI外设有一个总线号、一个设备号、一个功能号标识，PCI规范允许单个系统占用多达256根总线，每个总线占用32个设备，每个设备可以</li>
-  <li>是一个最多具有8个功能的多功能卡，每个功能在硬件层次被一个16位地址标识；</li>
-  <li>如果需要多个PCI总线，可以通过PCI桥实现，PCI系统的实现是树状分布；和PCI外设相关的16-位硬件地址，隐藏在<code>struct pci_dev</code>结构中；</li>
-  <li>PCI总线的I/O空间使用一个32位地址总线，而内存空间可以使用32位或者64位地址存取；系统启动时BIOS固件初始化PCI硬件，映射每个区到</li>
-  <li>不同地址来避免冲突，被映射的地址可以从配置空间读出，因此Linux驱动不需要使用探测读取设备，根据配置寄存器信息安全存取相应硬件；</li>
-  <li>每个设备的PCI(包括PCI Express设备)配置空间包含256Bytes，每个功能有4KB配置空间，配置空间排布标准化；配置空间的4个字节含有唯一</li>
-  <li>功能ID，因此驱动可以识别设备；即通过物理寻址找到设备的配置寄存器，根据寄存器信息进行正常的I/O存取；</li>
-  <li>PCI接口标准相对ISA创新之处在于配置地址空间；</li>
-</ul>
+				<span class="teaser"><p>  读入一组 string 类型的数据,并将它们存储在 vector 中。接着,把该 vector 对象复制给一个字符指针数组。为 vector 中的 每个元素创建一个新的字符数组,并把该 vector 元素的数据复制到相应的字符 数组中,最后把指向该数组的指针插入字符指针数组。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/24/Linux-Device-Driver-pci">Read More</a></span>
+				<span class="readmore"><a href="/c++/2015/03/23/Vector-String-Array">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -227,32 +215,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
+<a href="/categories.html#c++-ref" title="c++">
+	c++
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/24/Linux-Device-Driver-memory">Linux Device Driver——内存分配</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/c++/2015/03/23/CPP-Varible-Size-Array">C++中变量做数组维数</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="kmalloc">1. kmalloc：</h3>
-<ul>
-  <li>不清零获得的内存，分配的区在物理内存中连续；<code>void *kmalloc(size_t size, int flags)</code>;size为分配块的大小，flags为分配标志；</li>
-  <li>flags：GFP_KERNEL 分配代表运行在内核空间的进程进行，意味着调用函数代表一个进程执行一个系统调用，能够使当前进程在少内存情况下睡眠等待一页；内部通过调用<code>__get_free_pages</code>进行；</li>
-  <li>如果一个模块需要分配大块内存，最好使用面向页的技术；<code>__get_free_page(unsigned int flags)</code>;返回一个指向新页的指针，不清零该页；</li>
-  <li>flags：GFP_ATOMIC kmalloc从一个进程上下文外部调用时，当前进程不被睡眠，内核试图保持一些空闲页满足原子的分配；</li>
-  <li>Linux内核内存区：支持DMA操作内存区、普通内存、高端内存；</li>
-  <li>支持DMA操作内存区位于一个优先的地址范围，外设可以在此进行DMA存取，大部分健全平台，所有内存都在该区，在x86，DMA区在RAM的</li>
-  <li>前16MB。</li>
-  <li>kmalloc和__get_free_pages返回的内存地址是虚拟地址，实际物理地址寻址仍然由MMU管理；</li>
-</ul>
+				<span class="teaser"><p>  记得C/C++语法规范中，不能使用变量定义数组维数，因为数组维数的确定，需要在编译阶段完成。要想在程序实行阶段确定数组维数，应该使用new/malloc去动态分配；但是试验了一下，由于g++对C99的支持，使得使用变量定义数组维数也是可行的(在Linux系统下)，但是如此方法，在VC下会报错，即这并不是符合C++语法规范的写法，在很大程度上会限制代码的平台兼容性，应该避免这种写法，以此备忘。 </p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/24/Linux-Device-Driver-memory">Read More</a></span>
+				<span class="readmore"><a href="/c++/2015/03/23/CPP-Varible-Size-Array">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -263,38 +241,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
+<a href="/categories.html#algorithm-ref" title="algorithm">
+	algorithm
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-spinlock">Linux Device Driver——并发和竞争</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/algorithm/2015/03/21/sting-2-int">string与int转换相关</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="section">1. 并发和竞争</h3>
-<ul>
-  <li>实际产生竞争的情况</li>
-</ul>
-
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_pos</span><span class="p">])</span> <span class="p">{</span>
-              <span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_ops</span><span class="p">]</span> <span class="o">=</span> <span class="n">kmalloc</span><span class="p">(</span><span class="n">quantum</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
-              <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_pos</span><span class="p">])</span>
-                   <span class="k">goto</span> <span class="n">out</span><span class="p">;</span>
-         <span class="p">}</span></code></pre></div>
-
-<ul>
-  <li>假设两个进程（A，B）独立地试图写入同一个设备的相同偏移，进程同时到达if测试，如果被测试指针为NULL，每个进程都会决定分配内存且复制给dptr -&gt; data[s_ops]，显然只会有一个赋值可以成功；</li>
-  <li>如果A先赋值，则将被B覆盖，结果指针指向B分配的内存，而A分配的内存被丢掉，但是并没有返回给系统，产生了内存泄漏；</li>
-  <li>并发源：多个用户空间进程的运行；SMP系统能够同时在多个处理器上执行代码；内核代码抢占，驱动代码可能在任何时间失去处理器；设备中断，内核中延迟代码执行的机制等；</li>
-  <li>竞争来自对资源的共享存取，驱动设计时，应该避免共享的资源，比如全局变量的使用；</li>
-</ul>
+				<span class="teaser"><p>  在做Leetcode的Compare Version Numbers；涉及到string子串的比较，而子串全为数字，当时直接拿string来比较，没考虑到两个子串长度不同的情况，即”01”与”1”，应该是相等的。C语言中，使用atoi可以将string转换成int，而atoi的参数为<code>const char *nptr</code>，故在C++中，不能直接对string进行操作，可以先通过<code>c_str</code>返回一个指向正规C字符串的指针，再通过<code>atoi</code>进行转换;</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-spinlock">Read More</a></span>
+				<span class="readmore"><a href="/algorithm/2015/03/21/sting-2-int">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -305,26 +267,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
+<a href="/categories.html#c++-ref" title="c++">
+	c++
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-module">Linux Device Driver——模块相关</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/c++/2015/03/21/CPP-builtin-data-type">C++中各种内置数据类型的长度以及表示范围</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="section">1. 驱动编写策略：</h3>
-<ul>
-  <li>编写内核代码存取硬件，但是不能强加不同策略给用户；驱动应该做到使硬件可用，将所有关于如何使用硬件的事情交给应用程序；</li>
-  <li>单个设备可能由不同程序并发使用，驱动有完全自由决定如何处理并发性；</li>
-</ul>
+				<span class="teaser"><p>  关于各种内置数据类型的size，一直以来都记得不是特别明确，这段时间都在写比较底层的OS直接操作硬件的C代码，倒也习惯了u8、u16、u32各种为满足操作系统平台移植性要求定义的数据类型;想起两年半以前在skyroam时候，看着GMate的系统代码，这是啥，这特么又是啥，那个迷茫的夏天。两年多的时间，收获了太多，不管是coding 上，还是其他。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-module">Read More</a></span>
+				<span class="readmore"><a href="/c++/2015/03/21/CPP-builtin-data-type">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -365,7 +323,7 @@
   
      
     	<li><a href="/categories.html#algorithm-ref">
-    		algorithm <span>3</span>
+    		algorithm <span>2</span>
     	</a></li>
      
     	<li><a href="/categories.html#cv-ref">
@@ -377,7 +335,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#c++-ref">
-    		c++ <span>5</span>
+    		c++ <span>8</span>
     	</a></li>
      
     	<li><a href="/categories.html#leetcode-ref">
@@ -389,11 +347,19 @@
     	</a></li>
      
     	<li><a href="/categories.html#git-ref">
-    		git <span>2</span>
+    		git <span>3</span>
     	</a></li>
      
     	<li><a href="/categories.html#interview-ref">
-    		interview <span>2</span>
+    		interview <span>4</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#python-ref">
+    		python <span>4</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#shell-ref">
+    		shell <span>1</span>
     	</a></li>
     
   
@@ -462,6 +428,10 @@
       	<li><a href="/tags.html">Tags</a></li>
       	
       
+    
+  
+    
+  
     
   
     

@@ -122,6 +122,10 @@
 			 
 				
 			 
+				
+			 
+				
+			 
 			
 			
 		</ul>
@@ -167,15 +171,40 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/interview/2015/03/18/string-count">字符串统计</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/interview/2015/03/28/multi-thread">多线程编程面试题</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="section">1. 题目来源</h3>
-<p>  来自X公司的实习生面试题，即给定一个string s ＝ “abcabcabcbcc”，return “3a4b5c”;</p>
+				<span class="teaser"><p>  最近在写Ali 2015的代码，涉及到大文件数据的读取，一个500M左右的数据，使用python的<code>with...open</code>进行读取，在优化了文件IO的情况下，仍然需要25s，而将整个文件读取到内存之后，是一个大矩阵，大矩阵的处理，也是个很费时间的工作，故琢磨是否可以通过多线程的方法，进行加速。翻资料的过程中，顺便收集一下多线程相关的面试题，以备不时之需。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/interview/2015/03/18/string-count">Read More</a></span>
+				<span class="readmore"><a href="/interview/2015/03/28/multi-thread">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#python-ref" title="python">
+	python
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/python/2015/03/25/python-read-write-file">Python读写大数据文件</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  一般的数据挖掘比赛，原始数据都存储在csv文件里面。而python，由于其方便好用的机器学习框架scikit-lenran，被普遍采用。对比了一下Python将文件载入内存的几种方法，感觉直接使用csv.reader速度相对较慢。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/python/2015/03/25/python-read-write-file">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -194,15 +223,15 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/interview/2015/03/18/ali_interview">link list cycle</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/interview/2015/03/25/ali-interview1">三道面试题</a><span class="author"></span></h1>
 				
 				<span class="teaser"><h3 id="section">1. 题目来源</h3>
-<p>  今天宿舍哥们去面X公司的内推实习生，说二面时上来就两道算法题，30分钟写完。一道是Leetcode上的原题，即判断一个链表是否有环，若有环，找出环开始的位置；还有一道题目为字符串压缩，即给出”aaabbbbccccc”，return “3a4b5c”，两道题目都比较简单；；最近在按分类刷Leetcode，即将完成String的部分，特意把Linked List Cycle I/II找出出来，提前做一下，两道题在Leetcode上面AC率都比较高。</p>
+<p>  今天问了下xiaobo面X公司的Data Mining内推实习生的算法题，说是三道，都挺简单，但是陷阱不少，没准备的话会跪。随手做了一下，树的深度有限遍历，需要写出递归与非递归版本；strcpy的实现；二维链表转成一维链表，这个二维链表是不是十字链表？这个需要具体和面试官确定，即是不是一个node4个指针，第i行最后一个node的right指针指向第i+1行的第一个node；除此之外，主要抓着项目问，以及一些Linux的基本操作，MapReduce的基础等，没有问机器学习的模型。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/interview/2015/03/18/ali_interview">Read More</a></span>
+				<span class="readmore"><a href="/interview/2015/03/25/ali-interview1">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -213,22 +242,21 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#git-ref" title="git">
-	git
+<a href="/categories.html#shell-ref" title="shell">
+	shell
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/git/2015/03/18/Git-Operate">Git中基本操作</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/shell/2015/03/25/Shell-du">Shell中常用命令</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  前两天看王神面实习的简历，简历上面清晰地标出每个项目的tag似是一个很好的办法，既给面试官重点突出的感觉，也便于将面试中心集中，方便自己准备，而作为大型软件的开发，版本控制必不可少，将Git与SVN相关的东西做一个小总结。</p>
-
+				<span class="teaser"><p>  Linux Shell中常用易忘命令的记录。
 
 				
 				</span>
-				<span class="readmore"><a href="/git/2015/03/18/Git-Operate">Read More</a></span>
+				<span class="readmore"><a href="/shell/2015/03/25/Shell-du">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -239,49 +267,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#git-ref" title="git">
-	git
+<a href="/categories.html#python-ref" title="python">
+	python
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/git/2015/03/18/Git-Change-Account">Git操作中切换本地账户</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/python/2015/03/24/Spyder-Modules">Python Spyder IDE倒入模块报错的解决方案</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  前段时间由于项目需要，一直往oschina上面的私有空间提交代码，懒得新建账户，就将本地的Git账户切换成了oschina上面团队的公共账号。今天在整Blog，才发现当时把本地的global设置给改了。而oschina和github，用的是一套机制。提交代码到github时，显示的不是自己账户提交，很不爽。翻了下资料，把本地的git设置给改了回来，留个备忘。</p>
+				<span class="teaser"><p>  从去年上半年在做阿里的比赛以及神经网络算法搞量化的项目开始，就开始用Spyder的IDE调试Python代码，很方便，完爆其他的Python IDE，且自己预装了不少的常用模块；但是一直存在一个问题，import复用别人的模块时，会存在找不到模块的情况。这两天在用AWS的boto接口，又出现了这个情况。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/git/2015/03/18/Git-Change-Account">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/28/pcie-arch">PCI Express基本概念</a><span class="author"></span></h1>
-				
-				<span class="teaser"><h3 id="pciebar">1. PCIe设备BAR空间的初始化：</h3>
-<p>   PCIe设备进行数据传输之前，系统软件使用DFS算法遍历并完成BAR0~BAR5寄存器初始化，即分配这些设备在PCI总线域的地址空间，之后，PCI设备可以使用PCI总线地址进行数据传递；BAR0~5寄存器保存的都是PCI设备的地址空间，x86处理器中，没有存储器域和PCI总线域地址空间的转换机制，两个域的地址相等，也是一种简单映射，地址隔离的概念仍然存在；假设在一个32位处理器中，其存储器域的0xF000-0000~0xF7FF-FFFF总共128M的物理地址空间与PCI总线的地址空间映射；当处理器访问这段存储器地址空间，HOST主桥认领这个存储器访问，并将其使用的物理地址空间转换为PCI总线地址空间，并与PCI总线地址空间0xF000-0000~0xF7FF-FFFF对应；</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/28/pcie-arch">Read More</a></span>
+				<span class="readmore"><a href="/python/2015/03/24/Spyder-Modules">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -322,7 +323,7 @@
   
      
     	<li><a href="/categories.html#algorithm-ref">
-    		algorithm <span>3</span>
+    		algorithm <span>2</span>
     	</a></li>
      
     	<li><a href="/categories.html#cv-ref">
@@ -334,7 +335,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#c++-ref">
-    		c++ <span>5</span>
+    		c++ <span>8</span>
     	</a></li>
      
     	<li><a href="/categories.html#leetcode-ref">
@@ -346,11 +347,19 @@
     	</a></li>
      
     	<li><a href="/categories.html#git-ref">
-    		git <span>2</span>
+    		git <span>3</span>
     	</a></li>
      
     	<li><a href="/categories.html#interview-ref">
-    		interview <span>2</span>
+    		interview <span>4</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#python-ref">
+    		python <span>4</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#shell-ref">
+    		shell <span>1</span>
     	</a></li>
     
   
@@ -419,6 +428,10 @@
       	<li><a href="/tags.html">Tags</a></li>
       	
       
+    
+  
+    
+  
     
   
     

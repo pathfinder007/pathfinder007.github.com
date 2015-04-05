@@ -14,10 +14,22 @@ http://lambda.hk/3/index.html
 http://lambda.hk/4/index.html
 http://lambda.hk/5/index.html
 http://lambda.hk/6/index.html
+http://lambda.hk/7/index.html
+http://lambda.hk/8/index.html
 
+http://lambda.hk/git/2015/04/01/Git-Stash
+http://lambda.hk/python/2015/03/31/Python-List-Clear
+http://lambda.hk/c++/2015/03/30/C-Plus-Plus-Sizeof-Class
+http://lambda.hk/c++/2015/03/30/C-Plus-Plus-Polymorphism-Override
+http://lambda.hk/c++/2015/03/30/C-Plus-Plus-Class-Static
+http://lambda.hk/interview/2015/03/28/multi-thread
+http://lambda.hk/python/2015/03/25/python-read-write-file
+http://lambda.hk/interview/2015/03/25/ali-interview1
+http://lambda.hk/shell/2015/03/25/Shell-du
+http://lambda.hk/python/2015/03/24/Spyder-Modules
+http://lambda.hk/python/2015/03/24/Python-Shell
 http://lambda.hk/c++/2015/03/23/Vector-String-Array
 http://lambda.hk/c++/2015/03/23/CPP-Varible-Size-Array
-http://lambda.hk/algorithm/2015/03/21/test
 http://lambda.hk/algorithm/2015/03/21/sting-2-int
 http://lambda.hk/c++/2015/03/21/CPP-builtin-data-type
 http://lambda.hk/interview/2015/03/18/string-count

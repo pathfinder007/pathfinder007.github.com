@@ -171,6 +171,33 @@
 				
 			</div>
 			<div class="journal-body">
+				<h1 class="journal-title"><a href="/linux_kernel/2014/11/28/pcie-arch">PCI Express基本概念</a><span class="author"></span></h1>
+				
+				<span class="teaser"><h3 id="pciebar">1. PCIe设备BAR空间的初始化：</h3>
+<p>   PCIe设备进行数据传输之前，系统软件使用DFS算法遍历并完成BAR0~BAR5寄存器初始化，即分配这些设备在PCI总线域的地址空间，之后，PCI设备可以使用PCI总线地址进行数据传递；BAR0~5寄存器保存的都是PCI设备的地址空间，x86处理器中，没有存储器域和PCI总线域地址空间的转换机制，两个域的地址相等，也是一种简单映射，地址隔离的概念仍然存在；假设在一个32位处理器中，其存储器域的0xF000-0000~0xF7FF-FFFF总共128M的物理地址空间与PCI总线的地址空间映射；当处理器访问这段存储器地址空间，HOST主桥认领这个存储器访问，并将其使用的物理地址空间转换为PCI总线地址空间，并与PCI总线地址空间0xF000-0000~0xF7FF-FFFF对应；</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/linux_kernel/2014/11/28/pcie-arch">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
+	linux_kernel
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
 				<h1 class="journal-title"><a href="/linux_kernel/2014/11/28/pci-arch">PCI基本概念</a><span class="author"></span></h1>
 				
 				<span class="teaser"><h3 id="pci">1. PCI体系结构：</h3>
@@ -303,36 +330,6 @@
 		</div>
 		<div class="clearboth"></div>
 		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-module">Linux Device Driver——模块相关</a><span class="author"></span></h1>
-				
-				<span class="teaser"><h3 id="section">1. 驱动编写策略：</h3>
-<ul>
-  <li>编写内核代码存取硬件，但是不能强加不同策略给用户；驱动应该做到使硬件可用，将所有关于如何使用硬件的事情交给应用程序；</li>
-  <li>单个设备可能由不同程序并发使用，驱动有完全自由决定如何处理并发性；</li>
-</ul>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-module">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
 	</div>
 	
 	<div id="journal-arrows-cont">
@@ -401,7 +398,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#python-ref">
-    		python <span>4</span>
+    		python <span>5</span>
     	</a></li>
      
     	<li><a href="/categories.html#shell-ref">

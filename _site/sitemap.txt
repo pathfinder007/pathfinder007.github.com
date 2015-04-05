@@ -17,6 +17,7 @@ http://lambda.hk/6/index.html
 http://lambda.hk/7/index.html
 http://lambda.hk/8/index.html
 
+http://lambda.hk/python/2015/04/05/Python-Multiprocessing
 http://lambda.hk/git/2015/04/01/Git-Stash
 http://lambda.hk/python/2015/03/31/Python-List-Clear
 http://lambda.hk/c++/2015/03/30/C-Plus-Plus-Sizeof-Class

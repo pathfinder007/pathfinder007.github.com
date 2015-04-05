@@ -1,7 +1,7 @@
 ---
 layout: post
 category: Python
-title: Python Multiprocessing没有子进程通信的多进程操作
+title: Python Multiprocessing多进程操作
 tags: Python
 ---
 

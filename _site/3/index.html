@@ -126,6 +126,10 @@
 			 
 				
 			 
+				
+			 
+				
+			 
 			
 			
 		</ul>
@@ -171,13 +175,14 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/shell/2015/03/25/Shell-du">Shell中常用命令</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/shell/2015/04/05/Shell-rm">Mac/Linux下rm实现回收站功能</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  Linux Shell中常用易忘命令的记录。
+				<span class="teaser"><p>  Unix下的rm命令为彻底删除，特别加上-rf选项后，很容易由于手抖造成无法挽回的错误。上几天写代码时，写了一早上，临吃饭时，想把.pyc给删了，手抖把.py给删了。虽然可以通过<code>lost+found</code>想办法找回，但相当费劲。为防患于未然，还是想办法把<code>rm</code>命令alias成移到回收站的功能。在github上找到一个朋友写的脚本，不错。</p>
+
 
 				
 				</span>
-				<span class="readmore"><a href="/shell/2015/03/25/Shell-du">Read More</a></span>
+				<span class="readmore"><a href="/shell/2015/04/05/Shell-rm">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -196,14 +201,40 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/python/2015/03/24/Spyder-Modules">Python Spyder IDE倒入模块报错的解决方案</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/python/2015/04/05/Python-Multiprocessing">Python Multiprocessing多进程操作</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  从去年上半年在做阿里的比赛以及神经网络算法搞量化的项目开始，就开始用Spyder的IDE调试Python代码，很方便，完爆其他的Python IDE，且自己预装了不少的常用模块；但是一直存在一个问题，import复用别人的模块时，会存在找不到模块的情况。这两天在用AWS的boto接口，又出现了这个情况。</p>
+				<span class="teaser"><p>  最近在写Python代码，程序主要就是涉及大文件的IO以及处理。当时在Mac上跑，自己即使的手动释放一下内存，还勉强可以跑，Mac的Swap比较大，虚拟内存用到16个G左右。而再移到台式机上面跑，8G的内存，不久就MemoryError了，怀疑是当时装系统时候设置的Swap太小的缘故。单进程/线程都不堪重负，更别说使用多进程来加速了。想到了邱大神在服务器上面开的100G内存的虚拟机，很久不用了，遂把代码扔上去，顺便稍微把代码用简单的多进程操作简单加了加速。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/python/2015/03/24/Spyder-Modules">Read More</a></span>
+				<span class="readmore"><a href="/python/2015/04/05/Python-Multiprocessing">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#git-ref" title="git">
+	git
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/git/2015/04/01/Git-Stash">Git冲突以及pull时需要输入账户密码的解决办法</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  多人维护一份代码时，经常会出现，两边同时更改一个文件，产生冲突问题，而本地的更改，又暂时不能commit，导致<code>git pull</code>的时候报error，大部分时候，我们需要暂存本地的修改，先stash，返回自己上一个commit，将最新代码git pull到本地，之后再stash pop，继续原来的工作。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/git/2015/04/01/Git-Stash">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -222,14 +253,14 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/python/2015/03/24/Python-Shell">Python中执行shell命令</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/python/2015/03/31/Python-List-Clear">Python中list的删除与清空</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  早上在测试wget从EC2上面下载文件的速度，忘了在python中执行shell命令的方法，顺手查了查，做下备忘。</p>
+				<span class="teaser"><p>  今天在写阿里的代码，涉及到大量的数据load进内存处理的操作，由于Python的list/dict都是使用自动引用计数的机制进行内存释放；而操作中经常需要将文件读入一个list，处理后扔到另一个list，再转存。当不手动释放list占据的内存时，内存泄漏严重。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/python/2015/03/24/Python-Shell">Read More</a></span>
+				<span class="readmore"><a href="/python/2015/03/31/Python-List-Clear">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -248,40 +279,21 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/c++/2015/03/23/Vector-String-Array">Vector与String数组的转换</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/c++/2015/03/30/C-Plus-Plus-Sizeof-Class">C++类的大小，sizeof(class)</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  读入一组 string 类型的数据,并将它们存储在 vector 中。接着,把该 vector 对象复制给一个字符指针数组。为 vector 中的 每个元素创建一个新的字符数组,并把该 vector 元素的数据复制到相应的字符 数组中,最后把指向该数组的指针插入字符指针数组。</p>
+				<span class="teaser"><p>  面试题中经常遇到，定义一个类，或为空，或定义了几个内置类型的变量，或包含构造、析构函数、成员函数，问在32位/64位平台上，sizeof(class)的字节数。比较关键的几个考虑：</p>
+
+<ul>
+  <li>32位系统是4字节对齐，64位系统为8字节对齐；</li>
+  <li>空类，为了分配内存，字节数为1；</li>
+  <li>成员函数的字节数；</li>
+  <li>若包含虚函数，系统需要分配一个指向虚函数的指针vptr，32位系统，大小为4Byte</li>
+</ul>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/c++/2015/03/23/Vector-String-Array">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#c++-ref" title="c++">
-	c++
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/c++/2015/03/23/CPP-Varible-Size-Array">C++中变量做数组维数</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  记得C/C++语法规范中，不能使用变量定义数组维数，因为数组维数的确定，需要在编译阶段完成。要想在程序实行阶段确定数组维数，应该使用new/malloc去动态分配；但是试验了一下，由于g++对C99的支持，使得使用变量定义数组维数也是可行的(在Linux系统下)，但是如此方法，在VC下会报错，即这并不是符合C++语法规范的写法，在很大程度上会限制代码的平台兼容性，应该避免这种写法，以此备忘。 </p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/c++/2015/03/23/CPP-Varible-Size-Array">Read More</a></span>
+				<span class="readmore"><a href="/c++/2015/03/30/C-Plus-Plus-Sizeof-Class">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -322,7 +334,7 @@
   
      
     	<li><a href="/categories.html#algorithm-ref">
-    		algorithm <span>2</span>
+    		algorithm <span>3</span>
     	</a></li>
      
     	<li><a href="/categories.html#cv-ref">
@@ -338,7 +350,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#leetcode-ref">
-    		leetcode <span>3</span>
+    		leetcode <span>4</span>
     	</a></li>
      
     	<li><a href="/categories.html#linux_kernel-ref">
@@ -350,7 +362,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#interview-ref">
-    		interview <span>4</span>
+    		interview <span>5</span>
     	</a></li>
      
     	<li><a href="/categories.html#python-ref">
@@ -358,11 +370,11 @@
     	</a></li>
      
     	<li><a href="/categories.html#shell-ref">
-    		shell <span>1</span>
+    		shell <span>2</span>
     	</a></li>
      
     	<li><a href="/categories.html#ios-dev-ref">
-    		ios-dev <span>1</span>
+    		ios-dev <span>7</span>
     	</a></li>
     
   
@@ -431,6 +443,10 @@
       	<li><a href="/tags.html">Tags</a></li>
       	
       
+    
+  
+    
+  
     
   
     

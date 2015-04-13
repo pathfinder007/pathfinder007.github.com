@@ -126,6 +126,10 @@
 			 
 				
 			 
+				
+			 
+				
+			 
 			
 			
 		</ul>
@@ -163,38 +167,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
+<a href="/categories.html#algorithm-ref" title="algorithm">
+	algorithm
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-spinlock">Linux Device Driver——并发和竞争</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/algorithm/2015/03/21/sting-2-int">string与int转换相关</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="section">1. 并发和竞争</h3>
-<ul>
-  <li>实际产生竞争的情况</li>
-</ul>
-
-<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_pos</span><span class="p">])</span> <span class="p">{</span>
-              <span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_ops</span><span class="p">]</span> <span class="o">=</span> <span class="n">kmalloc</span><span class="p">(</span><span class="n">quantum</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">);</span>
-              <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dptr</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="p">[</span><span class="n">s_pos</span><span class="p">])</span>
-                   <span class="k">goto</span> <span class="n">out</span><span class="p">;</span>
-         <span class="p">}</span></code></pre></div>
-
-<ul>
-  <li>假设两个进程（A，B）独立地试图写入同一个设备的相同偏移，进程同时到达if测试，如果被测试指针为NULL，每个进程都会决定分配内存且复制给dptr -&gt; data[s_ops]，显然只会有一个赋值可以成功；</li>
-  <li>如果A先赋值，则将被B覆盖，结果指针指向B分配的内存，而A分配的内存被丢掉，但是并没有返回给系统，产生了内存泄漏；</li>
-  <li>并发源：多个用户空间进程的运行；SMP系统能够同时在多个处理器上执行代码；内核代码抢占，驱动代码可能在任何时间失去处理器；设备中断，内核中延迟代码执行的机制等；</li>
-  <li>竞争来自对资源的共享存取，驱动设计时，应该避免共享的资源，比如全局变量的使用；</li>
-</ul>
+				<span class="teaser"><p>  在做Leetcode的Compare Version Numbers；涉及到string子串的比较，而子串全为数字，当时直接拿string来比较，没考虑到两个子串长度不同的情况，即”01”与”1”，应该是相等的。C语言中，使用atoi可以将string转换成int，而atoi的参数为<code>const char *nptr</code>，故在C++中，不能直接对string进行操作，可以先通过<code>c_str</code>返回一个指向正规C字符串的指针，再通过<code>atoi</code>进行转换;</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-spinlock">Read More</a></span>
+				<span class="readmore"><a href="/algorithm/2015/03/21/sting-2-int">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -205,26 +193,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
+<a href="/categories.html#c++-ref" title="c++">
+	c++
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-module">Linux Device Driver——模块相关</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/c++/2015/03/21/CPP-builtin-data-type">C++中各种内置数据类型的长度以及表示范围</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="section">1. 驱动编写策略：</h3>
-<ul>
-  <li>编写内核代码存取硬件，但是不能强加不同策略给用户；驱动应该做到使硬件可用，将所有关于如何使用硬件的事情交给应用程序；</li>
-  <li>单个设备可能由不同程序并发使用，驱动有完全自由决定如何处理并发性；</li>
-</ul>
+				<span class="teaser"><p>  关于各种内置数据类型的size，一直以来都记得不是特别明确，这段时间都在写比较底层的OS直接操作硬件的C代码，倒也习惯了u8、u16、u32各种为满足操作系统平台移植性要求定义的数据类型;想起两年半以前在skyroam时候，看着GMate的系统代码，这是啥，这特么又是啥，那个迷茫的夏天。两年多的时间，收获了太多，不管是coding 上，还是其他。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/18/Linux-Device_Driver-module">Read More</a></span>
+				<span class="readmore"><a href="/c++/2015/03/21/CPP-builtin-data-type">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -235,31 +219,23 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#leetcode-ref" title="leetcode">
-	leetcode
+<a href="/categories.html#interview-ref" title="interview">
+	interview
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2014/11/05/leetcode-matrix-area">Leetcode:Maximal Rectangle</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/interview/2015/03/18/string-count">字符串统计</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="maximal-rectangle">Maximal Rectangle</h3>
-<ul>
-  <li>给一个二维数组，用0，1填充，找出包含1的矩形的最大面积。</li>
-</ul>
-
-<h3 id="section">思路</h3>
-<ul>
-  <li>开始想到的思路是，比较好的时间复杂度应该是n方，动态规划（似乎看到二维数组，首先就想到DP，估计跟最近做的几个二维DP的题目有关，还是得好好总结，建立方法论）。即f[i][j]纪录以matrix[i][j]为右下顶点的矩形的最大面积。但是这样出现了一个问题，到f[i][j]的转移方程没法写，无法从f[i-1][j]/f[i][j-1]得到，思维还是存在漏洞。</li>
-  <li>正确思路：这个题目应该跟一维数组时，求最大能够容纳的水容量，或者是两根柱子组成的面积最大，连续整数的最大长度这些题一个类型，只是把数组从一维变成了二维。这样的话，按照原来两遍夹逼的思路。两个全局的数组L，R，对每一列都适用，即纪录当前行位置，第j列的最大允许的左边界以及右边界。两个局部的指针left，right，纪录当前行每个位置的左边界与右边界。并且通过left与right去更新L，R数组。</li>
-</ul>
+				<span class="teaser"><h3 id="section">1. 题目来源</h3>
+<p>  来自X公司的实习生面试题，即给定一个string s ＝ “abcabcabcbcc”，return “3a4b5c”;</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/leetcode/2014/11/05/leetcode-matrix-area">Read More</a></span>
+				<span class="readmore"><a href="/interview/2015/03/18/string-count">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -270,27 +246,23 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#leetcode-ref" title="leetcode">
-	leetcode
+<a href="/categories.html#interview-ref" title="interview">
+	interview
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2014/11/05/leetcode-bucket_sort">Leetcode:First Missing Positive(Bucket Sort)</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/interview/2015/03/18/ali_interview">link list cycle</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="first-missing-positive">First Missing Positive</h3>
-<ul>
-  <li>给一个未排序的整形数组，找出缺失的第一个正整数。算法需要满足O(n)的时间复杂度以及使用恒定的空间。</li>
-  <li>输入：A[] = {1, 2, 0}, n = 3 return 3.</li>
-  <li>输出：A[] = {3, 4, -1, 1}, n = 4 return 2.</li>
-</ul>
+				<span class="teaser"><h3 id="section">1. 题目来源</h3>
+<p>  今天宿舍哥们去面X公司的内推实习生，说二面时上来就两道算法题，30分钟写完。一道是Leetcode上的原题，即判断一个链表是否有环，若有环，找出环开始的位置；还有一道题目为字符串压缩，即给出”aaabbbbccccc”，return “3a4b5c”，两道题目都比较简单；；最近在按分类刷Leetcode，即将完成String的部分，特意把Linked List Cycle I/II找出出来，提前做一下，两道题在Leetcode上面AC率都比较高。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/leetcode/2014/11/05/leetcode-bucket_sort">Read More</a></span>
+				<span class="readmore"><a href="/interview/2015/03/18/ali_interview">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -301,25 +273,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#linux_kernel-ref" title="linux_kernel">
-	linux_kernel
+<a href="/categories.html#git-ref" title="git">
+	git
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/linux_kernel/2014/11/05/Linux-DMA">Linux下PCIe驱动以及DMA机制</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/git/2015/03/18/Git-Operate">Git中基本操作</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="section">1. 驱动程序作用：</h3>
-<ul>
-  <li>设备驱动程序向应用程序屏蔽了硬件在实现上的细节，使得应用程序可以像操作普通文件一样操作外部设备。Linux操作系统抽象了对硬件的处理，可以使用和操作文件相同的，标准的系统调用接口来完成打开，关闭，读写喝I/O控制操作，而驱动程序主要任务也就是实现这些系统调用函数。</li>
-</ul>
+				<span class="teaser"><p>  前两天看王神面实习的简历，简历上面清晰地标出每个项目的tag似是一个很好的办法，既给面试官重点突出的感觉，也便于将面试中心集中，方便自己准备，而作为大型软件的开发，版本控制必不可少，将Git与SVN相关的东西做一个小总结。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/linux_kernel/2014/11/05/Linux-DMA">Read More</a></span>
+				<span class="readmore"><a href="/git/2015/03/18/Git-Operate">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -360,7 +329,7 @@
   
      
     	<li><a href="/categories.html#algorithm-ref">
-    		algorithm <span>2</span>
+    		algorithm <span>3</span>
     	</a></li>
      
     	<li><a href="/categories.html#cv-ref">
@@ -376,7 +345,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#leetcode-ref">
-    		leetcode <span>3</span>
+    		leetcode <span>4</span>
     	</a></li>
      
     	<li><a href="/categories.html#linux_kernel-ref">
@@ -388,7 +357,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#interview-ref">
-    		interview <span>4</span>
+    		interview <span>5</span>
     	</a></li>
      
     	<li><a href="/categories.html#python-ref">
@@ -396,11 +365,11 @@
     	</a></li>
      
     	<li><a href="/categories.html#shell-ref">
-    		shell <span>1</span>
+    		shell <span>2</span>
     	</a></li>
      
     	<li><a href="/categories.html#ios-dev-ref">
-    		ios-dev <span>1</span>
+    		ios-dev <span>7</span>
     	</a></li>
     
   
@@ -469,6 +438,10 @@
       	<li><a href="/tags.html">Tags</a></li>
       	
       
+    
+  
+    
+  
     
   
     

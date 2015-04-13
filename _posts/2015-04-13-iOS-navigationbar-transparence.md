@@ -101,6 +101,9 @@ self.personTable.tableHeaderView = _refreshHeaderView;
     }
 }
 
+{% endhighlight %}
+
+
 #### 3.2 通过加入一点动画效果，使下拉最后的操作更平滑
 
 &emsp;&emsp;直接通过setFrame改变UIWebView的位置时，最后归位时会有一点显得突兀，加入一点动画效果自动移动时，感觉稍微好了一些，似乎可以在下滑操作到UIScrollView的contentOffset.y一定程度时，通过setFrame去改变。即认定这一时刻，用户不会再上滑。

@@ -16,8 +16,20 @@ http://lambda.hk/5/index.html
 http://lambda.hk/6/index.html
 http://lambda.hk/7/index.html
 http://lambda.hk/8/index.html
+http://lambda.hk/9/index.html
+http://lambda.hk/10/index.html
 
+http://lambda.hk/ios-dev/2015/04/13/iOS-navigationbar-transparence
+http://lambda.hk/ios-dev/2015/04/13/iOS-get-js-elements
+http://lambda.hk/ios-dev/2015/04/12/iOS-Local-Cache
+http://lambda.hk/ios-dev/2015/04/09/iOS-key-words
+http://lambda.hk/leetcode/2015/04/09/Leetcode-Scramble-String
+http://lambda.hk/algorithm/2015/04/08/frog-jump-stairs
+http://lambda.hk/interview/2015/04/08/char-array-func
+http://lambda.hk/ios-dev/2015/04/06/iOS-some-warning-fixed
+http://lambda.hk/ios-dev/2015/04/06/iOS-local-data-storage
 http://lambda.hk/ios-dev/2015/04/05/iOS-pch
+http://lambda.hk/shell/2015/04/05/Shell-rm
 http://lambda.hk/python/2015/04/05/Python-Multiprocessing
 http://lambda.hk/git/2015/04/01/Git-Stash
 http://lambda.hk/python/2015/03/31/Python-List-Clear

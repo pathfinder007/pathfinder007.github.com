@@ -130,3 +130,7 @@ self.personTable.tableHeaderView = _refreshHeaderView;
 }
 
 {% endhighlight %}
+
+#### 3.3 Github的一个简单动画类库
+
+&emsp; &emsp; `https://github.com/kevincobain2000/UIViewAnimations-Demo`这哥们写了个简单的动画展示的demo，实现十几种视图动画效果（UIView Animations），包括旋转、弹跳、淡入淡出、放大缩小、左右移动、上下移动等，可以用在所有页面控件中。不难，也留作备忘。 

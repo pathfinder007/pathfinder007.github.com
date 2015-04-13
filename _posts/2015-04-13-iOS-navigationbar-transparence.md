@@ -106,28 +106,24 @@ self.personTable.tableHeaderView = _refreshHeaderView;
 
 #### 3.2 通过加入一点动画效果，使下拉最后的操作更平滑
 
-&emsp;&emsp;直接通过setFrame改变UIWebView的位置时，最后归位时会有一点显得突兀，加入一点动画效果自动移动时，感觉稍微好了一些，似乎可以在下滑操作到UIScrollView的contentOffset.y一定程度时，通过setFrame去改变。即认定这一时刻，用户不会再上滑。
+&emsp;&emsp;直接通过setFrame改变UIWebView的位置时，最后归位时会有一点显得突兀，加入一点动画效果自动移动时，感觉稍微平滑了很多。
 
 {% highlight Objective-C %}
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-    if (self.articleDetailWebView.scrollView.contentOffset.y > 5) {
-        if (!isMoveUp) {
-            [self moveUp: self.articleDetailWebView andAnimationDuration: 0.4f andLength: NAVIHEIGHT-STATUS_BAR_HEIGHT];
-            isMoveUp   = YES;
-            isMoveDown = NO;
-        }
+    if (self.articleDetailWebView.scrollView.contentOffset.y > 5 && !isMoveUp) {
+        [self moveUp: self.articleDetailWebView andAnimationDuration: 0.2f andLength: NAVIHEIGHT-STATUS_BAR_HEIGHT];
+        isMoveUp   = YES;
+        isMoveDown = NO;
         [self.banner setAlpha: BANNER_TRANS];
     }
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
-    if (self.articleDetailWebView.scrollView.contentOffset.y < 5) {
-        if (!isMoveDown) {
-            [self moveDown: self.articleDetailWebView andAnimationDuration: 0.1f andLength: NAVIHEIGHT-STATUS_BAR_HEIGHT];
-            isMoveDown = YES;
-            isMoveUp   = NO;
-        }
+    if (self.articleDetailWebView.scrollView.contentOffset.y < 5 && !isMoveDown) {
+        [self moveDown: self.articleDetailWebView andAnimationDuration: 0.2f andLength: NAVIHEIGHT-STATUS_BAR_HEIGHT];
+        isMoveDown = YES;
+        isMoveUp   = NO;
         [self.banner setAlpha: BANNER_NORMAL];
     }
 }
@@ -139,3 +135,22 @@ self.personTable.tableHeaderView = _refreshHeaderView;
 #### 3.3 Github的一个简单动画类库
 
 &emsp; &emsp; `https://github.com/kevincobain2000/UIViewAnimations-Demo`这哥们写了个简单的动画展示的demo，实现十几种视图动画效果（UIView Animations），包括旋转、弹跳、淡入淡出、放大缩小、左右移动、上下移动等，可以用在所有页面控件中。不难，也留作备忘。 
+
+
+### 4. 通过scrollViewDidScroll监听的方法实现
+
+&emsp;&emsp;还可以在下滑操作到UIScrollView的contentOffset.y一定程度时，通过setFrame去改变。即在用户快速下滑的时候，将整个UIWebView往下移动，在不易察觉的情况下回复位置。亲测这样的方法，也比较和谐。
+
+{% highlight Objective-C %}
+
+- (void)scrollViewDidScroll:( UIScrollView *)scrollView
+{
+    if (self.articleDetailWebView.scrollView.contentOffset.y < 100 && !isMoveDown) {
+        [self.articleDetailWebView setFrame: CGRectMake(0, NAVIHEIGHT, TSCREENW, TSCREENH)];
+        isMoveDown = YES;
+        isMoveUp   = NO;
+        [self.banner setAlpha: BANNER_NORMAL];
+    }
+}
+
+{% endhighlight %}

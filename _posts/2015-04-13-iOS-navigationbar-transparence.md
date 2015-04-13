@@ -81,6 +81,8 @@ self.personTable.tableHeaderView = _refreshHeaderView;
 	<img src="http://mhs-blog.qiniudn.com/2015_04_13_3.png" alt="">
 </figure>
 
+#### 3.1 通过setFrame简单实现
+
 &emsp; &emsp;整个页面，除了banner以及bottomView，整个是一个UIWebView，这个控件没有header的说法，而要实现透明效果，需要UIWebView与banner有一个重合。试了好几种方案，比如在页面上再扔一个UITableView/UIScrollView，再在上面布局，不起效果。只能暂时先实现一种比较丑陋的做法。在页面上滑倒需要实现banner透明的时候，将UIWebView的frame上移到与banner重合，上滑时看不出变化，但是下滑时，滑到最底部，需要将UIWebView的frame恢复，就有了一个比较突兀的下拉，考虑setFrame操作使用动画，解决这个问题。
 
 {% highlight Objective-C %}
@@ -96,6 +98,34 @@ self.personTable.tableHeaderView = _refreshHeaderView;
     if (self.articleDetailWebView.scrollView.contentOffset.y < 5) {
         [self.articleDetailWebView setFrame: CGRectMake(0, NAVIHEIGHT, TSCREENW, TSCREENH-NAVIHEIGHT)];
         [self.banner setAlpha: 0.9f];
+    }
+}
+
+#### 3.2 通过加入一点动画效果，使下拉最后的操作更平滑
+
+&emsp;&emsp;直接通过setFrame改变UIWebView的位置时，最后归位时会有一点显得突兀，加入一点动画效果自动移动时，感觉稍微好了一些，似乎可以在下滑操作到UIScrollView的contentOffset.y一定程度时，通过setFrame去改变。即认定这一时刻，用户不会再上滑。
+
+{% highlight Objective-C %}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    if (self.articleDetailWebView.scrollView.contentOffset.y > 5) {
+        if (!isMoveUp) {
+            [self moveUp: self.articleDetailWebView andAnimationDuration: 0.4f andLength: NAVIHEIGHT-STATUS_BAR_HEIGHT];
+            isMoveUp   = YES;
+            isMoveDown = NO;
+        }
+        [self.banner setAlpha: BANNER_TRANS];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+    if (self.articleDetailWebView.scrollView.contentOffset.y < 5) {
+        if (!isMoveDown) {
+            [self moveDown: self.articleDetailWebView andAnimationDuration: 0.1f andLength: NAVIHEIGHT-STATUS_BAR_HEIGHT];
+            isMoveDown = YES;
+            isMoveUp   = NO;
+        }
+        [self.banner setAlpha: BANNER_NORMAL];
     }
 }
 

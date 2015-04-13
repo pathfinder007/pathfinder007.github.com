@@ -19,15 +19,16 @@ tags: iOS
 
 ### 2. 整个页面是一个UITableView的情况
 
-####. 2.1 页面展示效果
+#### 2.1 页面展示效果
 
 <figure>
 	<img src="http://mhs-blog.qiniudn.com/2015_04_13_2.png" alt="">
-</figure>
+</figure>   
+
 
 #### 2.2 透明效果解决方案
 
-&emsp;&emsp;很多的新闻展示类的App，整个页面即为一个UITableView，而设置UIView的alpha，要达到需要的效果，UITableView需要与上面的导航栏banner有重叠，透明展示效果只在重叠处具有。因此UITableView需要从竖直偏移为y的地方进行布局，而这样显然不行，导航栏会挡住需要展示的内容。有几个方案，可以解决这个问题。
+&emsp;&emsp;很多的新闻展示类的App，整个页面即为一个UITableView，而设置UIView的alpha，要达到需要的效果，UITableView需要与上面的导航栏banner有重叠，透明展示效果只在重叠处具有。因此UITableView需要从竖直偏移为y的地方进行布局，而这样显然不行，导航栏会挡住需要展示的内容。有几个方案，解决这个问题。
 
 * 由于页面需要下拉刷新功能，因此可以将refreshHeaderView，加在UITableView的header上面；
 * 不需要下拉刷新功能时，可以自定义一个header，附着在banner的下方；
@@ -39,12 +40,17 @@ _refreshHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake
 _refreshHeaderView.delegate = self;
 self.personTable.tableHeaderView = _refreshHeaderView;
 
-{% endhighlight %}
+{% endhighlight %}   
 
 
 #### 2.3 UITableView滑动到一定程度时，实现透明效果
 
-&emsp; &emsp; UITableView继承自UIScrollView，可以实现UIScrollViewDelegate中的`- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView`以及`- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView`实现在这个空间在拖拽上滑的过程以及下滑归位之后需要实现的操作。
+&emsp; &emsp; UITableView继承自UIScrollView，可以实现UIScrollViewDelegate中的两个方法，实现在这个控件在拖拽上滑的过程以及下滑归位之后需要实现的操作。
+
+* `- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView`
+* `- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView` 
+
+
 
 {% highlight Objective-C %}
 

@@ -26,7 +26,19 @@ NSString *shareTitle = [_articleDetailWebView stringByEvaluatingJavaScriptFromSt
 
 {% endhighlight %}
 
-获取到`<div class="url_read_article" id="url_read_article" style="display:none">http: mrt.hsmrt.com/server/show_iphone.php?id=433</div>`中的`http: mrt.hsmrt.com/server/show_iphone.php?id=433`
+获取到
+
+{% highlight javascript %}
+
+<div class="url_read_article" id="url_read_article" style="display:none">
+http: mrt.hsmrt.com/server/show_iphone.php?id=433
+</div>
+
+{% endhighlight %}
+
+中的 
+
+`http: mrt.hsmrt.com/server/show_iphone.php?id=433`
 
 ### 3. 获取某一个tag下的src等属性
 
@@ -36,4 +48,16 @@ NSString *shareTitle = [_articleDetailWebView stringByEvaluatingJavaScriptFromSt
 
 {% endhighlight %}
 
-获取到`<img class="top_img" src="http://mrt.hsmrt.com/app/pics/433/index_sma_img.jpeg">`中img标签中的src属性的值，即`http://mrt.hsmrt.com/app/pics/433/index_sma_img.jpeg`；由于`getElementsByTagName`返回的是一个元素列表，故需要根据具体的html页面布局取相应的值，或者通过`getElementById/getElementByClass`进行一些限定。
+获取到
+
+{% highlight javascript %}
+
+`<img class="top_img" src="http://mrt.hsmrt.com/app/pics/433/index_sma_img.jpeg">`
+
+{% endhighlight %}
+
+中img标签中的src属性的值，即
+
+`http://mrt.hsmrt.com/app/pics/433/index_sma_img.jpeg`；
+
+由于`getElementsByTagName`返回的是一个元素列表，故需要根据具体的html页面布局取相应的值，或者通过`getElementById/getElementByClass`进行一些限定。

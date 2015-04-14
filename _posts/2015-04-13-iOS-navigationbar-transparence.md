@@ -126,6 +126,8 @@ self.personTable.tableHeaderView = _refreshHeaderView;
         isMoveUp   = NO;
         [self.banner setAlpha: BANNER_NORMAL];
     }
+    //为防止UIWebView在原始位置时，进行下滑操作，产生错误的偏移，初始化时应该将isMoveUp设置为NO，
+    //isMoveDown设置为YES，即限定了必须先有上移操作，才能下移。
 }
 
 {% endhighlight %}

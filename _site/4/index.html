@@ -175,6 +175,39 @@
 				
 			</div>
 			<div class="journal-body">
+				<h1 class="journal-title"><a href="/c++/2015/03/30/C-Plus-Plus-Sizeof-Class">C++类的大小，sizeof(class)</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  面试题中经常遇到，定义一个类，或为空，或定义了几个内置类型的变量，或包含构造、析构函数、成员函数，问在32位/64位平台上，sizeof(class)的字节数。比较关键的几个考虑：</p>
+
+<ul>
+  <li>32位系统是4字节对齐，64位系统为8字节对齐；</li>
+  <li>空类，为了分配内存，字节数为1；</li>
+  <li>成员函数的字节数；</li>
+  <li>若包含虚函数，系统需要分配一个指向虚函数的指针vptr，32位系统，大小为4Byte</li>
+</ul>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/c++/2015/03/30/C-Plus-Plus-Sizeof-Class">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#c++-ref" title="c++">
+	c++
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
 				<h1 class="journal-title"><a href="/c++/2015/03/30/C-Plus-Plus-Polymorphism-Override">C++中 的多态与覆盖</a><span class="author"></span></h1>
 				
 				<span class="teaser"><p>  C++中的多态与覆盖一直是容易混淆的概念，多态即一个接口，多种方法，程序在执行时才决定调用的函数，OOP的核心概念，通过虚函数来实现，虚函数允许子类重新定义成员函数：而子类重新定义父类的做法称为覆盖；只有重写了虚函数才算多态；而重载则是允许有多个同名的函数，而这些函数的参数列表不同，允许参数个数不同，参数类型不同，或者两者都不同。编译器会根据这些函数的不同列表，将同名的函数的名称做修饰，从而生成一些不同名称的预处理函数，来实现同名函数调用时的重载问题。但这并没有体现多态性。</p>
@@ -265,33 +298,6 @@
 		</div>
 		<div class="clearboth"></div>
 		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#interview-ref" title="interview">
-	interview
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/interview/2015/03/25/ali-interview1">三道面试题</a><span class="author"></span></h1>
-				
-				<span class="teaser"><h3 id="section">1. 题目来源</h3>
-<p>  今天问了下xiaobo面X公司的Data Mining内推实习生的算法题，说是三道，都挺简单，但是陷阱不少，没准备的话会跪。随手做了一下，树的深度有限遍历，需要写出递归与非递归版本；strcpy的实现；二维链表转成一维链表，这个二维链表是不是十字链表？这个需要具体和面试官确定，即是不是一个node4个指针，第i行最后一个node的right指针指向第i+1行的第一个node；除此之外，主要抓着项目问，以及一些Linux的基本操作，MapReduce的基础等，没有问机器学习的模型。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/interview/2015/03/25/ali-interview1">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
 	</div>
 	
 	<div id="journal-arrows-cont">
@@ -368,7 +374,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#ios-dev-ref">
-    		ios-dev <span>7</span>
+    		ios-dev <span>8</span>
     	</a></li>
     
   

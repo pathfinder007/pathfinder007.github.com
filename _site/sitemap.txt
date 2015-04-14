@@ -19,6 +19,7 @@ http://lambda.hk/8/index.html
 http://lambda.hk/9/index.html
 http://lambda.hk/10/index.html
 
+http://lambda.hk/ios-dev/2015/04/14/iOS-clear-cache
 http://lambda.hk/ios-dev/2015/04/13/iOS-navigationbar-transparence
 http://lambda.hk/ios-dev/2015/04/13/iOS-get-js-elements
 http://lambda.hk/ios-dev/2015/04/12/iOS-Local-Cache

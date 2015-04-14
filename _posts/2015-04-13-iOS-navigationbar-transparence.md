@@ -115,8 +115,8 @@ self.personTable.tableHeaderView = _refreshHeaderView;
         [self moveUp: self.articleDetailWebView andAnimationDuration: 0.2f andLength: NAVIHEIGHT-STATUS_BAR_HEIGHT];
         isMoveUp   = YES;
         isMoveDown = NO;
-        [self.banner setAlpha: BANNER_TRANS];
     }
+    [self.banner setAlpha: BANNER_TRANS];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
@@ -124,8 +124,9 @@ self.personTable.tableHeaderView = _refreshHeaderView;
         [self moveDown: self.articleDetailWebView andAnimationDuration: 0.2f andLength: NAVIHEIGHT-STATUS_BAR_HEIGHT];
         isMoveDown = YES;
         isMoveUp   = NO;
-        [self.banner setAlpha: BANNER_NORMAL];
     }
+    [self.banner setAlpha: BANNER_NORMAL];
+    //这里会有点小问题，最好再加上，self.articleDetailWebView.scrollView.contentOffset.y > 3
 }
 
 {% endhighlight %}

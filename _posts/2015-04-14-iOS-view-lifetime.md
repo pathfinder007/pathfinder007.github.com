@@ -5,7 +5,11 @@ title: iOS中View的生命周期
 tags: iOS
 ---
 
-&emsp;&emsp;现在写应用时，习惯完全通过代码进行布局，不使用nib文件，则`initWithNibName/awakeFromNib/initWithCoder`这一系列方法，都可以完全忽略。基本上需要关注的涉及视图生命周期的是下面这些函数：`loadView/viewDidLoad/viewDidUnload/viewWillAppear/viewDidAppear/viewWillDisappear/viewDidDisappear` 而一直对它们的执行顺序，能否覆写，了解得并不明确。
+现在写应用时，习惯完全通过代码进行布局，不使用nib文件，则  
+`initWithNibName/awakeFromNib/initWithCoder`这一系列方法，都可以完全忽略。
+基本上需要关注的涉及视图生命周期的是下面这些函数：  
+`loadView/viewDidLoad/viewDidUnload/viewWillAppear/viewDidAppear/viewWillDisappear/viewDidDisappear`   
+而一直对它们的执行顺序，能否覆写，了解得并不明确。
 
 <!--more-->
 

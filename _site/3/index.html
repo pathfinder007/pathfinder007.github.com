@@ -175,6 +175,32 @@
 				
 			</div>
 			<div class="journal-body">
+				<h1 class="journal-title"><a href="/ios-dev/2015/04/06/iOS-local-data-storage">iOS中本地持久化存储</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  App中有一些数据需要在本地持久化存储，主要是涉及一些App个人私有的配置信息，比如当前版本号、需要离线浏览的文章、当前选择的是白天/夜间浏览模式、登陆数据等。而为了最大化页面加载，也有不少信息需要在本地就行存储。iOS中本地存储主要是三种方式，数据库(SQLite)、NSUserDefaults、plist文件。原来开发中，一直喜欢自己新建plist文件进行存储，使用key-value的格式，类似自己建xml格式的文档。如此好处仅仅是开发的时候可视化比较好，但是这样需要显示创建、读取文件，很麻烦。而NSUserDefaults才则不需要考虑这些东西，像读取字符串一样直接读取、存储，自动进行key-value存储，并将数据进行序列化，读取方便、占用空间小，相当于一个小型的key-value数据库。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/ios-dev/2015/04/06/iOS-local-data-storage">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#ios-dev-ref" title="ios-dev">
+	ios-dev
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
 				<h1 class="journal-title"><a href="/ios-dev/2015/04/05/iOS-pch">iOS工程中添加pch文件</a><span class="author"></span></h1>
 				
 				<span class="teaser"><p>  最近在改版华商名人堂的iOS客户端，顺便把之前iOS开发中涉及到的一些东西整理一下。 </p>
@@ -267,32 +293,6 @@
 		</div>
 		<div class="clearboth"></div>
 		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#python-ref" title="python">
-	python
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/python/2015/03/31/Python-List-Clear">Python中list的删除与清空</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  今天在写阿里的代码，涉及到大量的数据load进内存处理的操作，由于Python的list/dict都是使用自动引用计数的机制进行内存释放；而操作中经常需要将文件读入一个list，处理后扔到另一个list，再转存。当不手动释放list占据的内存时，内存泄漏严重。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/python/2015/03/31/Python-List-Clear">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
 	</div>
 	
 	<div id="journal-arrows-cont">
@@ -369,7 +369,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#ios-dev-ref">
-    		ios-dev <span>8</span>
+    		ios-dev <span>9</span>
     	</a></li>
     
   

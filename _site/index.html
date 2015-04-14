@@ -175,6 +175,36 @@
 				
 			</div>
 			<div class="journal-body">
+				<h1 class="journal-title"><a href="/ios-dev/2015/04/14/iOS-view-lifetime">iOS中View的生命周期</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>现在写应用时，习惯完全通过代码进行布局，不使用nib文件，则<br />
+<code>initWithNibName/awakeFromNib/initWithCoder</code>这一系列方法，都可以完全忽略。
+基本上需要关注的涉及视图生命周期的是下面这些函数：<br />
+<code>loadView/viewDidLoad/viewDidUnload/viewWillAppear/viewDidAppear/viewWillDisappear/viewDidDisappear</code> <br />
+而一直对它们的执行顺序，能否覆写，了解得并不明确。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/ios-dev/2015/04/14/iOS-view-lifetime">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#ios-dev-ref" title="ios-dev">
+	ios-dev
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
 				<h1 class="journal-title"><a href="/ios-dev/2015/04/14/iOS-clear-cache">iOS中清理缓存的实现</a><span class="author"></span></h1>
 				
 				<span class="teaser"><p>  App开发中，经常涉及到清理Cache的功能，特别对于新闻展示类的App，为了提高页面加载速度，大量的数据，需要在本地缓存，当缓存没有一个比较规范的自动清理机制时，会造成程序占用空间越来越大的情况，实时给用户展示当前缓存数据的大小，让用户决定是否手动清理，是一个比较好的机制。最近也给华商韬略的iOS版本，加入了这一功能。</p>
@@ -265,31 +295,6 @@
 		</div>
 		<div class="clearboth"></div>
 		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#ios-dev-ref" title="ios-dev">
-	ios-dev
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/ios-dev/2015/04/09/iOS-key-words">iOS中一些关键字的意义</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  weak, strong, nonatomic, atomic, @property, @synthesize, readonly, readwrite, assign, copy, retain
-
-				
-				</span>
-				<span class="readmore"><a href="/ios-dev/2015/04/09/iOS-key-words">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
 	</div>
 	
 	<div id="journal-arrows-cont">
@@ -366,7 +371,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#ios-dev-ref">
-    		ios-dev <span>8</span>
+    		ios-dev <span>9</span>
     	</a></li>
     
   

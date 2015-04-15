@@ -7,7 +7,7 @@ tags: nginx 高并发
 
 &emsp;&emsp;现在很多涉及到大规模、高并发访问的Server，基本都是使用nginx作为反向代理服务器，进行网络请求的接收、分发以及缓存。特地问了下百度在线广告的师兄，它们的backend server也是使用的nginx。随着这一两年做的东西逐渐增多，也逐渐找到自己的兴趣，并不是Data Mining抑或Machine Learning，而在于与App相关的一些backend Server的开发，即涉及一些网络优化以及高并发的处理。
 
-&emsp;&emsp;下个月需要做一个Server相关的项目，而也一直有意华商韬略的Server进行优化而还没行动。计划接下来的时间，先在台式机搭一个nginx的反向代理Server环境，将华商韬略的数据库进行部署，将数据处理的Server由Apache换成Tornado，并在Server做一些数据的Cache，提高CRUD的效率。之后将环境分别迁移到aws遗迹阿里云。一来，为下面的项目做好准备，二来，继续翻新华商韬略的iOS客户端。涉及大规模方面的问题，有必要发信问问老罗。
+&emsp;&emsp;下个月需要做一个Server相关的项目，而也一直有意华商韬略的Server进行优化而还没行动。计划接下来的时间，先在台式机搭一个nginx的反向代理Server环境，将华商韬略的数据库进行部署，将数据处理的Server由Apache换成Tornado，并在Server做一些数据的Cache，提高CRUD的效率。之后将环境分别迁移到aws以及阿里云。一来，为下面的项目做好准备，二来，继续翻新华商韬略的iOS客户端。涉及大规模方面的问题，有必要发信问问老罗。
 
 <!--more-->
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-category: iOS-dev
+category: iOS
 title: iOS中清理缓存的实现
 tags: iOS
 ---

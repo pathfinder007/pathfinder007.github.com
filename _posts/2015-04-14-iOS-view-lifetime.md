@@ -1,6 +1,6 @@
 ---
 layout: post
-category: iOS-dev
+category: iOS
 title: iOS中View的生命周期
 tags: iOS
 ---

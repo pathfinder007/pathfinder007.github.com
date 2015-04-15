@@ -1,6 +1,6 @@
 ---
 layout: post
-category: iOS-dev
+category: iOS
 title: iOS中通过UIView定义的导航栏实现滑动半透明效果
 tags: iOS
 ---

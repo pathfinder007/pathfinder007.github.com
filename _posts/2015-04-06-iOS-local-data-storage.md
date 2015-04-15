@@ -1,6 +1,6 @@
 ---
 layout: post
-category: iOS-dev
+category: iOS
 title: iOS中本地持久化存储
 tags: iOS
 ---

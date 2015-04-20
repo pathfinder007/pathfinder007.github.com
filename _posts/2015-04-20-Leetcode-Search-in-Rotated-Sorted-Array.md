@@ -19,29 +19,30 @@ tags: Algorithm Leetcode
 
 class Solution {
 public:
-    int binarySearch(int A[], int n, int target, int left, int right) {
-        int mid = (left+right) >> 1;
-        if (right - left <= 1 && A[left] != target && A[right] != target)
-            return -1;
-        
+    int binarySearch(int A[], int target, int lo, int hi) {
+        int mid = (hi+lo) >> 1;
         if (A[mid] == target)
             return mid;
-        else if  (A[mid] > target) {
-            if ((A[left] <= A[mid] && A[left] <= target) || A[mid] < A[left])
-                return binarySearch(A, n, target, left, mid-1);
+        if (hi-lo <= 1 && A[hi] != target && A[lo] != target)
+            return -1;
+            
+        else if (A[mid] < A[hi]) {
+            if (A[mid] < target && A[hi] >= target)
+                return binarySearch(A, target, mid+1, hi);
             else
-                return binarySearch(A, n, target, mid+1, right);
+                return binarySearch(A, target, lo, mid-1);
         }
         else {
-            if ((A[mid] <= A[left] && A[right] >= target) || A[left] < A[mid])
-                return binarySearch(A, n, target, mid+1, right);
+            if (A[mid] > target && A[lo] <= target)
+                return binarySearch(A, target, lo, mid-1);
             else
-                return binarySearch(A, n, target, left, mid-1);
+                return binarySearch(A, target, mid+1, hi);
         }
     }
-    
+
     int search(int A[], int n, int target) {
-        return binarySearch(A, n, target, 0, n-1);
+        int lo = 0, hi = n-1;
+        return binarySearch(A, target, lo, hi);
     }
 };
 {% endhighlight %}
@@ -56,21 +57,23 @@ public:
     int search(int A[], int n, int target) {
         int lo = 0, hi = n-1;
         while (lo < hi) {
-            int mid = (lo+hi) >> 1;
+            int mid = (hi+lo) >> 1;
             if (A[mid] == target)
                 return mid;
+            
             else if (A[mid] < A[hi]) {
-                if (target > A[mid] && target <= A[hi])
+                if (A[mid] < target && A[hi] >= target)
                     lo = mid+1;
                 else
                     hi = mid-1;
             }
             else {
-                if (target >= A[lo] && target < A[mid])
+                if (A[mid] > target && A[lo] <= target)
                     hi = mid-1;
                 else
                     lo = mid+1;
             }
+            
         }
         return (A[lo] == target) ? lo : -1;
     }
@@ -80,6 +83,45 @@ public:
 
 ### 1. Search in Rotated Sorted Array II
 
+#### 2.1 递归解法
+
+{% highlight C++ %}
+
+class Solution {
+//关键点就是，比较的时候，先选定mid与两端进行比较，在mid与hi相等时候，可以通过hi--排除掉重复元素.
+public:
+    bool binarySearch(int A[], int target, int lo, int hi) {
+        int mid = (lo+hi) >> 1;
+        if (A[mid] == target)
+            return true;
+        if (hi-lo <= 1 && A[hi] != target && A[lo] != target)
+            return false;
+            
+        if (A[mid] < A[hi]) {
+            if (A[mid] < target && target <= A[hi])
+                return binarySearch(A, target, mid+1, hi);
+            else
+                return binarySearch(A, target, lo, mid-1);
+        }
+        else if (A[mid] > A[hi]) {
+            if (A[mid] > target && A[lo] <= target)
+                return binarySearch(A, target, lo, mid-1);
+            else
+                return binarySearch(A, target, mid+1, hi);
+        }
+        else
+            return binarySearch(A, target, lo, hi-1);
+    }
+
+    bool search(int A[], int n, int target) {
+        int lo = 0, hi = n-1;
+        return binarySearch(A, target, lo, hi);
+    }
+};
+{% endhighlight %}
+
+
+#### 2.2 非递归解法
 
 {% highlight C++ %}
 

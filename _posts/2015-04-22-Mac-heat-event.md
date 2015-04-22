@@ -1,7 +1,7 @@
 ---
 layout: post
 category: Mac OS X
-title: Find Mac风扇狂转 
+title: Mac风扇狂转 
 tags: Mac
 ---
 

@@ -141,6 +141,8 @@ public:
 
 #### 2.3 Solution3 递归DFS
 
+&emsp;&emsp;稍微有点麻烦的是，比如对于`[1, 2, 2]`，`[2, 2]`子集的生成。在dfs生成子集合的过程中，大致思想是，当需要add的索引位置为重复元素，这是第一次出现，加入；当后面再出现，则跳过，即`i>startIdx`
+
 {% highlight C++ %}
 
 class Solution {

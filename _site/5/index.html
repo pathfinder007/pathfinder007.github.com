@@ -130,6 +130,12 @@
 			 
 				
 			 
+				
+			 
+				
+			 
+				
+			 
 			
 			
 		</ul>
@@ -167,22 +173,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#python-ref" title="python">
-	python
+<a href="/categories.html#interview-ref" title="interview">
+	interview
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/python/2015/03/25/python-read-write-file">Python读写大数据文件</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/interview/2015/04/08/char-array-func">C字符串相关库函数的实现</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  一般的数据挖掘比赛，原始数据都存储在csv文件里面。而python，由于其方便好用的机器学习框架scikit-lenran，被普遍采用。对比了一下Python将文件载入内存的几种方法，感觉直接使用csv.reader速度相对较慢。</p>
+				<span class="teaser"><p>   笔试面试中经常出现让实现基础的字符数组操作相关的函数，这些函数的实现，简单，却很多陷阱，考察思维的严谨以及基础知识的扎实。越来越感受到，很多编程的小细节，能够很好地反应一个程序员的水平以及修养。甚至是从代码风格，小到一个空格是否需要，括号的组织，好吧，我是强迫症。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/python/2015/03/25/python-read-write-file">Read More</a></span>
+				<span class="readmore"><a href="/interview/2015/04/08/char-array-func">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -193,23 +199,85 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#interview-ref" title="interview">
-	interview
+<a href="/categories.html#ios-dev-ref" title="ios-dev">
+	ios-dev
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/interview/2015/03/25/ali-interview1">三道面试题</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/ios-dev/2015/04/06/iOS-some-warning-fixed">iOS中编译出现的一些warning/error解决</a><span class="author"></span></h1>
 				
-				<span class="teaser"><h3 id="section">1. 题目来源</h3>
-<p>  今天问了下xiaobo面X公司的Data Mining内推实习生的算法题，说是三道，都挺简单，但是陷阱不少，没准备的话会跪。随手做了一下，树的深度有限遍历，需要写出递归与非递归版本；strcpy的实现；二维链表转成一维链表，这个二维链表是不是十字链表？这个需要具体和面试官确定，即是不是一个node4个指针，第i行最后一个node的right指针指向第i+1行的第一个node；除此之外，主要抓着项目问，以及一些Linux的基本操作，MapReduce的基础等，没有问机器学习的模型。</p>
+				<span class="teaser"><p>ld: warning: directory not found for option ‘-L/Users/pathfinder/Documents/hstl/hstl/qqhsmrtiphone/qqhsmrtiphone/3rd_lib/SinaWeiboSDK’</p>
+
+<p>fixed:
+1. Click on your project (targets)
+2. Click on Build Settings
+3. Under Library Search Paths, delete the paths</p>
+
+<p>  最近在改版华商名人堂的iOS客户端，顺便把之前iOS开发中涉及到的一些东西整理一下。 </p>
+
+<p>  将整个共工程都广泛使用的头文件包含在该文件下，编译器会自动将头文件添加到所有源文件，使用相应类时不需要import;可以把UIKit/UIKit.h, Foundation/Foundation.h等框架头文件, 以及包含NSLog开关的头文件放在该文件中。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/interview/2015/03/25/ali-interview1">Read More</a></span>
+				<span class="readmore"><a href="/ios-dev/2015/04/06/iOS-some-warning-fixed">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#ios-ref" title="ios">
+	ios
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/ios/2015/04/06/iOS-local-data-storage">iOS中本地持久化存储</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  App中有一些数据需要在本地持久化存储，主要是涉及一些App个人私有的配置信息，比如当前版本号、需要离线浏览的文章、当前选择的是白天/夜间浏览模式、登陆数据等。而为了最大化页面加载，也有不少信息需要在本地就行存储。iOS中本地存储主要是三种方式，数据库(SQLite)、NSUserDefaults、plist文件。原来开发中，一直喜欢自己新建plist文件进行存储，使用key-value的格式，类似自己建xml格式的文档。如此好处仅仅是开发的时候可视化比较好，但是这样需要显示创建、读取文件，很麻烦。而NSUserDefaults才则不需要考虑这些东西，像读取字符串一样直接读取、存储，自动进行key-value存储，并将数据进行序列化，读取方便、占用空间小，相当于一个小型的key-value数据库。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/ios/2015/04/06/iOS-local-data-storage">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#ios-ref" title="ios">
+	ios
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/ios/2015/04/05/iOS-pch">iOS工程中添加pch文件</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  最近在改版华商名人堂的iOS客户端，顺便把之前iOS开发中涉及到的一些东西整理一下。 </p>
+
+<p>  将整个共工程都广泛使用的头文件包含在该文件下，编译器会自动将头文件添加到所有源文件，使用相应类时不需要import;可以把UIKit/UIKit.h, Foundation/Foundation.h等框架头文件, 以及包含NSLog开关的头文件放在该文件中。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/ios/2015/04/05/iOS-pch">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -228,65 +296,14 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/shell/2015/03/25/Shell-du">Shell中常用命令</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/shell/2015/04/05/Shell-rm">Mac/Linux下rm实现回收站功能</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  Linux Shell中常用易忘命令的记录。
-
-				
-				</span>
-				<span class="readmore"><a href="/shell/2015/03/25/Shell-du">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#python-ref" title="python">
-	python
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/python/2015/03/24/Spyder-Modules">Python Spyder IDE倒入模块报错的解决方案</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  从去年上半年在做阿里的比赛以及神经网络算法搞量化的项目开始，就开始用Spyder的IDE调试Python代码，很方便，完爆其他的Python IDE，且自己预装了不少的常用模块；但是一直存在一个问题，import复用别人的模块时，会存在找不到模块的情况。这两天在用AWS的boto接口，又出现了这个情况。</p>
+				<span class="teaser"><p>  Unix下的rm命令为彻底删除，特别加上-rf选项后，很容易由于手抖造成无法挽回的错误。上几天写代码时，写了一早上，临吃饭时，想把.pyc给删了，手抖把.py给删了。虽然可以通过<code>lost+found</code>想办法找回，但相当费劲。为防患于未然，还是想办法把<code>rm</code>命令alias成移到回收站的功能。在github上找到一个朋友写的脚本，不错。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/python/2015/03/24/Spyder-Modules">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#python-ref" title="python">
-	python
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/python/2015/03/24/Python-Shell">Python中执行shell命令</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  早上在测试wget从EC2上面下载文件的速度，忘了在python中执行shell命令的方法，顺手查了查，做下备忘。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/python/2015/03/24/Python-Shell">Read More</a></span>
+				<span class="readmore"><a href="/shell/2015/04/05/Shell-rm">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -339,11 +356,11 @@
     	</a></li>
      
     	<li><a href="/categories.html#c++-ref">
-    		c++ <span>8</span>
+    		c++ <span>9</span>
     	</a></li>
      
     	<li><a href="/categories.html#leetcode-ref">
-    		leetcode <span>4</span>
+    		leetcode <span>11</span>
     	</a></li>
      
     	<li><a href="/categories.html#linux_kernel-ref">
@@ -366,8 +383,24 @@
     		shell <span>2</span>
     	</a></li>
      
+    	<li><a href="/categories.html#ios-ref">
+    		ios <span>7</span>
+    	</a></li>
+     
     	<li><a href="/categories.html#ios-dev-ref">
-    		ios-dev <span>9</span>
+    		ios-dev <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#design pattern-ref">
+    		design pattern <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#nginx-ref">
+    		nginx <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#mac os x-ref">
+    		mac os x <span>1</span>
     	</a></li>
     
   
@@ -436,6 +469,12 @@
       	<li><a href="/tags.html">Tags</a></li>
       	
       
+    
+  
+    
+  
+    
+  
     
   
     

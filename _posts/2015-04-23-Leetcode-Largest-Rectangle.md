@@ -13,7 +13,6 @@ tags: Algorithm Leetcode
 
 ### 1. Largest Rectangle in Histogram
 
-<br />
 
 #### 1.1 Solution1 
 
@@ -84,7 +83,6 @@ public:
 
 &emsp;&emsp;转化成dp问题，逐行扫描，纪录每个元素对应的最大矩形块的left、right边界以及height值，逐点更新macRect的值。
 
-<br />
 
 {% highlight C++ %}
 class Solution {

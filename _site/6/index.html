@@ -130,6 +130,12 @@
 			 
 				
 			 
+				
+			 
+				
+			 
+				
+			 
 			
 			
 		</ul>
@@ -167,22 +173,74 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#c++-ref" title="c++">
-	c++
+<a href="/categories.html#python-ref" title="python">
+	python
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/c++/2015/03/23/Vector-String-Array">Vector与String数组的转换</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/python/2015/04/05/Python-Multiprocessing">Python Multiprocessing多进程操作</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  读入一组 string 类型的数据,并将它们存储在 vector 中。接着,把该 vector 对象复制给一个字符指针数组。为 vector 中的 每个元素创建一个新的字符数组,并把该 vector 元素的数据复制到相应的字符 数组中,最后把指向该数组的指针插入字符指针数组。</p>
+				<span class="teaser"><p>  最近在写Python代码，程序主要就是涉及大文件的IO以及处理。当时在Mac上跑，自己即使的手动释放一下内存，还勉强可以跑，Mac的Swap比较大，虚拟内存用到16个G左右。而再移到台式机上面跑，8G的内存，不久就MemoryError了，怀疑是当时装系统时候设置的Swap太小的缘故。单进程/线程都不堪重负，更别说使用多进程来加速了。想到了邱大神在服务器上面开的100G内存的虚拟机，很久不用了，遂把代码扔上去，顺便稍微把代码用简单的多进程操作简单加了加速。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/c++/2015/03/23/Vector-String-Array">Read More</a></span>
+				<span class="readmore"><a href="/python/2015/04/05/Python-Multiprocessing">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#git-ref" title="git">
+	git
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/git/2015/04/01/Git-Stash">Git冲突以及pull时需要输入账户密码的解决办法</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  多人维护一份代码时，经常会出现，两边同时更改一个文件，产生冲突问题，而本地的更改，又暂时不能commit，导致<code>git pull</code>的时候报error，大部分时候，我们需要暂存本地的修改，先stash，返回自己上一个commit，将最新代码git pull到本地，之后再stash pop，继续原来的工作。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/git/2015/04/01/Git-Stash">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#python-ref" title="python">
+	python
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/python/2015/03/31/Python-List-Clear">Python中list的删除与清空</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  今天在写阿里的代码，涉及到大量的数据load进内存处理的操作，由于Python的list/dict都是使用自动引用计数的机制进行内存释放；而操作中经常需要将文件读入一个list，处理后扔到另一个list，再转存。当不手动释放list占据的内存时，内存泄漏严重。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/python/2015/03/31/Python-List-Clear">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -201,40 +259,21 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/c++/2015/03/23/CPP-Varible-Size-Array">C++中变量做数组维数</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/c++/2015/03/30/C-Plus-Plus-Sizeof-Class">C++类的大小，sizeof(class)</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  记得C/C++语法规范中，不能使用变量定义数组维数，因为数组维数的确定，需要在编译阶段完成。要想在程序实行阶段确定数组维数，应该使用new/malloc去动态分配；但是试验了一下，由于g++对C99的支持，使得使用变量定义数组维数也是可行的(在Linux系统下)，但是如此方法，在VC下会报错，即这并不是符合C++语法规范的写法，在很大程度上会限制代码的平台兼容性，应该避免这种写法，以此备忘。 </p>
+				<span class="teaser"><p>  面试题中经常遇到，定义一个类，或为空，或定义了几个内置类型的变量，或包含构造、析构函数、成员函数，问在32位/64位平台上，sizeof(class)的字节数。比较关键的几个考虑：</p>
+
+<ul>
+  <li>32位系统是4字节对齐，64位系统为8字节对齐；</li>
+  <li>空类，为了分配内存，字节数为1；</li>
+  <li>成员函数的字节数；</li>
+  <li>若包含虚函数，系统需要分配一个指向虚函数的指针vptr，32位系统，大小为4Byte</li>
+</ul>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/c++/2015/03/23/CPP-Varible-Size-Array">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#algorithm-ref" title="algorithm">
-	algorithm
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/algorithm/2015/03/21/sting-2-int">string与int转换相关</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  在做Leetcode的Compare Version Numbers；涉及到string子串的比较，而子串全为数字，当时直接拿string来比较，没考虑到两个子串长度不同的情况，即”01”与”1”，应该是相等的。C语言中，使用atoi可以将string转换成int，而atoi的参数为<code>const char *nptr</code>，故在C++中，不能直接对string进行操作，可以先通过<code>c_str</code>返回一个指向正规C字符串的指针，再通过<code>atoi</code>进行转换;</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/algorithm/2015/03/21/sting-2-int">Read More</a></span>
+				<span class="readmore"><a href="/c++/2015/03/30/C-Plus-Plus-Sizeof-Class">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -253,41 +292,14 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/c++/2015/03/21/CPP-builtin-data-type">C++中各种内置数据类型的长度以及表示范围</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/c++/2015/03/30/C-Plus-Plus-Polymorphism-Override">C++中 的多态与覆盖</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  关于各种内置数据类型的size，一直以来都记得不是特别明确，这段时间都在写比较底层的OS直接操作硬件的C代码，倒也习惯了u8、u16、u32各种为满足操作系统平台移植性要求定义的数据类型;想起两年半以前在skyroam时候，看着GMate的系统代码，这是啥，这特么又是啥，那个迷茫的夏天。两年多的时间，收获了太多，不管是coding 上，还是其他。</p>
+				<span class="teaser"><p>  C++中的多态与覆盖一直是容易混淆的概念，多态即一个接口，多种方法，程序在执行时才决定调用的函数，OOP的核心概念，通过虚函数来实现，虚函数允许子类重新定义成员函数：而子类重新定义父类的做法称为覆盖；只有重写了虚函数才算多态；而重载则是允许有多个同名的函数，而这些函数的参数列表不同，允许参数个数不同，参数类型不同，或者两者都不同。编译器会根据这些函数的不同列表，将同名的函数的名称做修饰，从而生成一些不同名称的预处理函数，来实现同名函数调用时的重载问题。但这并没有体现多态性。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/c++/2015/03/21/CPP-builtin-data-type">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#interview-ref" title="interview">
-	interview
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/interview/2015/03/18/string-count">字符串统计</a><span class="author"></span></h1>
-				
-				<span class="teaser"><h3 id="section">1. 题目来源</h3>
-<p>  来自X公司的实习生面试题，即给定一个string s ＝ “abcabcabcbcc”，return “3a4b5c”;</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/interview/2015/03/18/string-count">Read More</a></span>
+				<span class="readmore"><a href="/c++/2015/03/30/C-Plus-Plus-Polymorphism-Override">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -340,11 +352,11 @@
     	</a></li>
      
     	<li><a href="/categories.html#c++-ref">
-    		c++ <span>8</span>
+    		c++ <span>9</span>
     	</a></li>
      
     	<li><a href="/categories.html#leetcode-ref">
-    		leetcode <span>4</span>
+    		leetcode <span>11</span>
     	</a></li>
      
     	<li><a href="/categories.html#linux_kernel-ref">
@@ -367,8 +379,24 @@
     		shell <span>2</span>
     	</a></li>
      
+    	<li><a href="/categories.html#ios-ref">
+    		ios <span>7</span>
+    	</a></li>
+     
     	<li><a href="/categories.html#ios-dev-ref">
-    		ios-dev <span>9</span>
+    		ios-dev <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#design pattern-ref">
+    		design pattern <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#nginx-ref">
+    		nginx <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#mac os x-ref">
+    		mac os x <span>1</span>
     	</a></li>
     
   
@@ -437,6 +465,12 @@
       	<li><a href="/tags.html">Tags</a></li>
       	
       
+    
+  
+    
+  
+    
+  
     
   
     

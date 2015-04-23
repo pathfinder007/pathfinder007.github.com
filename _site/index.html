@@ -130,6 +130,12 @@
 			 
 				
 			 
+				
+			 
+				
+			 
+				
+			 
 			
 			
 		</ul>
@@ -167,26 +173,24 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#ios-dev-ref" title="ios-dev">
-	ios-dev
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/ios-dev/2015/04/14/iOS-view-lifetime">iOS中View的生命周期</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/leetcode/2015/04/23/Leetcode-Largest-Rectangle">Largest Rectangle in Histogram/Maximal Rectangle</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>现在写应用时，习惯完全通过代码进行布局，不使用nib文件，则<br />
-<code>initWithNibName/awakeFromNib/initWithCoder</code>这一系列方法，都可以完全忽略。
-基本上需要关注的涉及视图生命周期的是下面这些函数：<br />
-<code>loadView/viewDidLoad/viewDidUnload/viewWillAppear/viewDidAppear/viewWillDisappear/viewDidDisappear</code> <br />
-而一直对它们的执行顺序，能否覆写，了解得并不明确。</p>
+				<span class="teaser"><p>   Leetcode中求面积的两个相对比较难的题目，其中<code>Largest Rectangle in Histogram</code>给定n个元素的数组，每个元素为柱子的高度，宽度均为1，计算柱子组成的矩形的最大面积；<code>Maximal Rectangle</code>给一个二维数组，元素为0/1，找出包含1的最大的方形区域。</p>
+
+<p>  对于第一道题，穷举的时间复杂度为O(n^2)，可以通过减枝满足AC的要求；也可以使用栈来优化算法，达到O(n)的时间复杂度。很多需要进行时间复杂度优化的问题都可以通过栈或者是哈希表加以解决；而对于后者，开始想到了纪录一个矩形块的左右边界的方法，但没有具体想明白，可以通过逐层对每个元素，纪录左右边界以及有效高度的方法，类似DP。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/ios-dev/2015/04/14/iOS-view-lifetime">Read More</a></span>
+				<span class="readmore"><a href="/leetcode/2015/04/23/Leetcode-Largest-Rectangle">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -197,22 +201,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#ios-dev-ref" title="ios-dev">
-	ios-dev
+<a href="/categories.html#mac os x-ref" title="mac os x">
+	mac os x
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/ios-dev/2015/04/14/iOS-clear-cache">iOS中清理缓存的实现</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/mac%20os%20x/2015/04/22/Mac-heat-event">Mac风扇狂转</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  App开发中，经常涉及到清理Cache的功能，特别对于新闻展示类的App，为了提高页面加载速度，大量的数据，需要在本地缓存，当缓存没有一个比较规范的自动清理机制时，会造成程序占用空间越来越大的情况，实时给用户展示当前缓存数据的大小，让用户决定是否手动清理，是一个比较好的机制。最近也给华商韬略的iOS版本，加入了这一功能。</p>
+				<span class="teaser"><p>  这两天温度上来，所里真是苦不堪言，本来就很闷的环境，没有空调，跟蒸笼一样。从苏州回来后，这两天Mac air的风扇狂转，还怀疑是在炎热的环境中罢工了，想想真不至于。昨晚在15楼，搞到晚上10点，就受制于风扇的嗡嗡声音，草草回宿舍，晚上在宿舍开着电脑更新软件，却并未见异响，诡异。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/ios-dev/2015/04/14/iOS-clear-cache">Read More</a></span>
+				<span class="readmore"><a href="/mac%20os%20x/2015/04/22/Mac-heat-event">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -223,22 +227,24 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#ios-dev-ref" title="ios-dev">
-	ios-dev
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/ios-dev/2015/04/13/iOS-navigationbar-transparence">iOS中通过UIView定义的导航栏实现滑动半透明效果</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/leetcode/2015/04/22/Leetcode-Subset">Subsets I/II</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  iOS中，导航栏一般两种方式，或者使用系统自带的<code>UINavagationBar</code>，则导航栏会随着页面的push/pop有一个继承。或者不使用系统自带导航栏，自己定义一个UIView，绘制导航栏。最近在调整华商韬略的iOS客户端，在文章页面，想要实现导航栏的透明效果，而之前在人物列表页面，是实现了想要的透明效果的，即页面上滑到一定程度，设置透明效果，当下滑归位，去掉透明效果，如此相对容易，如下细说。而文章页面，整个是一个UIWebView，稍微麻烦一些。</p>
+				<span class="teaser"><p>   给定一个vector容器存放的整形数组，返回所有的子集，要求子集中的元素为非递减排列；其中I中的元素没有重复，II中可能存在重复元素。</p>
+
+<p>  开始看到题目，第一感觉就是dfs，但是似乎这一题，又不算标准的dfs。当数组中没有重复元素时，对于长度为n的数组，子集有2^n个，即对于每个元素，都可以选择加入或者不加入。则可以先将数组排序，再依次将每个元素加入已生成的子集中。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/ios-dev/2015/04/13/iOS-navigationbar-transparence">Read More</a></span>
+				<span class="readmore"><a href="/leetcode/2015/04/22/Leetcode-Subset">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -249,22 +255,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#ios-dev-ref" title="ios-dev">
-	ios-dev
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/ios-dev/2015/04/13/iOS-get-js-elements">iOS中获取UIWebView中加载页面的元素</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/leetcode/2015/04/21/Leetcode-Find-Peak-Element">Find Peak Element</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  iOS中，一般使用UIWebView加载来自后台的文章页面，而在涉及分享功能时，经常需要从加载的页面中获取图片或者通用的说，某一个<code>javascript element</code>的值，即涉及到iOS与javascript的交互，项目中用到了几个方法，记录。</p>
+				<span class="teaser"><p>  按照题意，peak number即在一个数组中，比前后元素都大的数字。对于nums[-1], nums[n]，都认为值为无穷小。题目要求的时间复杂度为O(logn)，毫无疑问需要使用二分查找，解题有一个小trick，即对mid元素做判断是否为peak number，若否，往那边跳的问题。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/ios-dev/2015/04/13/iOS-get-js-elements">Read More</a></span>
+				<span class="readmore"><a href="/leetcode/2015/04/21/Leetcode-Find-Peak-Element">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -275,22 +281,24 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#ios-dev-ref" title="ios-dev">
-	ios-dev
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/ios-dev/2015/04/12/iOS-Local-Cache">iOS中关于离线阅读的实现——UIImageView以及UIWebView的Cache</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/leetcode/2015/04/20/Leetcode-Search-in-Rotated-Sorted-Array">Search in Rotated Sorted Array I/II</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  华商韬略的iOS客户端，网络请求、图片加载、页面缓存部分一直存在不少的问题，最近在帮着改版。正好把全部代码翻了一遍，也把网络请求的部分优化了一下，页面缓存进行重做。基本上，目前的iOS开发，网络请求使用比较多的都是封装好的<code>AFNetworking</code>，需要注意1.x版本与2.x版本的接口存在不少的差异性。而对于图片的加载，使用<code>SDWebImageView</code>，这是一个自带图片Cache与清理的框架。一般来说，使用SDWebImageView进行图片资源的Cache，这个类库的1.x与2.x版本的接口也存在很大的不同。而AFNetworking结合NSURLCache进行UIWebView的Cache，而对于一些title、subtitle等文字信息，则使用plist文件或者NSUserDefault进行存储，考虑到这些数据的特殊性以及数据量不大，使用NSUserDefault是一个比较好的选择。</p>
+				<span class="teaser"><p>  给定一个有序数组，以某一个支点做旋转；给定一个target，找出该数组中是否存在该target.其中I数组没有重复元素，若存在，则返回元素索引，反之，返回-1。II数组中存在重复元素，存在返回True，否则返回False。</p>
+
+<p>  这一题O(n)的写法，几行代码就写出来了，但是显然题目是要考察二分查找，O(n)的解法没什么意义。二分查找，时间复杂度为O(logn)，其中第二题中，存在重复元素的情况下，主要可能存在A[lo] == A[mid]同时A[mid] == A[hi]的情况，这点是需要特别注意的地方，可以通过逐步收缩right/left的位置将这个影响因素排除。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/ios-dev/2015/04/12/iOS-Local-Cache">Read More</a></span>
+				<span class="readmore"><a href="/leetcode/2015/04/20/Leetcode-Search-in-Rotated-Sorted-Array">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -343,11 +351,11 @@
     	</a></li>
      
     	<li><a href="/categories.html#c++-ref">
-    		c++ <span>8</span>
+    		c++ <span>9</span>
     	</a></li>
      
     	<li><a href="/categories.html#leetcode-ref">
-    		leetcode <span>4</span>
+    		leetcode <span>11</span>
     	</a></li>
      
     	<li><a href="/categories.html#linux_kernel-ref">
@@ -370,8 +378,24 @@
     		shell <span>2</span>
     	</a></li>
      
+    	<li><a href="/categories.html#ios-ref">
+    		ios <span>7</span>
+    	</a></li>
+     
     	<li><a href="/categories.html#ios-dev-ref">
-    		ios-dev <span>9</span>
+    		ios-dev <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#design pattern-ref">
+    		design pattern <span>1</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#nginx-ref">
+    		nginx <span>2</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#mac os x-ref">
+    		mac os x <span>1</span>
     	</a></li>
     
   
@@ -440,6 +464,12 @@
       	<li><a href="/tags.html">Tags</a></li>
       	
       
+    
+  
+    
+  
+    
+  
     
   
     

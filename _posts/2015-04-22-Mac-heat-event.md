@@ -24,7 +24,8 @@ tags: Mac
 * Mac开机启动程序存放的位置：`/Library/LaunchDaemons/, /Library/LaunchAgents/, ~/Library/LaunchAgents/`. Mac下的一些程序安装的时候，会生成一个或者多个plist文件，执行开机自启动。这些文件大多位于这些路径下，可以通过`launchctl unload com.razer.rzupdater.plist`取消相应项目的开机自启动。对于一些比较显式的应用，则可以通过`System Preferences/User & Groups/Loin items`进行相应的添加与删除。
 * 
 * 另外，不管是实体店还是官网买的Mac，全球联保都是一样的，北京有4个维修点，离海淀比较近的在朝阳，实在不行，真是硬件有问题，只能找个时间，官网预约，过去检测一下了。
-
+*
+* 事实上，今天终于找到了问题，果然是软件问题，使用Mou打开大的文件时，不一会儿功夫，CPU占用率就达到了200%，而且页面的CSS渲染也做不完。应该就是CPU对CSS的渲染不堪重负，导致了负载过高。目前将在Mou上纪录的刷题纪录迁移到了一个比较不错的在线MarkDown编辑器上面。
 
 
 

@@ -136,6 +136,8 @@
 			 
 				
 			 
+				
+			 
 			
 			
 		</ul>
@@ -173,6 +175,88 @@
 				
 				<div class="journal-cat-box">
 
+<a href="/categories.html#algorithm-ref" title="algorithm">
+	algorithm
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/algorithm/2015/04/27/Merge-Sort-Array-ListNode">Reverse Nodes in k-Group</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  这两天在写链表相关的题目，不少数组操作，将数据结构换成链表之后，都会比较难以处理，主要是单向链表，没有了反向的指针，其实数组，可以将其与双向链表对应上。早上在写一个链表归并排序的题目，一直<code>runtime error</code>，很是头疼。故将数组、链表的归并排序递归以及非递归实现，做一个整理。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/algorithm/2015/04/27/Merge-Sort-Array-ListNode">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/leetcode/2015/04/26/Leetcode-Reverse">Reverse Nodes in k-Group</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  给一个链表，每次反转k个节点，如果节点数不是k的倍数，最后剩下的节点不需要反转，只能操作节点，不能改变节点的值，使用常数空间。</p>
+
+<p>   跟昨天做的<code>Reverse Linked List II</code>是一样的思路，即对于每k个节点，看成一组[m, n]，<code>Reverse Linked List II</code>只需要反转一组子链表，而这一题需要反转多组。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/leetcode/2015/04/26/Leetcode-Reverse">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/leetcode/2015/04/25/Leetcode-Reverse-Linked-List-II">Reverse Linked List II</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>   即给定一个链表，以及两个位置m，n，将从第m个节点到第n个节点的链表进行反转。要求最好是只扫描一次链表，以及in-place去做。比如，对于<code>1-&gt;2-&gt;3-&gt;4-&gt;5-&gt;NULL, m = 2 and n = 4</code>，反转后返回<code>1-&gt;4-&gt;3-&gt;2-&gt;5-&gt;NULL</code>。</p>
+
+<p>  开始想到的方法是，使用一个栈，从m到n，将节点的值入栈，然后再扫一遍链表，从m到n，再将值依次出栈，更改节点元素值即可。如此，有两个不好的地方，首先，多开辟了存储空间，最坏情况下，需要浪费O(n)的存储空间；再者，需要遍历两次。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/leetcode/2015/04/25/Leetcode-Reverse-Linked-List-II">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
 <a href="/categories.html#leetcode-ref" title="leetcode">
 	leetcode
 
@@ -201,104 +285,24 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#mac os x-ref" title="mac os x">
-	mac os x
+<a href="/categories.html#algorithm-ref" title="algorithm">
+	algorithm
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/mac%20os%20x/2015/04/22/Mac-heat-event">Mac风扇狂转</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/algorithm/2015/04/23/Big-Number-Add">链表表示的大数加法</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  这两天温度上来，所里真是苦不堪言，本来就很闷的环境，没有空调，跟蒸笼一样。从苏州回来后，这两天Mac air的风扇狂转，还怀疑是在炎热的环境中罢工了，想想真不至于。昨晚在15楼，搞到晚上10点，就受制于风扇的嗡嗡声音，草草回宿舍，晚上在宿舍开着电脑更新软件，却并未见异响，诡异。</p>
+				<span class="teaser"><p>   来自企鹅的题目，大数加法，两个单向链表，未知长度，不能将链表翻转、不能使用数组，不能修改链表，需要O(n)的时间复杂度。</p>
+
+<p>  大数加法的变种，一般都以数组/链表的形式出现。主要是进位的处理。对这一题来说，比较麻烦的就是，数据的高位在链表头位置，而链表只能通过头指针进行遍历。不能使用一个stack，先遍历链表，将各个节点入栈，然后依次出栈并相加。不能使用数组，即限制了这种方法的使用。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/mac%20os%20x/2015/04/22/Mac-heat-event">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#leetcode-ref" title="leetcode">
-	leetcode
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2015/04/22/Leetcode-Subset">Subsets I/II</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>   给定一个vector容器存放的整形数组，返回所有的子集，要求子集中的元素为非递减排列；其中I中的元素没有重复，II中可能存在重复元素。</p>
-
-<p>  开始看到题目，第一感觉就是dfs，但是似乎这一题，又不算标准的dfs。当数组中没有重复元素时，对于长度为n的数组，子集有2^n个，即对于每个元素，都可以选择加入或者不加入。则可以先将数组排序，再依次将每个元素加入已生成的子集中。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/leetcode/2015/04/22/Leetcode-Subset">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#leetcode-ref" title="leetcode">
-	leetcode
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2015/04/21/Leetcode-Find-Peak-Element">Find Peak Element</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  按照题意，peak number即在一个数组中，比前后元素都大的数字。对于nums[-1], nums[n]，都认为值为无穷小。题目要求的时间复杂度为O(logn)，毫无疑问需要使用二分查找，解题有一个小trick，即对mid元素做判断是否为peak number，若否，往那边跳的问题。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/leetcode/2015/04/21/Leetcode-Find-Peak-Element">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#leetcode-ref" title="leetcode">
-	leetcode
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2015/04/20/Leetcode-Search-in-Rotated-Sorted-Array">Search in Rotated Sorted Array I/II</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  给定一个有序数组，以某一个支点做旋转；给定一个target，找出该数组中是否存在该target.其中I数组没有重复元素，若存在，则返回元素索引，反之，返回-1。II数组中存在重复元素，存在返回True，否则返回False。</p>
-
-<p>  这一题O(n)的写法，几行代码就写出来了，但是显然题目是要考察二分查找，O(n)的解法没什么意义。二分查找，时间复杂度为O(logn)，其中第二题中，存在重复元素的情况下，主要可能存在A[lo] == A[mid]同时A[mid] == A[hi]的情况，这点是需要特别注意的地方，可以通过逐步收缩right/left的位置将这个影响因素排除。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/leetcode/2015/04/20/Leetcode-Search-in-Rotated-Sorted-Array">Read More</a></span>
+				<span class="readmore"><a href="/algorithm/2015/04/23/Big-Number-Add">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -339,7 +343,7 @@
   
      
     	<li><a href="/categories.html#algorithm-ref">
-    		algorithm <span>3</span>
+    		algorithm <span>5</span>
     	</a></li>
      
     	<li><a href="/categories.html#cv-ref">
@@ -355,7 +359,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#leetcode-ref">
-    		leetcode <span>11</span>
+    		leetcode <span>13</span>
     	</a></li>
      
     	<li><a href="/categories.html#linux_kernel-ref">
@@ -464,6 +468,8 @@
       	<li><a href="/tags.html">Tags</a></li>
       	
       
+    
+  
     
   
     

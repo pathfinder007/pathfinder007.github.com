@@ -21,8 +21,13 @@ http://lambda.hk/10/index.html
 http://lambda.hk/11/index.html
 http://lambda.hk/12/index.html
 http://lambda.hk/13/index.html
+http://lambda.hk/14/index.html
 
+http://lambda.hk/algorithm/2015/04/27/Merge-Sort-Array-ListNode
+http://lambda.hk/leetcode/2015/04/26/Leetcode-Reverse
+http://lambda.hk/leetcode/2015/04/25/Leetcode-Reverse-Linked-List-II
 http://lambda.hk/leetcode/2015/04/23/Leetcode-Largest-Rectangle
+http://lambda.hk/algorithm/2015/04/23/Big-Number-Add
 http://lambda.hk/mac%20os%20x/2015/04/22/Mac-heat-event
 http://lambda.hk/leetcode/2015/04/22/Leetcode-Subset
 http://lambda.hk/leetcode/2015/04/21/Leetcode-Find-Peak-Element

@@ -1,7 +1,7 @@
 ---
 layout: post
 category: Algorithm
-title: Reverse Nodes in k-Group 
+title: 基于数组与链表的归并排序算法实现 
 tags: Algorithm Interview
 ---
 

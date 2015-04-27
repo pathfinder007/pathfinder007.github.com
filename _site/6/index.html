@@ -136,6 +136,8 @@
 			 
 				
 			 
+				
+			 
 			
 			
 		</ul>
@@ -173,6 +175,121 @@
 				
 				<div class="journal-cat-box">
 
+<a href="/categories.html#ios-dev-ref" title="ios-dev">
+	ios-dev
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/ios-dev/2015/04/06/iOS-some-warning-fixed">iOS中编译出现的一些warning/error解决</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>ld: warning: directory not found for option ‘-L/Users/pathfinder/Documents/hstl/hstl/qqhsmrtiphone/qqhsmrtiphone/3rd_lib/SinaWeiboSDK’</p>
+
+<p>fixed:
+1. Click on your project (targets)
+2. Click on Build Settings
+3. Under Library Search Paths, delete the paths</p>
+
+<p>  最近在改版华商名人堂的iOS客户端，顺便把之前iOS开发中涉及到的一些东西整理一下。 </p>
+
+<p>  将整个共工程都广泛使用的头文件包含在该文件下，编译器会自动将头文件添加到所有源文件，使用相应类时不需要import;可以把UIKit/UIKit.h, Foundation/Foundation.h等框架头文件, 以及包含NSLog开关的头文件放在该文件中。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/ios-dev/2015/04/06/iOS-some-warning-fixed">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#ios-ref" title="ios">
+	ios
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/ios/2015/04/06/iOS-local-data-storage">iOS中本地持久化存储</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  App中有一些数据需要在本地持久化存储，主要是涉及一些App个人私有的配置信息，比如当前版本号、需要离线浏览的文章、当前选择的是白天/夜间浏览模式、登陆数据等。而为了最大化页面加载，也有不少信息需要在本地就行存储。iOS中本地存储主要是三种方式，数据库(SQLite)、NSUserDefaults、plist文件。原来开发中，一直喜欢自己新建plist文件进行存储，使用key-value的格式，类似自己建xml格式的文档。如此好处仅仅是开发的时候可视化比较好，但是这样需要显示创建、读取文件，很麻烦。而NSUserDefaults才则不需要考虑这些东西，像读取字符串一样直接读取、存储，自动进行key-value存储，并将数据进行序列化，读取方便、占用空间小，相当于一个小型的key-value数据库。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/ios/2015/04/06/iOS-local-data-storage">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#ios-ref" title="ios">
+	ios
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/ios/2015/04/05/iOS-pch">iOS工程中添加pch文件</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  最近在改版华商名人堂的iOS客户端，顺便把之前iOS开发中涉及到的一些东西整理一下。 </p>
+
+<p>  将整个共工程都广泛使用的头文件包含在该文件下，编译器会自动将头文件添加到所有源文件，使用相应类时不需要import;可以把UIKit/UIKit.h, Foundation/Foundation.h等框架头文件, 以及包含NSLog开关的头文件放在该文件中。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/ios/2015/04/05/iOS-pch">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#shell-ref" title="shell">
+	shell
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/shell/2015/04/05/Shell-rm">Mac/Linux下rm实现回收站功能</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  Unix下的rm命令为彻底删除，特别加上-rf选项后，很容易由于手抖造成无法挽回的错误。上几天写代码时，写了一早上，临吃饭时，想把.pyc给删了，手抖把.py给删了。虽然可以通过<code>lost+found</code>想办法找回，但相当费劲。为防患于未然，还是想办法把<code>rm</code>命令alias成移到回收站的功能。在github上找到一个朋友写的脚本，不错。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/shell/2015/04/05/Shell-rm">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
 <a href="/categories.html#python-ref" title="python">
 	python
 
@@ -189,117 +306,6 @@
 				
 				</span>
 				<span class="readmore"><a href="/python/2015/04/05/Python-Multiprocessing">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#git-ref" title="git">
-	git
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/git/2015/04/01/Git-Stash">Git冲突以及pull时需要输入账户密码的解决办法</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  多人维护一份代码时，经常会出现，两边同时更改一个文件，产生冲突问题，而本地的更改，又暂时不能commit，导致<code>git pull</code>的时候报error，大部分时候，我们需要暂存本地的修改，先stash，返回自己上一个commit，将最新代码git pull到本地，之后再stash pop，继续原来的工作。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/git/2015/04/01/Git-Stash">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#python-ref" title="python">
-	python
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/python/2015/03/31/Python-List-Clear">Python中list的删除与清空</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  今天在写阿里的代码，涉及到大量的数据load进内存处理的操作，由于Python的list/dict都是使用自动引用计数的机制进行内存释放；而操作中经常需要将文件读入一个list，处理后扔到另一个list，再转存。当不手动释放list占据的内存时，内存泄漏严重。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/python/2015/03/31/Python-List-Clear">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#c++-ref" title="c++">
-	c++
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/c++/2015/03/30/C-Plus-Plus-Sizeof-Class">C++类的大小，sizeof(class)</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  面试题中经常遇到，定义一个类，或为空，或定义了几个内置类型的变量，或包含构造、析构函数、成员函数，问在32位/64位平台上，sizeof(class)的字节数。比较关键的几个考虑：</p>
-
-<ul>
-  <li>32位系统是4字节对齐，64位系统为8字节对齐；</li>
-  <li>空类，为了分配内存，字节数为1；</li>
-  <li>成员函数的字节数；</li>
-  <li>若包含虚函数，系统需要分配一个指向虚函数的指针vptr，32位系统，大小为4Byte</li>
-</ul>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/c++/2015/03/30/C-Plus-Plus-Sizeof-Class">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#c++-ref" title="c++">
-	c++
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/c++/2015/03/30/C-Plus-Plus-Polymorphism-Override">C++中 的多态与覆盖</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  C++中的多态与覆盖一直是容易混淆的概念，多态即一个接口，多种方法，程序在执行时才决定调用的函数，OOP的核心概念，通过虚函数来实现，虚函数允许子类重新定义成员函数：而子类重新定义父类的做法称为覆盖；只有重写了虚函数才算多态；而重载则是允许有多个同名的函数，而这些函数的参数列表不同，允许参数个数不同，参数类型不同，或者两者都不同。编译器会根据这些函数的不同列表，将同名的函数的名称做修饰，从而生成一些不同名称的预处理函数，来实现同名函数调用时的重载问题。但这并没有体现多态性。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/c++/2015/03/30/C-Plus-Plus-Polymorphism-Override">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -340,7 +346,7 @@
   
      
     	<li><a href="/categories.html#algorithm-ref">
-    		algorithm <span>3</span>
+    		algorithm <span>5</span>
     	</a></li>
      
     	<li><a href="/categories.html#cv-ref">
@@ -356,7 +362,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#leetcode-ref">
-    		leetcode <span>11</span>
+    		leetcode <span>13</span>
     	</a></li>
      
     	<li><a href="/categories.html#linux_kernel-ref">
@@ -465,6 +471,8 @@
       	<li><a href="/tags.html">Tags</a></li>
       	
       
+    
+  
     
   
     

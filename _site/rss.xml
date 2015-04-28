@@ -5,13 +5,13 @@
         <description>Mushsen's Blog - Hombo Wang</description>
         <link>http://lambda.hk</link>
         <link>http://lambda.hk</link>
-        <lastBuildDate>2015-04-28T07:30:27+08:00</lastBuildDate>
-        <pubDate>2015-04-28T07:30:27+08:00</pubDate>
+        <lastBuildDate>2015-04-28T07:31:56+08:00</lastBuildDate>
+        <pubDate>2015-04-28T07:31:56+08:00</pubDate>
         <ttl>1800</ttl>
 
 
         <item>
-                <title>Reverse Nodes in k-Group</title>
+                <title>基于数组与链表的归并排序算法实现</title>
                 <description>&lt;p&gt;  这两天在写链表相关的题目，不少数组操作，将数据结构换成链表之后，都会比较难以处理，主要是单向链表，没有了反向的指针，其实数组，可以将其与双向链表对应上。早上在写一个链表归并排序的题目，一直&lt;code&gt;runtime error&lt;/code&gt;，很是头疼。故将数组、链表的归并排序递归以及非递归实现，做一个整理。&lt;/p&gt;
 
 &lt;!--more--&gt;

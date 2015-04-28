@@ -4,7 +4,7 @@
  <title>Mushsen's Blog</title>
  <link href="http://lambda.hk/" rel="self"/>
  <link href="http://lambda.hk"/>
- <updated>2015-04-28T07:30:27+08:00</updated>
+ <updated>2015-04-28T07:31:56+08:00</updated>
  <id>http://lambda.hk</id>
  <author>
    <name>Hombo Wang</name>
@@ -13,7 +13,7 @@
 
  
  <entry>
-   <title>Reverse Nodes in k-Group</title>
+   <title>基于数组与链表的归并排序算法实现</title>
    <link href="http://lambda.hk/algorithm/2015/04/27/Merge-Sort-Array-ListNode"/>
    <updated>2015-04-27T00:00:00+08:00</updated>
    <id>http://lambda.hk/algorithm/2015/04/27/Merge-Sort-Array-ListNode</id>

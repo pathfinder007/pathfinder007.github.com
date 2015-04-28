@@ -33,7 +33,8 @@ sudo make install
 * 启动，直接./运行sbin/nginx即可
 * 重启，`sudo ./nginx -s reload`
 * 停止，通过`ps -ef | grep nginx`查询nginx的主进程号可以发现一共有两个进程，一个master，一个worker（由于配置文件中设置的process为1，因此一个worker）.通过`sudo kill -QUIT pid`即可停止Nginx.`当在nginx.conf中配置process的个数之后，相应的worker数目会增多，而master为1个不会有变化。
-*  改变配置之后，通过nginx -t测试一下配置是否有问题，没有问题再nginx -s reload重启服务器。
+*  改变配置之后，通过./nginx -t测试一下配置是否有问题，没有问题再./nginx -s reload重启服务器。
+*  将nginx.conf中server_name改成nginx部署机器所在ip，既可以实现外网访问
 
 <figure>
 	<img src="http://mhs-blog.qiniudn.com/2015_04_28.png" alt="">

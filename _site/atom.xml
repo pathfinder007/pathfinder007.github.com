@@ -4,7 +4,7 @@
  <title>Mushsen's Blog</title>
  <link href="http://lambda.hk/" rel="self"/>
  <link href="http://lambda.hk"/>
- <updated>2015-04-30T09:27:56+08:00</updated>
+ <updated>2015-04-30T09:31:37+08:00</updated>
  <id>http://lambda.hk</id>
  <author>
    <name>Hombo Wang</name>
@@ -17,33 +17,13 @@
    <link href="http://lambda.hk/nginx/2015/04/30/nginx-tornado-supervisor"/>
    <updated>2015-04-30T00:00:00+08:00</updated>
    <id>http://lambda.hk/nginx/2015/04/30/nginx-tornado-supervisor</id>
-   <content type="html">&lt;p&gt;  上一节已经在Ubuntu 14.04上部署了Nginx服务器，对于生产环境来说，一般使用Nginx反向代理到Tornado的架构，其中前端的Nginx主要处理Internet上的请求，而Tornado作为一个应用服务器，处理各个模块之间的数据交互。而supervisor是一个守护进程软件，可以把Linux上众多的守护进程集中在supervisor进行统一管理。&lt;/p&gt;
+   <content type="html">&lt;p&gt;  Nginx不支持外部程序的调用或者解析，包括php程序、python程序都不行，因此业务处理模块的调用，必须通过FastCGI接口来调用。FastCGI在Linux下是socket，为了调用CGI程序，还需要一个FastCGI的wrapper（启动另一个程序的程序），绑定在某个固定的socket。&lt;/p&gt;
 
 &lt;!--more--&gt;
 
-&lt;h3 id=&quot;tornado&quot;&gt;1 Tornado简介及部署&lt;/h3&gt;
-
-&lt;p&gt;  Tornado为facebook的一个开源项目，和现有的主流Web服务器框架有着明显区别，是非阻塞的服务器，得力于其非阻塞的方式以及epoll的运用，Tornado每秒可以处理数以千计的连接。&lt;/p&gt;
-
-&lt;p&gt;  首先在&lt;code&gt;http://www.tornadoweb.org/en/stable/index.html&lt;/code&gt;下载最新版本的tornado，通过以下方式安装，&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;tar&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xvzf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tornado&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;4.1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gz&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tornado&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;2.0&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;python&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;py&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;build&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;python&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;py&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;  为了使用Tornado的所有功能，需要安装PycURL以及simplejson，Ubuntu下可以通过
-&lt;code&gt;sudo apt-get install python-pycurl&lt;/code&gt;安装.&lt;/p&gt;
-
-&lt;p&gt;  tornado安装目录下有一个demo目录，里面有一些应用的示例demo，包括一个类S3的基于本地文件的文件存储服务器。我们进入helloworld目录下，&lt;code&gt;python helloworld.py&lt;/code&gt;运行，即可通过浏览器中localhost:8888进行访问（我们设定的监听端口为8888）。事实上，无论py文件放在哪里，将其运行后，都可以正常访问，这也是Tornado不同于Apache的地方，不必有一个固定的/var/www/目录存放代码。&lt;/p&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;nginxfastcgi&quot;&gt;2 Nginx与FastCGI调用&lt;/h3&gt;
+&lt;h3 id=&quot;nginxfastcgi&quot;&gt;1 Nginx与FastCGI调用&lt;/h3&gt;
 
 &lt;p&gt;  FastCGI程序(fast common gateway interface) - 常驻型CGI程序，它是语言无关的、可伸缩架构的CGI开放扩展，其主要行为是将CGI解释器进程保持在内存中并因此获得较高的性能。nginx不能直接执行外部的cgi程序，需要使用FastCGI进程管理程序，才能调用FastCGI程序，比如lighttpd中的spawn-fastcgi。&lt;/p&gt;
-
-&lt;p&gt;  Nginx不支持外部程序的调用或者解析，包括php程序、python程序都不行，因此业务处理模块的调用，必须通过FastCGI接口来调用。FastCGI在Linux下是socket，为了调用CGI程序，还需要一个FastCGI的wrapper（启动另一个程序的程序），绑定在某个固定的socket伤。&lt;/p&gt;
 
 &lt;p&gt;  当Nginx将CGI请求发送给这个socket的时候，通过FastCGI接口，wrapper接收到请求，然后派生出一个新的线程，这个线程调用解释器或者外部程序处理脚本并读取返回数据；接着，wrapper再将返回的数据通过FastCGI接口，沿着固定的socket传递给Nginx；最后，Nginx将返回的数据发送给客户端。这就是Nginx+FastCGI的整个运作过程，如下图所示：&lt;/p&gt;
 
@@ -53,9 +33,9 @@
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;fastcgi&quot;&gt;3. FastCGI环境部署与测试&lt;/h3&gt;
+&lt;h3 id=&quot;fastcgi&quot;&gt;2. FastCGI环境部署与测试&lt;/h3&gt;
 
-&lt;h4 id=&quot;spawnfastcgi&quot;&gt;3.1 spawn_fastcgi的安装、部署与配置&lt;/h4&gt;
+&lt;h4 id=&quot;spawnfastcgi&quot;&gt;2.1 spawn_fastcgi的安装、部署与配置&lt;/h4&gt;
 
 &lt;ul&gt;
   &lt;li&gt;从&lt;code&gt;https://github.com/lighttpd/spawn-fcgi&lt;/code&gt;下载spawn-fcgi的安装包；&lt;/li&gt;
@@ -65,7 +45,7 @@
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;fastcgi-1&quot;&gt;3.2 fastcgi库的安装&lt;/h4&gt;
+&lt;h4 id=&quot;fastcgi-1&quot;&gt;2.2 fastcgi库的安装&lt;/h4&gt;
 
 &lt;ul&gt;
   &lt;li&gt;下载&lt;code&gt;http://www.fastcgi.com/dist/fcgi.tar.gz&lt;/code&gt;之后解压&lt;/li&gt;
@@ -75,7 +55,7 @@
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;fastcgidemo&quot;&gt;3.3 FastCGI的一个demo&lt;/h4&gt;
+&lt;h4 id=&quot;fastcgidemo&quot;&gt;2.3 FastCGI的一个demo&lt;/h4&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;fcgi_stdio.h&amp;gt;&lt;/span&gt;
 &lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdlib.h&amp;gt;&lt;/span&gt;
@@ -104,7 +84,7 @@
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;spawn-fcgiservernginx&quot;&gt;3.4 启动spawn-fcgi管理进程，绑定server，配置nginx转发请求&lt;/h4&gt;
+&lt;h4 id=&quot;spawn-fcgiservernginx&quot;&gt;2.4 启动spawn-fcgi管理进程，绑定server，配置nginx转发请求&lt;/h4&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;code&gt;/usr/local/nginx/sbin/spawn-fcgi -a 127.0.0.1 -p 8088 -f /usr/local/nginx/cgibin/demo&lt;/code&gt;启动spawn-fcgi进程，绑定server ip和端口（不要与nginx监听端口重合）；&lt;/li&gt;

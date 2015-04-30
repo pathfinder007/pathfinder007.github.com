@@ -185,7 +185,7 @@
 			<div class="journal-body">
 				<h1 class="journal-title"><a href="/nginx/2015/04/30/nginx-tornado-supervisor">在Ubuntu14.04上搭建配置nginx与FastCGI环境</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  上一节已经在Ubuntu 14.04上部署了Nginx服务器，对于生产环境来说，一般使用Nginx反向代理到Tornado的架构，其中前端的Nginx主要处理Internet上的请求，而Tornado作为一个应用服务器，处理各个模块之间的数据交互。而supervisor是一个守护进程软件，可以把Linux上众多的守护进程集中在supervisor进行统一管理。</p>
+				<span class="teaser"><p>  Nginx不支持外部程序的调用或者解析，包括php程序、python程序都不行，因此业务处理模块的调用，必须通过FastCGI接口来调用。FastCGI在Linux下是socket，为了调用CGI程序，还需要一个FastCGI的wrapper（启动另一个程序的程序），绑定在某个固定的socket。</p>
 
 
 				

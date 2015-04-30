@@ -183,14 +183,16 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2015/04/20/Leetcode-Majority-Element">Majority Element</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/leetcode/2015/04/22/Leetcode-Subset">Subsets I/II</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  Leetcode中的题目，似乎之前刷的时候没有这道题，大意就是一个给定长度为n的数组，找出其中出现次数大于n/2的元素，数组非空且一定存在这样的元素。</p>
+				<span class="teaser"><p>   给定一个vector容器存放的整形数组，返回所有的子集，要求子集中的元素为非递减排列；其中I中的元素没有重复，II中可能存在重复元素。</p>
+
+<p>  开始看到题目，第一感觉就是dfs，但是似乎这一题，又不算标准的dfs。当数组中没有重复元素时，对于长度为n的数组，子集有2^n个，即对于每个元素，都可以选择加入或者不加入。则可以先将数组排序，再依次将每个元素加入已生成的子集中。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/leetcode/2015/04/20/Leetcode-Majority-Element">Read More</a></span>
+				<span class="readmore"><a href="/leetcode/2015/04/22/Leetcode-Subset">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -209,16 +211,14 @@
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2015/04/20/Leetcode-Find-Minimum-in-Rotated-Sorted-Array">Find Minimum in Rotated Sorted Array I/II</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/leetcode/2015/04/21/Leetcode-Find-Peak-Element">Find Peak Element</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  一个有序数组，以某一个点为轴，进行旋转，找出数组中最小的元素，其中I中数组没有重复元素，II中数组存在重复元素。</p>
-
-<p>  由于这是一个递增的数组，以数组中某一个点为轴进行旋转，则旋转的位置，会产生一个递减。因此最直观的方法，遍历一遍数组，找出递减的位置，即找到了最小值，时间复杂度为O(n)。而这一题很明显的，是典型的二分查找应用，O(n)的算法没什么意义。使用二分查找，可以达到O(logn)的时间复杂度，通过递归或者非递归实现。</p>
+				<span class="teaser"><p>  按照题意，peak number即在一个数组中，比前后元素都大的数字。对于nums[-1], nums[n]，都认为值为无穷小。题目要求的时间复杂度为O(logn)，毫无疑问需要使用二分查找，解题有一个小trick，即对mid元素做判断是否为peak number，若否，往那边跳的问题。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/leetcode/2015/04/20/Leetcode-Find-Minimum-in-Rotated-Sorted-Array">Read More</a></span>
+				<span class="readmore"><a href="/leetcode/2015/04/21/Leetcode-Find-Peak-Element">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -229,22 +229,24 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#c++-ref" title="c++">
-	c++
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/c++/2015/04/20/C++-STL-map-hash_map-unordered_map">STL中的map、unordered_map、hash_map</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/leetcode/2015/04/20/Leetcode-Search-in-Rotated-Sorted-Array">Search in Rotated Sorted Array I/II</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  在之前使用STL时，经常混淆的几个数据结构，特别是做Leetcode的题目时，对于使用哪一个map，一直没有太明确的概念，事实上，三个容器，有着比较大的区别.</p>
+				<span class="teaser"><p>  给定一个有序数组，以某一个支点做旋转；给定一个target，找出该数组中是否存在该target.其中I数组没有重复元素，若存在，则返回元素索引，反之，返回-1。II数组中存在重复元素，存在返回True，否则返回False。</p>
+
+<p>  这一题O(n)的写法，几行代码就写出来了，但是显然题目是要考察二分查找，O(n)的解法没什么意义。二分查找，时间复杂度为O(logn)，其中第二题中，存在重复元素的情况下，主要可能存在A[lo] == A[mid]同时A[mid] == A[hi]的情况，这点是需要特别注意的地方，可以通过逐步收缩right/left的位置将这个影响因素排除。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/c++/2015/04/20/C++-STL-map-hash_map-unordered_map">Read More</a></span>
+				<span class="readmore"><a href="/leetcode/2015/04/20/Leetcode-Search-in-Rotated-Sorted-Array">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -255,24 +257,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#nginx-ref" title="nginx">
-	nginx
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/nginx/2015/04/15/nginx-ubuntu-install">在Ubuntu14.04上安装Nginx</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/leetcode/2015/04/20/Leetcode-Maximum-Subarray">Maximum Subarray</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  现在很多涉及到大规模、高并发访问的Server，基本都是使用nginx作为反向代理服务器，进行网络请求的接收、分发以及缓存。特地问了下百度在线广告的师兄，它们的backend server也是使用的nginx。随着这一两年做的东西逐渐增多，也逐渐找到自己的兴趣，并不是Data Mining抑或Machine Learning，而在于与App相关的一些backend Server的开发，即涉及一些网络优化以及高并发的处理。</p>
-
-<p>  下个月需要做一个Server相关的项目，而也一直有意华商韬略的Server进行优化而还没行动。计划接下来的时间，先在台式机搭一个nginx的反向代理Server环境，将华商韬略的数据库进行部署，将数据处理的Server由Apache换成Tornado，并在Server做一些数据的Cache，提高CRUD的效率。之后将环境分别迁移到aws以及阿里云。一来，为下面的项目做好准备，二来，继续翻新华商韬略的iOS客户端。涉及大规模方面的问题，有必要发信问问老罗。</p>
+				<span class="teaser"><p>  给定一个数组，找出其中和最大的子串长度。比如对于<code>[−2,1,−3,4,−1,2,1,−5,4]</code>，和最大的连续子串为<code>[4,−1,2,1]</code>，即最大的和为6.</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/nginx/2015/04/15/nginx-ubuntu-install">Read More</a></span>
+				<span class="readmore"><a href="/leetcode/2015/04/20/Leetcode-Maximum-Subarray">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -283,24 +283,22 @@
 				
 				<div class="journal-cat-box">
 
-<a href="/categories.html#nginx-ref" title="nginx">
-	nginx
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
 
 </a>
 </div>
 				
 			</div>
 			<div class="journal-body">
-				<h1 class="journal-title"><a href="/nginx/2015/04/15/nginx-overview">为什么要折腾nginx</a><span class="author"></span></h1>
+				<h1 class="journal-title"><a href="/leetcode/2015/04/20/Leetcode-Majority-Element">Majority Element</a><span class="author"></span></h1>
 				
-				<span class="teaser"><p>  现在很多涉及到大规模、高并发访问的Server，基本都是使用nginx作为反向代理服务器，进行网络请求的接收、分发以及缓存。特地问了下百度在线广告的师兄，它们的backend server也是使用的nginx。随着这一两年做的东西逐渐增多，也逐渐找到自己的兴趣，并不是Data Mining抑或Machine Learning，而在于与App相关的一些backend Server的开发，即涉及一些网络优化以及高并发的处理。</p>
-
-<p>  下个月需要做一个Server相关的项目，而也一直有意华商韬略的Server进行优化而还没行动。计划接下来的时间，先在台式机搭一个nginx的反向代理Server环境，将华商韬略的数据库进行部署，将数据处理的Server由Apache换成Tornado，并在Server做一些数据的Cache，提高CRUD的效率。之后将环境分别迁移到aws以及阿里云。一来，为下面的项目做好准备，二来，继续翻新华商韬略的iOS客户端。涉及大规模方面的问题，有必要发信问问老罗。</p>
+				<span class="teaser"><p>  Leetcode中的题目，似乎之前刷的时候没有这道题，大意就是一个给定长度为n的数组，找出其中出现次数大于n/2的元素，数组非空且一定存在这样的元素。</p>
 
 
 				
 				</span>
-				<span class="readmore"><a href="/nginx/2015/04/15/nginx-overview">Read More</a></span>
+				<span class="readmore"><a href="/leetcode/2015/04/20/Leetcode-Majority-Element">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -357,7 +355,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#leetcode-ref">
-    		leetcode <span>13</span>
+    		leetcode <span>14</span>
     	</a></li>
      
     	<li><a href="/categories.html#linux_kernel-ref">
@@ -393,7 +391,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#nginx-ref">
-    		nginx <span>2</span>
+    		nginx <span>4</span>
     	</a></li>
      
     	<li><a href="/categories.html#mac os x-ref">

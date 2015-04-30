@@ -4,13 +4,368 @@
  <title>Mushsen's Blog</title>
  <link href="http://lambda.hk/" rel="self"/>
  <link href="http://lambda.hk"/>
- <updated>2015-04-28T07:31:56+08:00</updated>
+ <updated>2015-04-30T09:27:56+08:00</updated>
  <id>http://lambda.hk</id>
  <author>
    <name>Hombo Wang</name>
    <email></email>
  </author>
 
+ 
+ <entry>
+   <title>在Ubuntu14.04上搭建配置nginx与FastCGI环境</title>
+   <link href="http://lambda.hk/nginx/2015/04/30/nginx-tornado-supervisor"/>
+   <updated>2015-04-30T00:00:00+08:00</updated>
+   <id>http://lambda.hk/nginx/2015/04/30/nginx-tornado-supervisor</id>
+   <content type="html">&lt;p&gt;  上一节已经在Ubuntu 14.04上部署了Nginx服务器，对于生产环境来说，一般使用Nginx反向代理到Tornado的架构，其中前端的Nginx主要处理Internet上的请求，而Tornado作为一个应用服务器，处理各个模块之间的数据交互。而supervisor是一个守护进程软件，可以把Linux上众多的守护进程集中在supervisor进行统一管理。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;tornado&quot;&gt;1 Tornado简介及部署&lt;/h3&gt;
+
+&lt;p&gt;  Tornado为facebook的一个开源项目，和现有的主流Web服务器框架有着明显区别，是非阻塞的服务器，得力于其非阻塞的方式以及epoll的运用，Tornado每秒可以处理数以千计的连接。&lt;/p&gt;
+
+&lt;p&gt;  首先在&lt;code&gt;http://www.tornadoweb.org/en/stable/index.html&lt;/code&gt;下载最新版本的tornado，通过以下方式安装，&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;tar&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xvzf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tornado&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;4.1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gz&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tornado&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;2.0&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;python&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;py&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;build&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;python&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;py&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;  为了使用Tornado的所有功能，需要安装PycURL以及simplejson，Ubuntu下可以通过
+&lt;code&gt;sudo apt-get install python-pycurl&lt;/code&gt;安装.&lt;/p&gt;
+
+&lt;p&gt;  tornado安装目录下有一个demo目录，里面有一些应用的示例demo，包括一个类S3的基于本地文件的文件存储服务器。我们进入helloworld目录下，&lt;code&gt;python helloworld.py&lt;/code&gt;运行，即可通过浏览器中localhost:8888进行访问（我们设定的监听端口为8888）。事实上，无论py文件放在哪里，将其运行后，都可以正常访问，这也是Tornado不同于Apache的地方，不必有一个固定的/var/www/目录存放代码。&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;nginxfastcgi&quot;&gt;2 Nginx与FastCGI调用&lt;/h3&gt;
+
+&lt;p&gt;  FastCGI程序(fast common gateway interface) - 常驻型CGI程序，它是语言无关的、可伸缩架构的CGI开放扩展，其主要行为是将CGI解释器进程保持在内存中并因此获得较高的性能。nginx不能直接执行外部的cgi程序，需要使用FastCGI进程管理程序，才能调用FastCGI程序，比如lighttpd中的spawn-fastcgi。&lt;/p&gt;
+
+&lt;p&gt;  Nginx不支持外部程序的调用或者解析，包括php程序、python程序都不行，因此业务处理模块的调用，必须通过FastCGI接口来调用。FastCGI在Linux下是socket，为了调用CGI程序，还需要一个FastCGI的wrapper（启动另一个程序的程序），绑定在某个固定的socket伤。&lt;/p&gt;
+
+&lt;p&gt;  当Nginx将CGI请求发送给这个socket的时候，通过FastCGI接口，wrapper接收到请求，然后派生出一个新的线程，这个线程调用解释器或者外部程序处理脚本并读取返回数据；接着，wrapper再将返回的数据通过FastCGI接口，沿着固定的socket传递给Nginx；最后，Nginx将返回的数据发送给客户端。这就是Nginx+FastCGI的整个运作过程，如下图所示：&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_04_28_2.png&quot; alt=&quot;&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;fastcgi&quot;&gt;3. FastCGI环境部署与测试&lt;/h3&gt;
+
+&lt;h4 id=&quot;spawnfastcgi&quot;&gt;3.1 spawn_fastcgi的安装、部署与配置&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;从&lt;code&gt;https://github.com/lighttpd/spawn-fcgi&lt;/code&gt;下载spawn-fcgi的安装包；&lt;/li&gt;
+  &lt;li&gt;解压后&lt;code&gt;cmake .    make    make install&lt;/code&gt;进行安装；&lt;/li&gt;
+  &lt;li&gt;将可执行文件spawn-fcgi移动到nginx/sbin中&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;fastcgi-1&quot;&gt;3.2 fastcgi库的安装&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;下载&lt;code&gt;http://www.fastcgi.com/dist/fcgi.tar.gz&lt;/code&gt;之后解压&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;./configure  make sudo make install&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;在/usr/local/nginx下新建cgibin文件夹，cgi的可执行文件放在该目录下&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;fastcgidemo&quot;&gt;3.3 FastCGI的一个demo&lt;/h4&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;fcgi_stdio.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdlib.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;unistd.h&amp;gt;                                                                                                                                                                     &lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FCGI_Accept&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Content-type: text/html&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\r\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\r\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&amp;quot;FastCGI Hello!&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&amp;quot;Request number %d running on host%s &amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&amp;quot;Process ID: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;SERVER_NAME&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; 
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;通过&lt;code&gt;g++ cgidemo.cc -o cgidemo -lfcgi&lt;/code&gt;进行编译；&lt;/li&gt;
+  &lt;li&gt;将cgidemo移到上一步新建的cgibin目录下;&lt;/li&gt;
+  &lt;li&gt;若提示缺少动态库libfcgi.so.0，建立一个软链接 ：ln -s /usr/local/libfcgi.so.0 /usr/lib/，执行idconfig更新；&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;spawn-fcgiservernginx&quot;&gt;3.4 启动spawn-fcgi管理进程，绑定server，配置nginx转发请求&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;/usr/local/nginx/sbin/spawn-fcgi -a 127.0.0.1 -p 8088 -f /usr/local/nginx/cgibin/demo&lt;/code&gt;启动spawn-fcgi进程，绑定server ip和端口（不要与nginx监听端口重合）；&lt;/li&gt;
+  &lt;li&gt;查看一下9002端口是否已成功：netstat -na | grep 8088
+*
+更改nginx.conf配置文件，让nginx转发请求 &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;err&quot;&gt;在&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;节点的子节点&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;server节&amp;quot;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;点中下添加配置&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;~&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cgi&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fastcgi_pass&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;127.0.0.1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8088&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fastcgi_index&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cgi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fastcgi_param&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SCRIPT_FILENAME&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fcgi&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fastcgi_script_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fastcgi_params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;sudo killall nginx 停止nginx的所有进程&lt;/li&gt;
+  &lt;li&gt;sudo ./nginx重新启动，&lt;code&gt;http://localhost/cgidemo.cgi&lt;/code&gt;即可访问刚才编写的cgidemo程序&lt;/li&gt;
+&lt;/ul&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Reorder List</title>
+   <link href="http://lambda.hk/leetcode/2015/04/29/Leetcode-ListNode-Reorder"/>
+   <updated>2015-04-29T00:00:00+08:00</updated>
+   <id>http://lambda.hk/leetcode/2015/04/29/Leetcode-ListNode-Reorder</id>
+   <content type="html">&lt;p&gt;  改变一个链表的顺序，从&lt;code&gt;L0-&amp;gt;L1-&amp;gt;L2...-&amp;gt;Ln变成L0-&amp;gt;Ln-&amp;gt;L1-&amp;gt;Ln-1...&lt;/code&gt;,in-place并且不能改变节点的值。比较经典的链表相关题目。涉及到链表的切分、反转以及拼接。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;c1&quot;&gt;//第一想法，将链表全部反转，得一个新链表，再将两个链表拼起来，取前一半。但不是in-place&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//这个思路是对的，不能新增加节点，可以将链表拆成两个，将后者进行反转，再将两个链表拼接&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//不能改变元素的值，限制了不能使用stack存储，只能纯链表操作&lt;/span&gt;
+
+ 
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Solution&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;splitList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fast&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;slow&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fast&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fast&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;slow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;fast&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fast&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;slow&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;slow&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;slow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reverse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;head&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        
+        &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pCur&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pNext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pCur&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;pNext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pCur&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;pCur&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pCur&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;pCur&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pNext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reorderList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;head&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        
+        &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;splitList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reverse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        
+        &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ListNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;next1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;next2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;p1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;p1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>在Ubuntu14.04上安装Nginx</title>
+   <link href="http://lambda.hk/nginx/2015/04/28/nginx-ubuntu-install"/>
+   <updated>2015-04-28T00:00:00+08:00</updated>
+   <id>http://lambda.hk/nginx/2015/04/28/nginx-ubuntu-install</id>
+   <content type="html">&lt;p&gt;  aws上面开的Instance为Ubuntu 14.04，下面记录在ubuntu 14.04上搭建一个Nginx服务器，通过浏览器&lt;code&gt;localhost&lt;/code&gt;可以访问的过程&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;pcre&quot;&gt;1.1 PCRE依赖库安装&lt;/h3&gt;
+
+&lt;p&gt;  nginx rewrite依赖PCRE包，需要先编译安装PCRE库，一个perl语言的兼容正则表达式第三方库。可以通过&lt;code&gt;ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/&lt;/code&gt;下载&lt;code&gt;pcre-8.35.tar.gz&lt;/code&gt;, 然后安装，pcre安装之后的动态库文件位于&lt;code&gt;/usr/local/lib&lt;/code&gt;中。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;o&quot;&gt;./&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configure&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;make&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;make&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;nginx&quot;&gt;1.2 Nginx源码安装&lt;/h3&gt;
+
+&lt;p&gt;  从&lt;code&gt;http://nginx.org/download/&lt;/code&gt;下载&lt;code&gt;nginx-1.8.0.tar.gz&lt;/code&gt;，然后通过make方式安装，若未安装pcre依赖库，会报错，可以通过先安装pcre库或者禁用rewrite功能解决，推荐前者。安装成功后，Nginx的目录为&lt;code&gt;/usr/local/nginx&lt;/code&gt;.Nginx主要的配置文件为conf下的nginx.conf，启动文件为sbin下的nginx。&lt;/p&gt;
+
+&lt;p&gt;  启动nginx并访问localhost验证安装成功，结果报错如下：&lt;code&gt;./nginx: error while loading shared libraries: libpcre.so.1: cannot open shared object file: Error 40&lt;/code&gt;。通过&lt;code&gt;ldd $(which /usr/local/nginx/sbin/nginx)&lt;/code&gt;查看该可执行文件依赖的库文件，可以发现，其他的动态库文件so都在lib下找到，而libpcre.so.1未找到，事实上该动态库在第一步安装了PCRE依赖库之后，存在于/usr/local/lib中，通过&lt;code&gt;ln -s /usr/local/lib/libpcre.so.1 /lib&lt;/code&gt;建立软链接，即可正常启动Nginx&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;nginx-1&quot;&gt;1.3 Nginx的启动、停止、重启&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;启动，直接./运行sbin/nginx即可&lt;/li&gt;
+  &lt;li&gt;重启，&lt;code&gt;sudo ./nginx -s reload&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;停止，通过&lt;code&gt;ps -ef | grep nginx&lt;/code&gt;查询nginx的主进程号可以发现一共有两个进程，一个master，一个worker（由于配置文件中设置的process为1，因此一个worker）.通过&lt;code&gt;sudo kill -QUIT pid&lt;/code&gt;即可停止Nginx.`当在nginx.conf中配置process的个数之后，相应的worker数目会增多，而master为1个不会有变化。&lt;/li&gt;
+  &lt;li&gt;改变配置之后，通过./nginx -t测试一下配置是否有问题，没有问题再./nginx -s reload重启服务器。&lt;/li&gt;
+  &lt;li&gt;将nginx.conf中server_name改成nginx部署机器所在ip，既可以实现外网访问&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_04_28.png&quot; alt=&quot;&quot; /&gt;
+&lt;/figure&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>在Ubuntu14.04上搭建配置nginx与FastCGI环境</title>
+   <link href="http://lambda.hk/nginx/2015/04/28/nginx-cgifast"/>
+   <updated>2015-04-28T00:00:00+08:00</updated>
+   <id>http://lambda.hk/nginx/2015/04/28/nginx-cgifast</id>
+   <content type="html">&lt;p&gt;  上一节已经在Ubuntu 14.04上部署了Nginx服务器，对于生产环境来说，一般使用Nginx反向代理到Tornado的架构，其中前端的Nginx主要处理Internet上的请求，而Tornado作为一个应用服务器，处理各个模块之间的数据交互。而supervisor是一个守护进程软件，可以把Linux上众多的守护进程集中在supervisor进行统一管理。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;tornado&quot;&gt;1 Tornado简介及部署&lt;/h3&gt;
+
+&lt;p&gt;  Tornado为facebook的一个开源项目，和现有的主流Web服务器框架有着明显区别，是非阻塞的服务器，得力于其非阻塞的方式以及epoll的运用，Tornado每秒可以处理数以千计的连接。&lt;/p&gt;
+
+&lt;p&gt;  首先在&lt;code&gt;http://www.tornadoweb.org/en/stable/index.html&lt;/code&gt;下载最新版本的tornado，通过以下方式安装，&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;tar&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xvzf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tornado&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;4.1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gz&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tornado&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;2.0&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;python&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;py&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;build&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;python&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;py&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;  为了使用Tornado的所有功能，需要安装PycURL以及simplejson，Ubuntu下可以通过
+&lt;code&gt;sudo apt-get install python-pycurl&lt;/code&gt;安装.&lt;/p&gt;
+
+&lt;p&gt;  tornado安装目录下有一个demo目录，里面有一些应用的示例demo，包括一个类S3的基于本地文件的文件存储服务器。我们进入helloworld目录下，&lt;code&gt;python helloworld.py&lt;/code&gt;运行，即可通过浏览器中localhost:8888进行访问（我们设定的监听端口为8888）。事实上，无论py文件放在哪里，将其运行后，都可以正常访问，这也是Tornado不同于Apache的地方，不必有一个固定的/var/www/目录存放代码。&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;nginxfastcgi&quot;&gt;2 Nginx与FastCGI调用&lt;/h3&gt;
+
+&lt;p&gt;  FastCGI程序(fast common gateway interface) - 常驻型CGI程序，它是语言无关的、可伸缩架构的CGI开放扩展，其主要行为是将CGI解释器进程保持在内存中并因此获得较高的性能。nginx不能直接执行外部的cgi程序，需要使用FastCGI进程管理程序，才能调用FastCGI程序，比如lighttpd中的spawn-fastcgi。&lt;/p&gt;
+
+&lt;p&gt;  Nginx不支持外部程序的调用或者解析，包括php程序、python程序都不行，因此业务处理模块的调用，必须通过FastCGI接口来调用。FastCGI在Linux下是socket，为了调用CGI程序，还需要一个FastCGI的wrapper（启动另一个程序的程序），绑定在某个固定的socket伤。&lt;/p&gt;
+
+&lt;p&gt;  当Nginx将CGI请求发送给这个socket的时候，通过FastCGI接口，wrapper接收到请求，然后派生出一个新的线程，这个线程调用解释器或者外部程序处理脚本并读取返回数据；接着，wrapper再将返回的数据通过FastCGI接口，沿着固定的socket传递给Nginx；最后，Nginx将返回的数据发送给客户端。这就是Nginx+FastCGI的整个运作过程，如下图所示：&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_04_28_2.png&quot; alt=&quot;&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;fastcgi&quot;&gt;3. FastCGI环境部署与测试&lt;/h3&gt;
+
+&lt;h4 id=&quot;spawnfastcgi&quot;&gt;3.1 spawn_fastcgi的安装、部署与配置&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;从&lt;code&gt;https://github.com/lighttpd/spawn-fcgi&lt;/code&gt;下载spawn-fcgi的安装包；&lt;/li&gt;
+  &lt;li&gt;解压后&lt;code&gt;cmake .    make    make install&lt;/code&gt;进行安装；&lt;/li&gt;
+  &lt;li&gt;将可执行文件spawn-fcgi移动到nginx/sbin中&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;fastcgi-1&quot;&gt;3.2 fastcgi库的安装&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;下载&lt;code&gt;http://www.fastcgi.com/dist/fcgi.tar.gz&lt;/code&gt;之后解压&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;./configure  make sudo make install&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;在/usr/local/nginx下新建cgibin文件夹，cgi的可执行文件放在该目录下&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;fastcgidemo&quot;&gt;3.3 FastCGI的一个demo&lt;/h4&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;fcgi_stdio.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdlib.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;unistd.h&amp;gt;                                                                                                                                                                     &lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FCGI_Accept&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Content-type: text/html&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\r\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\r\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&amp;quot;FastCGI Hello!&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&amp;quot;Request number %d running on host%s &amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;s&quot;&gt;&amp;quot;Process ID: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;SERVER_NAME&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; 
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;通过&lt;code&gt;g++ cgidemo.cc -o cgidemo -lfcgi&lt;/code&gt;进行编译；&lt;/li&gt;
+  &lt;li&gt;将cgidemo移到上一步新建的cgibin目录下;&lt;/li&gt;
+  &lt;li&gt;若提示缺少动态库libfcgi.so.0，建立一个软链接 ：ln -s /usr/local/libfcgi.so.0 /usr/lib/，执行idconfig更新；&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;spawn-fcgiservernginx&quot;&gt;3.4 启动spawn-fcgi管理进程，绑定server，配置nginx转发请求&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;/usr/local/nginx/sbin/spawn-fcgi -a 127.0.0.1 -p 8088 -f /usr/local/nginx/cgibin/demo&lt;/code&gt;启动spawn-fcgi进程，绑定server ip和端口（不要与nginx监听端口重合）；&lt;/li&gt;
+  &lt;li&gt;查看一下9002端口是否已成功：netstat -na | grep 8088
+*
+更改nginx.conf配置文件，让nginx转发请求 &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;err&quot;&gt;在&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;节点的子节点&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;server节&amp;quot;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;点中下添加配置&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;~&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cgi&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fastcgi_pass&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;127.0.0.1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8088&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fastcgi_index&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cgi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fastcgi_param&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SCRIPT_FILENAME&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fcgi&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fastcgi_script_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fastcgi_params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;sudo killall nginx 停止nginx的所有进程&lt;/li&gt;
+  &lt;li&gt;sudo ./nginx重新启动，&lt;code&gt;http://localhost/cgidemo.cgi&lt;/code&gt;即可访问刚才编写的cgidemo程序&lt;/li&gt;
+&lt;/ul&gt;
+
+</content>
+ </entry>
  
  <entry>
    <title>基于数组与链表的归并排序算法实现</title>
@@ -1253,70 +1608,6 @@
 &lt;p&gt;  C++ 11标准中加入了unordered系列的容器。unordered_map记录元素的hash值，根据hash值判断元素是否相同。map相当于java中的TreeMap，unordered_map相当于HashMap。无论从查找、插入上来说，unordered_map的效率都优于hash_map，更优于map；而空间复杂度方面，hash_map最低，unordered_map次之，map最大。&lt;/p&gt;
 
 &lt;p&gt;  对于STL里的map容器，count方法与find方法，都可以用来判断一个key是否出现，count统计的是key出现的次数，因此只能为0/1，而find基于迭代器实现，以mp.end()判断是否找到要求的key。&lt;/p&gt;
-</content>
- </entry>
- 
- <entry>
-   <title>在Ubuntu14.04上安装Nginx</title>
-   <link href="http://lambda.hk/nginx/2015/04/15/nginx-ubuntu-install"/>
-   <updated>2015-04-15T00:00:00+08:00</updated>
-   <id>http://lambda.hk/nginx/2015/04/15/nginx-ubuntu-install</id>
-   <content type="html">&lt;p&gt;  现在很多涉及到大规模、高并发访问的Server，基本都是使用nginx作为反向代理服务器，进行网络请求的接收、分发以及缓存。特地问了下百度在线广告的师兄，它们的backend server也是使用的nginx。随着这一两年做的东西逐渐增多，也逐渐找到自己的兴趣，并不是Data Mining抑或Machine Learning，而在于与App相关的一些backend Server的开发，即涉及一些网络优化以及高并发的处理。&lt;/p&gt;
-
-&lt;p&gt;  下个月需要做一个Server相关的项目，而也一直有意华商韬略的Server进行优化而还没行动。计划接下来的时间，先在台式机搭一个nginx的反向代理Server环境，将华商韬略的数据库进行部署，将数据处理的Server由Apache换成Tornado，并在Server做一些数据的Cache，提高CRUD的效率。之后将环境分别迁移到aws以及阿里云。一来，为下面的项目做好准备，二来，继续翻新华商韬略的iOS客户端。涉及大规模方面的问题，有必要发信问问老罗。&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h3 id=&quot;reverse-proxy&quot;&gt;1. 反向代理(Reverse Proxy):&lt;/h3&gt;
-
-&lt;p&gt;  使用代理服务器接受Internet的连接请求，将请求转发给内部网络的服务器，并将从内部服务器得到的结果返回给Internet上请求连接的客户端。因此对于Client看起来，反向代理服务器就是其能够看到的Server。使用反向代理的好处很多。&lt;/p&gt;
-
-&lt;p&gt;  反向代理与正向代理的区别，主要相对于Client来说，如果Nginx就是其目的服务器，而不是Nginx隐藏的数据服务器，则Nginx是反向代理；如果对于Client来说，Nginx并不是目的服务器，只是作为一个转发请求的桥梁，而其为正向代理。对于正向代理服务器，Client需要进行相应的设置，即知道代理服务器的IP以及端口；而对于反向代理服务器，该服务器即是其目标服务器，不需要进行相应的设置。&lt;/p&gt;
-
-&lt;p&gt;  反向代理服务器可以搭成集群，用户访问不同的资源服务器B时，让不同代理服务器Z(x)去应答不同用户，发送给不同用户不同的资源。因为不同的Z(x)可以做不同的Cache，而并不需要每次都像B发请求，特别是一些静态数据，如果这些反向代理服务器可以和用户x来自同一网络，则x对B的访问，就能得到高质量的速度，这也是CDN的核心技术。 &lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;隔绝了内部真正进行数据处理的服务器，任何来自Internet的请求都必须经过反向代理，保障了安全性；&lt;/li&gt;
-  &lt;li&gt;可以在反向代理服务器上缓存真实Web服务器的某些静态资源，减轻真实Web服务器的负载压力，而将静态资源与动态资源分开存储的方式，也有利于数据的分批返回，优化前端的页面加载，不至于在等待数据库返回的时候，前端出现长时间的空白；&lt;/li&gt;
-  &lt;li&gt;可以使用RP充当负载均衡服务器，分发请求，平衡集群中各个服务器的压力；&lt;/li&gt;
-  &lt;li&gt;相比于Apache/IIS，Nginx的运行速度更快、系统资源消耗更低，，处理并发请求的能力也更强；&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;figure&gt;
-	&lt;img src=&quot;http://mhs-blog.qiniudn.com/server_arch.jpg&quot; alt=&quot;&quot; /&gt;
-&lt;/figure&gt;
-
-&lt;h4 id=&quot;nginx&quot;&gt;1.1 Nginx核心特点&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;跨平台，可以在大多数Unix like OS编译运行&lt;/li&gt;
-  &lt;li&gt;配置简单&lt;/li&gt;
-  &lt;li&gt;非阻塞、高并发连接：使用最新的epoll模型，数据复制时，磁盘I/O第一阶段非阻塞，能支撑5万左右的并发连接，实际生产环境中2~3万并发连接数&lt;/li&gt;
-  &lt;li&gt;事件驱动：通信机制使用epoll模型，支持更大的并发连接&lt;/li&gt;
-  &lt;li&gt;Master/Worker结构&lt;/li&gt;
-  &lt;li&gt;处理大并发的请求内存消耗小，3万并发连接，开启10个Nginx进程，消耗150M内存作用&lt;/li&gt;
-  &lt;li&gt;内置健康检查功能，后台Web服务器宕机不影响前端访问&lt;/li&gt;
-  &lt;li&gt;支持GZIP压缩，可以添加浏览器本地缓存的Header头&lt;/li&gt;
-  &lt;li&gt;稳定性高，这也是反向代理普遍的特点&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;section&quot;&gt;1.2 异步非阻塞的良好机制&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;一个Web请求：建立连接 -&amp;gt; 接收数据 -&amp;gt; 发送数据，系统底层看来，都是数据的读写；&lt;/li&gt;
-  &lt;li&gt;阻塞调用：读写事件没有准备好时，只能等待，即请求会被耽搁；&lt;/li&gt;
-  &lt;li&gt;非阻塞：读写事件没有准备好，事件马上返回，请求定时检查事件是否准备好，即轮询。在时间间隔，可以进行其他的处理，但这样会带来很大的请求事件切换开销；&lt;/li&gt;
-  &lt;li&gt;异步非阻塞：可以同时监控多个事件，阻塞调用，设置超时时间。对于epoll模型来说，事件没有准备好，放入epoll队列，事件准备好了，才去处理。epoll队列的存在，提供了处理高并发的能力。线程只有一个，能够同时处理的请求也只有一个，只是可以通过在请求间不断的切换，即循环处理多个准备好的事件，实现了并发；&lt;/li&gt;
-  &lt;li&gt;Nginx异步非阻塞与多线程方式相比的优势，不需要创建线程，每个请求占用内存小，不存在上下文切换。事实上，上下文切换的时间代价，还是很大的。而对于IIS服务器来说，会为每个请求创建一个工作线程，线程带来的内存占用非常大，上下文切换的CPU开销很大，自然产生性能瓶颈。而Nginx的轻量级，也就体现在单线程基于epoll队列的异步非阻塞机制。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;nginx-1&quot;&gt;1.3 Nginx进程模型&lt;/h4&gt;
-
-&lt;p&gt;  一个master进程，生成一个或者多个worker进程，将原来串行的逻辑并行化，并将逻辑拆分成很多独立模块并行执行，Master组件主要进行逻辑拆分，将每个独立部分下发到多个Worker，同时维护Worker队列，Worker主要进行逻辑计算，并将结果返回Master	&lt;/p&gt;
-
-&lt;figure&gt;
-	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_04_15.png&quot; alt=&quot;&quot; /&gt;
-&lt;/figure&gt;
 </content>
  </entry>
  

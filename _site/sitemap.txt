@@ -23,6 +23,10 @@ http://lambda.hk/12/index.html
 http://lambda.hk/13/index.html
 http://lambda.hk/14/index.html
 
+http://lambda.hk/nginx/2015/04/30/nginx-tornado-supervisor
+http://lambda.hk/leetcode/2015/04/29/Leetcode-ListNode-Reorder
+http://lambda.hk/nginx/2015/04/28/nginx-ubuntu-install
+http://lambda.hk/nginx/2015/04/28/nginx-cgifast
 http://lambda.hk/algorithm/2015/04/27/Merge-Sort-Array-ListNode
 http://lambda.hk/leetcode/2015/04/26/Leetcode-Reverse
 http://lambda.hk/leetcode/2015/04/25/Leetcode-Reverse-Linked-List-II
@@ -36,7 +40,6 @@ http://lambda.hk/leetcode/2015/04/20/Leetcode-Maximum-Subarray
 http://lambda.hk/leetcode/2015/04/20/Leetcode-Majority-Element
 http://lambda.hk/leetcode/2015/04/20/Leetcode-Find-Minimum-in-Rotated-Sorted-Array
 http://lambda.hk/c++/2015/04/20/C++-STL-map-hash_map-unordered_map
-http://lambda.hk/nginx/2015/04/15/nginx-ubuntu-install
 http://lambda.hk/nginx/2015/04/15/nginx-overview
 http://lambda.hk/ios/2015/04/14/iOS-view-lifetime
 http://lambda.hk/ios/2015/04/14/iOS-clear-cache

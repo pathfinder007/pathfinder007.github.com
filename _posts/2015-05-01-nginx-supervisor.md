@@ -66,6 +66,11 @@ password=123               ; (default is no password (open server))
 	<img src="http://mhs-blog.qiniudn.com/2015_05_01_5.png" alt="">
 </figure>
 
+&emsp;&emsp; 可以将tornado的python业务处理程序也加入supervisord的守护进程中（参考nginx的方法，修改配置文件），则该业务处理程序也随着supervisord儿而启动，直接通过localhost可以访问对应的helloworld程序。如下图可以发现，supervisord的守护进程队列，包含了nginx一级tornado的进程。
+<figure>
+	<img src="http://mhs-blog.qiniudn.com/2015_05_01_6.png" alt="">
+</figure>
+
 <br />
 
 ### 4. supervidor开机自启动

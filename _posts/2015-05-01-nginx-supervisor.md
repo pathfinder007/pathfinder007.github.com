@@ -17,13 +17,15 @@ tags: nginx 高并发
 &emsp;&emsp;修改配置，守护nginx进程，在`/etc/supervisord.conf`中添加以下信息：
 
 {% highlight Python %}
-[program:nginx]
-command=/usr/local/nginx/sbin/nginx
-priority=1
-numprocs=1
-autostart=true
-autorestart=true
+[program:nginx]    
+command=/usr/local/nginx/sbin/nginx    ;要执行的命令，即启动需要守护的进程
+priority=1                             ;优先级
+numprocs=1                             ;启动的进程数目
+autostart=true                         ;supervisor启动的时候是否随着同时启动
+autorestart=true                       ;当supervisor程序crash的时候，这个进程会自动重启（很重要）
 {% endhighlight %}
+
+
 
 
 ### 2.Supervisor守护Nginx测试 

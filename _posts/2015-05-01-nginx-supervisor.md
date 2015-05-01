@@ -1,7 +1,7 @@
 ---
 layout: post
 category: nginx
-title: ubuntu 14.04下进程管理工具supervisor安装
+title: Ubuntu 14.04下进程管理工具supervisor安装
 tags: nginx 高并发
 ---
 

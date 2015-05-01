@@ -1,7 +1,7 @@
 ---
 layout: post
 category: nginx
-title: 在Ubuntu14.04上安装Nginx
+title: Ubuntu14.04下安装Nginx
 tags: nginx 高并发
 ---
 

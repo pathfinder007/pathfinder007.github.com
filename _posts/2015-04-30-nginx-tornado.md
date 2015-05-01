@@ -1,7 +1,7 @@
 ---
 layout: post
 category: nginx
-title: 在Ubuntu14.04上搭建配置nginx与Tornado反向代理
+title: Ubuntu14.04下搭建配置nginx与Tornado反向代理
 tags: nginx 高并发
 ---
 

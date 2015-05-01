@@ -25,8 +25,7 @@ autostart=true                         ;supervisor启动的时候是否随着同
 autorestart=true                       ;当supervisor程序crash的时候，这个进程会自动重启（很重要）
 {% endhighlight %}
 
-
-
+<br />
 
 ### 2.Supervisor守护Nginx测试 
 
@@ -48,6 +47,8 @@ autorestart=true                       ;当supervisor程序crash的时候，这�
 <figure>
 	<img src="http://mhs-blog.qiniudn.com/2015_05_01_4.png" alt="">
 </figure>
+
+<br />
 
 ### 3. 通过Web界面管理进程以及查看进程状态
 

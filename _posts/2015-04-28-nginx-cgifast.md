@@ -70,8 +70,8 @@ int main() {
 
 #### 2.4 启动spawn-fcgi管理进程，绑定server，配置nginx转发请求
 
-* `/usr/local/nginx/sbin/spawn-fcgi -a 127.0.0.1 -p 8088 -f /usr/local/nginx/cgibin/demo`启动spawn-fcgi进程，绑定server ip和端口（不要与nginx监听端口重合）；
-* 查看一下9002端口是否已成功：netstat -na | grep 8088
+* `/usr/local/nginx/sbin/spawn-fcgi -a 127.0.0.1 -p 8088 -f /usr/local/nginx/cgibin/cgidemo`启动spawn-fcgi进程，绑定server ip和端口（不要与nginx监听端口重合）；
+* 查看一下8088端口是否已成功：netstat -na | grep 8088
 *
 更改nginx.conf配置文件，让nginx转发请求 
 {% highlight C++ %}

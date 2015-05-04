@@ -4,7 +4,7 @@
  <title>Mushsen's Blog</title>
  <link href="http://lambda.hk/" rel="self"/>
  <link href="http://lambda.hk"/>
- <updated>2015-04-30T09:31:37+08:00</updated>
+ <updated>2015-05-04T10:38:38+08:00</updated>
  <id>http://lambda.hk</id>
  <author>
    <name>Hombo Wang</name>
@@ -13,98 +13,440 @@
 
  
  <entry>
-   <title>在Ubuntu14.04上搭建配置nginx与FastCGI环境</title>
-   <link href="http://lambda.hk/nginx/2015/04/30/nginx-tornado-supervisor"/>
-   <updated>2015-04-30T00:00:00+08:00</updated>
-   <id>http://lambda.hk/nginx/2015/04/30/nginx-tornado-supervisor</id>
-   <content type="html">&lt;p&gt;  Nginx不支持外部程序的调用或者解析，包括php程序、python程序都不行，因此业务处理模块的调用，必须通过FastCGI接口来调用。FastCGI在Linux下是socket，为了调用CGI程序，还需要一个FastCGI的wrapper（启动另一个程序的程序），绑定在某个固定的socket。&lt;/p&gt;
+   <title>SSH登录AWS上的EC2以及SCP操作</title>
+   <link href="http://lambda.hk/aws/2015/05/04/aws-ec2-fundation"/>
+   <updated>2015-05-04T00:00:00+08:00</updated>
+   <id>http://lambda.hk/aws/2015/05/04/aws-ec2-fundation</id>
+   <content type="html">&lt;p&gt;  3月底的时候，当时有做一个基于aws的高性能Web Server项目的意向。就开始对aws S3以及EC2进行了一定的调研，并做了一些测试。后来项目后延，这个事情暂时搁置。5月中旬左右将会正式开展，想了一下，得把以前一些有用的东西重拾一下，稍微搭建一个小系统，尽量缩短正式开始时候的工期。&lt;/p&gt;
 
 &lt;!--more--&gt;
 
-&lt;h3 id=&quot;nginxfastcgi&quot;&gt;1 Nginx与FastCGI调用&lt;/h3&gt;
+&lt;h3 id=&quot;aws&quot;&gt;1.AWS相关服务&lt;/h3&gt;
 
-&lt;p&gt;  FastCGI程序(fast common gateway interface) - 常驻型CGI程序，它是语言无关的、可伸缩架构的CGI开放扩展，其主要行为是将CGI解释器进程保持在内存中并因此获得较高的性能。nginx不能直接执行外部的cgi程序，需要使用FastCGI进程管理程序，才能调用FastCGI程序，比如lighttpd中的spawn-fastcgi。&lt;/p&gt;
+&lt;p&gt;  亚马逊的云服务，应该是目前提供的云服务最完备、接口最好用的地方。但是在国内，可能会涉及到被墙的问题，但是如果核心链路是国外到国内的下行链路，即这一条通道对在线率的要求高，而上行通道在线率可以有一定的妥协，在这一点上来看，问题倒不是太大。比较简单的一个场景，当上行链路被墙，下行链路通畅，数据仍然可以从aws上的Server打到client，可以通过client做一定的本地存储，将由于上行链路被墙产生的数据阻塞，在链路恢复时，同步到Server即可，在一定程度上规避被墙的问题。在这个问题上，不管链路暂时是否通畅，VPN应该都是必不可少的工具，行云是一个不错的选择。&lt;/p&gt;
 
-&lt;p&gt;  当Nginx将CGI请求发送给这个socket的时候，通过FastCGI接口，wrapper接收到请求，然后派生出一个新的线程，这个线程调用解释器或者外部程序处理脚本并读取返回数据；接着，wrapper再将返回的数据通过FastCGI接口，沿着固定的socket传递给Nginx；最后，Nginx将返回的数据发送给客户端。这就是Nginx+FastCGI的整个运作过程，如下图所示：&lt;/p&gt;
+&lt;p&gt;  主要需要使用的服务包括AWS的EC2，即弹性计算云服务，每一个实例为一个虚拟机，定制好自己的系统、配置之后，可以完全像操作本地的虚拟机一样去操作。对于EC2多存放的机房，可以自己选择，对于Client主要在国内的应用场景来说，东京或者新加坡，是比较好的选择，也可以通过VPN所设定的位置，进行相应的实例位置选择。&lt;/p&gt;
+
+&lt;p&gt;  S3为AWS主要的存储服务，提供类似键值对的存储，S3的存储位置不能选择。而对于S3上数据的操作，可以通过AWS提供的SDK进行处理，对于使用Python作为主要的backend语言的业务场景来说，AWS提供了boto的SDK，而由于很多业务场景，需要在Server上面使用Tornado等框架，Github上不少人对此进行了整合，比如botocore、botornado是被提到比较多的两个repo。&lt;/p&gt;
+
+&lt;h3 id=&quot;ec2&quot;&gt;2.EC2相关&lt;/h3&gt;
+
+&lt;p&gt;  需要说明的是，AWS提供了一年的免费试用，注册账号，绑定一张信用卡即可。虽然免费提供的EC2很弱，使用起来略卡，但人家免费，似乎并不能多要求什么。提供的操作系统包括Amazon Linux、Red Hat、SUSE Linux、Ubuntu、Windows。惯用Ubuntu，故选择的也是Ubuntu 14.04的64bit Server版本。AWS提供的免费版本配置如下，实际生产环境中，可以选择更好的配置：&lt;/p&gt;
 
 &lt;figure&gt;
-	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_04_28_2.png&quot; alt=&quot;&quot; /&gt;
+	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_05_04_1.png&quot; alt=&quot;&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;  EC2提供了AMI的接入机制，大概就是，尽量不使用root账号进行登录，提供了一定的权限管理手段，对于不同的用户，根据其具体权限、可接触的资源，提供不同的AMI证书，这点上来说，倒是跟本地的用户管理，是一个思路。需要注意的是，实例在使用的过程中，可以不宕机进行包括内存、存储等一系列的动态扩展，都可以通过AWS的Web操作界面进行。实例新建之后，可以下载登录需要的证书文件，为一个pem文件。这也是AWS跟一般的本地ssh操作不一样的地方，需要在参数中带上证书，才能进行登录验证，而不需要使用用户名、密码。&lt;/p&gt;
+
+&lt;p&gt;  目前我使用的是AWS账户的证书进行访问，实际上，更好的做法是，使用&lt;code&gt;AWS Identity and Access Management (IAM)&lt;/code&gt;创建IAM用户，再将该用户添加到具有管理权限的IAM组或授予此用户管理权限。&lt;/p&gt;
+
+&lt;h3 id=&quot;sshscp&quot;&gt;3.SSH登录以及SCP操作&lt;/h3&gt;
+
+&lt;p&gt;  之前直接食用AWS的账户证书进行EC2的访问，ssh以及scp脚本如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;ssh&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mushsen&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pem&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ubuntu&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;@ec2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;54&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;199&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;189&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;171.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;northeast&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compute&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;amazonaws&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;com&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;scp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mushsen&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pem&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$1&amp;quot;&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;ubuntu&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;@ec2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;54&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;199&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;189&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;171.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;northeast&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compute&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;amazonaws&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;com&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;home&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ubuntu&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Ubuntu 14.04下进程管理工具supervisor安装</title>
+   <link href="http://lambda.hk/nginx/2015/05/01/nginx-supervisor"/>
+   <updated>2015-05-01T00:00:00+08:00</updated>
+   <id>http://lambda.hk/nginx/2015/05/01/nginx-supervisor</id>
+   <content type="html">&lt;p&gt;  supervisor的存在，主要是为了Nginx可以优雅的重启。作为一个进程管理工具，通过Supervisor启动其他进程，则其他进程都为其子进程。实现对特定的进程的守护（则其他进程不能设置为守护进程），在进程被挂起时，自动重启进程。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;supervisor&quot;&gt;1.Supervisor安装&lt;/h3&gt;
+
+&lt;p&gt;  可以安装在任何Unix系统，Ubuntu下可以通过&lt;code&gt;easy_install supervisor&lt;/code&gt;进行安装。然后切换到root权限，通过&lt;code&gt;echo_supervisord_conf &amp;gt; /etc/supervisord.conf&lt;/code&gt;创建配置文件，可以在其中更改所需要的配置。
+  修改配置，守护nginx进程，在&lt;code&gt;/etc/supervisord.conf&lt;/code&gt;中添加以下信息：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;program&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nginx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;    
+&lt;span class=&quot;n&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;usr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;local&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nginx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sbin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nginx&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;要执行的命令，即启动需要守护的进程&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;priority&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;                             &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;优先级&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;numprocs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;                             &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;启动的进程数目&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;autostart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;true&lt;/span&gt;                         &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;supervisor&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;启动的时候是否随着同时启动&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;autorestart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;true&lt;/span&gt;                       &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;当&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;supervisor&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;程序&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;crash&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;的时候，这个进程会自动重启（很重要）&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;supervisornginx&quot;&gt;2.Supervisor守护Nginx测试&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;指定配置文件，启动supervisord: &lt;code&gt;sudo supervisord -c /etc/supervisord.conf&lt;/code&gt;，则根据配置文件的设置，nginx会被同时启动。&lt;/li&gt;
+  &lt;li&gt;通过&lt;code&gt;sudo supervisorctl&lt;/code&gt;可以进入supervidor的命令行工具（可以代替接下来提到的Web界面进行管理，控制守护程序的start/restart/stop），或者查看其守护的进程的状态。&lt;/li&gt;
+  &lt;li&gt;查看守护进程状态: &lt;code&gt;ps -le | grep supervisord &lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure&gt;
+	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_05_01_1.png&quot; alt=&quot;&quot; /&gt;
+&lt;/figure&gt;
+&lt;ul&gt;
+  &lt;li&gt;查看Nginx进程状态: &lt;code&gt;ps -le | grep nginx&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure&gt;
+	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_05_01_2.png&quot; alt=&quot;&quot; /&gt;
+&lt;/figure&gt;
+&lt;ul&gt;
+  &lt;li&gt;杀掉nginx进程: &lt;code&gt;killall nginx&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure&gt;
+	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_05_01_3.png&quot; alt=&quot;&quot; /&gt;
+&lt;/figure&gt;
+&lt;ul&gt;
+  &lt;li&gt;结果发现，nginx被重启，且pid被切换&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure&gt;
+	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_05_01_4.png&quot; alt=&quot;&quot; /&gt;
 &lt;/figure&gt;
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;fastcgi&quot;&gt;2. FastCGI环境部署与测试&lt;/h3&gt;
+&lt;h3 id=&quot;web&quot;&gt;3. 通过Web界面管理进程以及查看进程状态&lt;/h3&gt;
 
-&lt;h4 id=&quot;spawnfastcgi&quot;&gt;2.1 spawn_fastcgi的安装、部署与配置&lt;/h4&gt;
+&lt;p&gt;  通过配置文件的修改，supervisor通过web管理进程以及查看进程状态。如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inet_http_server&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;         &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inet&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TCP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;disabled&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;by&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;default&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;port&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;127.0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9001&lt;/span&gt;        &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ip_address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;port&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;specifier&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;port&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;all&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;iface&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;username&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;admin&lt;/span&gt;             &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;no&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;username&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;open&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;password&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;123&lt;/span&gt;               &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;no&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;password&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;open&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;  其中port的设置表示允许任何ip进行访问，也可以指定单个ip可以访问。保存配置之后，&lt;code&gt;supervisorctl reload&lt;/code&gt;重启，通过配置文件中配置的&lt;code&gt;127.0.0.1:9001&lt;/code&gt;，输入用户名密码，即可访问。&lt;/p&gt;
+&lt;figure&gt;
+	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_05_01_5.png&quot; alt=&quot;&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;   可以将tornado的python业务处理程序也加入supervisord的守护进程中（参考nginx的方法，修改配置文件），则该业务处理程序也随着supervisord儿而启动，直接通过localhost可以访问对应的helloworld程序。如下图可以发现，supervisord的守护进程队列，包含了nginx一级tornado的进程。&lt;/p&gt;
+&lt;figure&gt;
+	&lt;img src=&quot;http://mhs-blog.qiniudn.com/2015_05_01_6.png&quot; alt=&quot;&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;supervidor&quot;&gt;4. supervidor开机自启动&lt;/h3&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;从&lt;code&gt;https://github.com/lighttpd/spawn-fcgi&lt;/code&gt;下载spawn-fcgi的安装包；&lt;/li&gt;
-  &lt;li&gt;解压后&lt;code&gt;cmake .    make    make install&lt;/code&gt;进行安装；&lt;/li&gt;
-  &lt;li&gt;将可执行文件spawn-fcgi移动到nginx/sbin中&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;sudo supervisorctl stop &amp;lt;name&amp;gt;&lt;/code&gt;可以停止一个进程，但是该进程还会重新启动；&lt;/li&gt;
+  &lt;li&gt;要停止supervisord，直接ps查找到其对应的pid，&lt;code&gt;kill -9 pid&lt;/code&gt;即可，其中-9的意思是，传递给进程的信号量为9，即强制，尽快终止进程；因为supervisord是以守护进程形式启动，所以将其kill之后，nginx依然顺利运行；当将supervisord设置成非守护进程，将其kill后，则nginx也停止运行；&lt;/li&gt;
+  &lt;li&gt;注意启动supervisord的时候一定要使用root权限，因为该进程的启动会带动nginx进程的启动，而nginx进程有监听80端口的操作，必须root权限，否则supervisord守护的进程将无法启动；&lt;/li&gt;
+  &lt;li&gt;对于Ubuntu系统来说，参考&lt;code&gt;http://blog.csdn.net/shanliangliuxing/article/details/15499891&lt;/code&gt;的方法，新建文件/etc/init.d/supervisord中，并将文章末尾的脚本复制进去，执行以下命令，即将supervisord设置成了开机自启动；&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chmod&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;etc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;supervisord&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;update&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;supervisord&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;defaults&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;service&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;supervisord&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;/etc/init.d/supervisord&lt;/code&gt;文件内容：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;c&quot;&gt;#! /bin/sh&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;### BEGIN INIT INFO&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Provides:          supervisord&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Required-Start:    $remote_fs&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Required-Stop:     $remote_fs&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Default-Start:     2 3 4 5&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Default-Stop:      0 1 6&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Short-Description: Example initscript&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Description:       This file should be used to construct scripts to be&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#                    placed in /etc/init.d.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;### END INIT INFO&lt;/span&gt;
+ 
+&lt;span class=&quot;c&quot;&gt;# Author: Dan MacKinlay &amp;lt;danielm@phm.gov.au&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Based on instructions by Bertrand Mathieu&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# http://zebert.blogspot.com/2009/05/installing-django-solr-varnish-and.html&lt;/span&gt;
+ 
+&lt;span class=&quot;c&quot;&gt;# Do NOT &amp;quot;set -e&amp;quot;&lt;/span&gt;
+ 
+&lt;span class=&quot;c&quot;&gt;# PATH should only include /usr/* if it runs after the mountnfs.sh script&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sbin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;usr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sbin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;usr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;bin&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;DESC&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Description of the service&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;NAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;supervisord&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;DAEMON&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;usr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;local&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;supervisord&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;DAEMON_ARGS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;PIDFILE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tmp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;SCRIPTNAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;etc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NAME&lt;/span&gt;
+ 
+&lt;span class=&quot;c&quot;&gt;# Exit if the package is not installed&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$DAEMON&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exit&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+ 
+&lt;span class=&quot;c&quot;&gt;# Read configuration variable file if it is present&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;etc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NAME&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;etc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NAME&lt;/span&gt;
+ 
+&lt;span class=&quot;c&quot;&gt;# Load the VERBOSE setting and other rcS variables&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;vars&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sh&lt;/span&gt;
+ 
+&lt;span class=&quot;c&quot;&gt;# Define LSB log_* functions.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Depend on lsb-base (&amp;gt;= 3.0-6) to ensure that this file is present.&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lsb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;functions&lt;/span&gt;
+ 
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Function that starts the daemon/service&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;do_start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# Return&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#   0 if daemon has been started&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#   1 if daemon was already running&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#   2 if daemon could not be started&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;daemon&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;quiet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pidfile&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PIDFILE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DAEMON&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;null&lt;/span&gt; \
+		&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;daemon&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;quiet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pidfile&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PIDFILE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DAEMON&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt; \
+		&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DAEMON_ARGS&lt;/span&gt; \
+		&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# Add code here, if necessary, that waits for the process to be ready&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# to handle requests from services started subsequently which depend&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# on this one.  As a last resort, sleep for some time.&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+ 
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Function that stops the daemon/service&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;do_stop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# Return&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#   0 if daemon has been stopped&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#   1 if daemon was already stopped&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#   2 if daemon could not be stopped&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#   other if a failure occurred&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;daemon&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;quiet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;retry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TERM&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KILL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pidfile&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PIDFILE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NAME&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;RETVAL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;$?&amp;quot;&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$RETVAL&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# Wait for children to finish too if this is a daemon that forks&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# and if the daemon is only ever run from this initscript.&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# If the above conditions are not satisfied then add some other code&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# that waits for the process to drop all resources that could be&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# needed by services started subsequently.  A last resort is to&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# sleep for some time.&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;daemon&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;quiet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;oknodo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;retry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KILL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DAEMON&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$?&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# Many daemons don&amp;#39;t delete their pidfiles when they exit.&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;rm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PIDFILE&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$RETVAL&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+ 
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Function that sends a SIGHUP to the daemon/service&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;do_reload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# If the daemon can reload its configuration without&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# restarting (for example, when it is sent a SIGHUP),&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# then implement that here.&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;daemon&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;signal&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;quiet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pidfile&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PIDFILE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NAME&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+ 
+&lt;span class=&quot;n&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$1&amp;quot;&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$VERBOSE&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;no&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;log_daemon_msg&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Starting $DESC&amp;quot;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$NAME&amp;quot;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;do_start&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$?&amp;quot;&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt;
+		&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$VERBOSE&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;no&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;log_end_msg&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+		&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$VERBOSE&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;no&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;log_end_msg&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;esac&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$VERBOSE&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;no&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;log_daemon_msg&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Stopping $DESC&amp;quot;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$NAME&amp;quot;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;do_stop&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$?&amp;quot;&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt;
+		&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$VERBOSE&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;no&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;log_end_msg&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+		&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$VERBOSE&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;no&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;log_end_msg&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;esac&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#reload|force-reload)&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# If do_reload() is not implemented then leave this commented out&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# and leave &amp;#39;force-reload&amp;#39; as an alias for &amp;#39;restart&amp;#39;.&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#log_daemon_msg &amp;quot;Reloading $DESC&amp;quot; &amp;quot;$NAME&amp;quot;&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#do_reload&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#log_end_msg $?&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#;;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;restart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;force&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# If the &amp;quot;reload&amp;quot; option is implemented then remove the&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;# &amp;#39;force-reload&amp;#39; alias&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;log_daemon_msg&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Restarting $DESC&amp;quot;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$NAME&amp;quot;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;do_stop&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$?&amp;quot;&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt;
+	  &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;do_start&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$?&amp;quot;&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt;
+			&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;log_end_msg&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+			&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;log_end_msg&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Old process is still running&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;log_end_msg&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Failed to start&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;esac&lt;/span&gt;
+		&lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+	  &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	  	&lt;span class=&quot;c&quot;&gt;# Failed to stop&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;log_end_msg&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+		&lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;esac&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;c&quot;&gt;#echo &amp;quot;Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}&amp;quot; &amp;gt;&amp;amp;2&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Usage: $SCRIPTNAME {start|stop|restart|force-reload}&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+	&lt;span class=&quot;nb&quot;&gt;exit&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;esac&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Shell中的各种查找</title>
+   <link href="http://lambda.hk/shell/2015/05/01/Shell-Search-File"/>
+   <updated>2015-05-01T00:00:00+08:00</updated>
+   <id>http://lambda.hk/shell/2015/05/01/Shell-Search-File</id>
+   <content type="html">&lt;p&gt;  关于Shell中的各种查找命令，&lt;code&gt;find、locate、whereis、which&lt;/code&gt;，不可谓不多，做个总结，方便查阅。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;find&quot;&gt;1. find&lt;/h3&gt;
+&lt;p&gt;  当知道文件的大概文件名时，查找一个或者若干个想要的文件。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;find -name filename&lt;/code&gt;: 在当前目录/子目录下查找filename&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;find / -name filename&lt;/code&gt;: 从root根路径开始，在所有子目录中查找filename，效率比较低，文件目录树的遍历&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;find -name file*&lt;/code&gt;: 在当前目录/子目录下查找文件名以file开头的文件&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;find -name ‘*’ -size +1000k&lt;/code&gt;: 查找任何大于1000k的文件&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;find / -type f -mmin -10&lt;/code&gt;: 在系统中查找过去十分钟内编辑过的文件&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;find PCIe_src/ -type f -name &quot;*.c&quot; | xargs grep &quot;edma_common.vh&quot;&lt;/code&gt;: 在PCIe_src/目录下的c文件中，查找字符串&lt;code&gt;edma_common.vh&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;fastcgi-1&quot;&gt;2.2 fastcgi库的安装&lt;/h4&gt;
+&lt;h3 id=&quot;locate&quot;&gt;2. locate&lt;/h3&gt;
+
+&lt;p&gt;  &lt;code&gt;find -name&lt;/code&gt;的另一种写法，但是比后者快很多。其不搜索具体目录，而是搜索一个数据库&lt;code&gt;/var/lib/locatedb&lt;/code&gt;，数据库含有本地所有文件的信息，Linux系统自动创建这个数据库，并且每天更新一次，所以locate查找不到最近变更的文件，可以在使用之前，通过updatedb去手动更新数据库。&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;下载&lt;code&gt;http://www.fastcgi.com/dist/fcgi.tar.gz&lt;/code&gt;之后解压&lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;./configure  make sudo make install&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;在/usr/local/nginx下新建cgibin文件夹，cgi的可执行文件放在该目录下&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;locate &quot;*.png&quot;&lt;/code&gt;: 列出系统中所有的png文件后缀的文件&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;locate ~/m&lt;/code&gt;: 列出主目录下所有以m开头的文件&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;fastcgidemo&quot;&gt;2.3 FastCGI的一个demo&lt;/h4&gt;
+&lt;h3 id=&quot;whereis&quot;&gt;3. whereis&lt;/h3&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;fcgi_stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdlib.h&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;unistd.h&amp;gt;                                                                                                                                                                     &lt;/span&gt;
+&lt;p&gt;  只能用于程序名的搜索，而且只能搜索二进制文件（b文件）、man说明文件（参数-m）和源代码文件（参数-s）&lt;/p&gt;
 
-&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FCGI_Accept&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
-        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Content-type: text/html&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\r\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
-                &lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\r\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
-                &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
-                &lt;span class=&quot;s&quot;&gt;&amp;quot;FastCGI Hello!&amp;quot;&lt;/span&gt;
-                &lt;span class=&quot;s&quot;&gt;&amp;quot;Request number %d running on host%s &amp;quot;&lt;/span&gt;
-                &lt;span class=&quot;s&quot;&gt;&amp;quot;Process ID: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;SERVER_NAME&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; 
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;which&quot;&gt;4. which&lt;/h3&gt;
+
+&lt;p&gt;  which的作用是，在PATH变量指定的路径中，搜索某个系统命令的位置，并且返回第一个搜索结果；即使用which可以查看某个系统命令是否存在，以及执行的位置。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;which supervisord&lt;/code&gt;返回 &lt;code&gt;/usr/local/bin/supervisord&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;type&quot;&gt;5. type&lt;/h3&gt;
+
+&lt;p&gt;  type区分某个命令到底是shell自带还是shell外部的独立二进制文件提供。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;type supervisord&lt;/code&gt;返回 &lt;code&gt;/usr/local/bin/supervisord&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;type cd&lt;/code&gt;返回&lt;code&gt;cd is a shell builtin&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Ubuntu14.04下搭建配置nginx与Tornado反向代理</title>
+   <link href="http://lambda.hk/nginx/2015/04/30/nginx-tornado"/>
+   <updated>2015-04-30T00:00:00+08:00</updated>
+   <id>http://lambda.hk/nginx/2015/04/30/nginx-tornado</id>
+   <content type="html">&lt;p&gt;  上一节已经在Ubuntu 14.04上部署了Nginx服务器，Nginx是一个高效的Web服务器及代理服务器，Tornado是一个基于epoll的异步非阻塞的Web开发框架，通常使用Nginx做为Web服务器时，都会以FastCGI模式，而我们从开发、调试、运维的角度考虑，使用了反向代理的模式，Tornado作为主要的业务服务器，同时Nginx可以通过FastCGI做一些特殊业务和负载均衡的处理。而supervisor是一个守护进程软件，可以把Linux上众多的守护进程集中在supervisor进行统一管理。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;tornado&quot;&gt;1 Tornado简介及部署&lt;/h3&gt;
+
+&lt;p&gt;  Tornado为facebook的一个开源项目，当初为了friendfeed而搭建，目前这个项目已经下线。和现有的主流Web服务器框架有着明显区别，是非阻塞的服务器，得力于其非阻塞的方式以及epoll的运用，Tornado每秒可以处理数以千计的连接。&lt;/p&gt;
+
+&lt;p&gt;  首先在&lt;code&gt;http://www.tornadoweb.org/en/stable/index.html&lt;/code&gt;下载最新版本的tornado，通过以下方式安装，&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;tar&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xvzf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tornado&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;4.1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gz&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tornado&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;2.0&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;python&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;py&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;build&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;python&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;py&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;  为了使用Tornado的所有功能，需要安装PycURL以及simplejson，Ubuntu下可以通过
+&lt;code&gt;sudo apt-get install python-pycurl&lt;/code&gt;安装.&lt;/p&gt;
+
+&lt;p&gt;  tornado安装目录下有一个demo目录，里面有一些应用的示例demo，包括一个类S3的基于本地文件的文件存储服务器。我们进入helloworld目录下，&lt;code&gt;python helloworld.py&lt;/code&gt;运行，即可通过浏览器中localhost:8888进行访问（我们设定的监听端口为8888）。事实上，无论py文件放在哪里，将其运行后，都可以正常访问，这也是Tornado不同于Apache的地方，不必有一个固定的/var/www/目录存放代码。&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;nginxtornado&quot;&gt;2 Nginx与Tornado连接，配置反向代理环境&lt;/h3&gt;
+
+&lt;p&gt;  一般的情况下，不管是VPS还是其他的基于Linux的服务器，必须搭建一个Web Server监听80端口(http默认端口)，而Tornado服务进程监听在808*内部端口（可以启动多个进程）。由于Nginx是一个轻量、快速、安全的Server，一般选择Nginx作为反向代理，监听80端口并转发请求到后端的其他业务处理Server，比如Tornado。当将图片等一些静态资源缓存在前端的Nginx，可以节约内存以及CPU资源。&lt;/p&gt;
+
+&lt;p&gt;  为什么Tornado需要Nginx做一层反向代理？大概是这样的。Tornado为单线程的Web服务器，一个Req如果阻塞了IO，进程挂起，无法接受新的Req；可以通过多进程在一定程度上改善IO被阻塞的情况，但是多进程本来就极其消耗资源。而一般会阻塞IO大文件，大多数都是静态文件，所以有了在前面挂一层Nginx来缓存静态文件的思路，原始初衷是为了避免Tornado产生IO阻塞。&lt;/p&gt;
+
+&lt;p&gt;  实现Tornado的反向代理，主要通过Nginx的配置文件选项完成，下面针对配置了一个worker的Nginx反向代理，对相应的配置文件进行说明。关于&lt;code&gt;/logs/nginx.pid&lt;/code&gt;文件，在Nginx实例启动时，会将相应进程的pid在该文件进行记录，所以reload重启时，直接读取该文件中的进程pid，进行重启。因此killall之后，没法重启。&lt;/p&gt;
+
+&lt;p&gt;  基本配置代码如下，启动一个Tornado的应用，其监听8888端口，重启Nginx，监听80端口，则可以通过127.0.0.1访问Nginx，反向代理到后端的Tornado服务器。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;worker_processes&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# 开启的worker进程数目                                                                        &lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# 全局错误日志以及PID文件&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;error_log&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;logs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;logs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nginx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;events&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;worker_connections&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;1024&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;#单个worker process进程允许的最大连接数目&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;epoll&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;#多路复用IO的一种方式，可以大大提高Nginx性能&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;http&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;# Enumerate all the Tornado servers here &lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;upstream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;helloworld&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;127.0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8888&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#多个server的时候，即实现负载均衡，可以配置相应的权值。&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;listen&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+ 
+        &lt;span class=&quot;n&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;^~&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;static&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;www&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;query_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;expires&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;favicon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ico&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;rewrite&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;static&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;favicon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ico&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;robots&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;txt&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;rewrite&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;static&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;robots&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;txt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+ 
+        &lt;span class=&quot;n&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;proxy_pass_header&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Server&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;proxy_set_header&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Host&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;http_host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;proxy_redirect&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;off&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;#关闭重定向&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;proxy_set_header&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Real&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IP&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;remote_addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;#转发ip等http头信息&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;proxy_set_header&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Scheme&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scheme&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;c&quot;&gt;# 配置反向代理到的后端server，可以使用http://127.0.0.1:8888&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;proxy_pass&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;//&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;helloworld&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;      &lt;span class=&quot;c&quot;&gt;#需要与前面匹配&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;通过&lt;code&gt;g++ cgidemo.cc -o cgidemo -lfcgi&lt;/code&gt;进行编译；&lt;/li&gt;
-  &lt;li&gt;将cgidemo移到上一步新建的cgibin目录下;&lt;/li&gt;
-  &lt;li&gt;若提示缺少动态库libfcgi.so.0，建立一个软链接 ：ln -s /usr/local/libfcgi.so.0 /usr/lib/，执行idconfig更新；&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;spawn-fcgiservernginx&quot;&gt;2.4 启动spawn-fcgi管理进程，绑定server，配置nginx转发请求&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;code&gt;/usr/local/nginx/sbin/spawn-fcgi -a 127.0.0.1 -p 8088 -f /usr/local/nginx/cgibin/demo&lt;/code&gt;启动spawn-fcgi进程，绑定server ip和端口（不要与nginx监听端口重合）；&lt;/li&gt;
-  &lt;li&gt;查看一下9002端口是否已成功：netstat -na | grep 8088
-*
-更改nginx.conf配置文件，让nginx转发请求 &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;err&quot;&gt;在&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;节点的子节点&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;server节&amp;quot;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;点中下添加配置&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;~&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cgi&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;fastcgi_pass&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;127.0.0.1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8088&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;fastcgi_index&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cgi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;fastcgi_param&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SCRIPT_FILENAME&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fcgi&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fastcgi_script_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fastcgi_params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;sudo killall nginx 停止nginx的所有进程&lt;/li&gt;
-  &lt;li&gt;sudo ./nginx重新启动，&lt;code&gt;http://localhost/cgidemo.cgi&lt;/code&gt;即可访问刚才编写的cgidemo程序&lt;/li&gt;
-&lt;/ul&gt;
 
 </content>
  </entry>
@@ -189,7 +531,7 @@
  </entry>
  
  <entry>
-   <title>在Ubuntu14.04上安装Nginx</title>
+   <title>Ubuntu14.04下安装Nginx</title>
    <link href="http://lambda.hk/nginx/2015/04/28/nginx-ubuntu-install"/>
    <updated>2015-04-28T00:00:00+08:00</updated>
    <id>http://lambda.hk/nginx/2015/04/28/nginx-ubuntu-install</id>
@@ -231,37 +573,17 @@
  </entry>
  
  <entry>
-   <title>在Ubuntu14.04上搭建配置nginx与FastCGI环境</title>
+   <title>Ubuntu14.04下搭建配置nginx与FastCGI环境</title>
    <link href="http://lambda.hk/nginx/2015/04/28/nginx-cgifast"/>
    <updated>2015-04-28T00:00:00+08:00</updated>
    <id>http://lambda.hk/nginx/2015/04/28/nginx-cgifast</id>
-   <content type="html">&lt;p&gt;  上一节已经在Ubuntu 14.04上部署了Nginx服务器，对于生产环境来说，一般使用Nginx反向代理到Tornado的架构，其中前端的Nginx主要处理Internet上的请求，而Tornado作为一个应用服务器，处理各个模块之间的数据交互。而supervisor是一个守护进程软件，可以把Linux上众多的守护进程集中在supervisor进行统一管理。&lt;/p&gt;
+   <content type="html">&lt;p&gt;  Nginx不支持外部程序的调用或者解析，包括php程序、python程序都不行，因此业务处理模块的调用，必须通过FastCGI接口来调用。FastCGI在Linux下是socket，为了调用CGI程序，还需要一个FastCGI的wrapper（启动另一个程序的程序），绑定在某个固定的socket。&lt;/p&gt;
 
 &lt;!--more--&gt;
 
-&lt;h3 id=&quot;tornado&quot;&gt;1 Tornado简介及部署&lt;/h3&gt;
-
-&lt;p&gt;  Tornado为facebook的一个开源项目，和现有的主流Web服务器框架有着明显区别，是非阻塞的服务器，得力于其非阻塞的方式以及epoll的运用，Tornado每秒可以处理数以千计的连接。&lt;/p&gt;
-
-&lt;p&gt;  首先在&lt;code&gt;http://www.tornadoweb.org/en/stable/index.html&lt;/code&gt;下载最新版本的tornado，通过以下方式安装，&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;tar&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xvzf&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tornado&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;4.1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gz&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tornado&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;2.0&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;python&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;py&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;build&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;python&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;py&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;  为了使用Tornado的所有功能，需要安装PycURL以及simplejson，Ubuntu下可以通过
-&lt;code&gt;sudo apt-get install python-pycurl&lt;/code&gt;安装.&lt;/p&gt;
-
-&lt;p&gt;  tornado安装目录下有一个demo目录，里面有一些应用的示例demo，包括一个类S3的基于本地文件的文件存储服务器。我们进入helloworld目录下，&lt;code&gt;python helloworld.py&lt;/code&gt;运行，即可通过浏览器中localhost:8888进行访问（我们设定的监听端口为8888）。事实上，无论py文件放在哪里，将其运行后，都可以正常访问，这也是Tornado不同于Apache的地方，不必有一个固定的/var/www/目录存放代码。&lt;/p&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;nginxfastcgi&quot;&gt;2 Nginx与FastCGI调用&lt;/h3&gt;
+&lt;h3 id=&quot;nginxfastcgi&quot;&gt;1 Nginx与FastCGI调用&lt;/h3&gt;
 
 &lt;p&gt;  FastCGI程序(fast common gateway interface) - 常驻型CGI程序，它是语言无关的、可伸缩架构的CGI开放扩展，其主要行为是将CGI解释器进程保持在内存中并因此获得较高的性能。nginx不能直接执行外部的cgi程序，需要使用FastCGI进程管理程序，才能调用FastCGI程序，比如lighttpd中的spawn-fastcgi。&lt;/p&gt;
-
-&lt;p&gt;  Nginx不支持外部程序的调用或者解析，包括php程序、python程序都不行，因此业务处理模块的调用，必须通过FastCGI接口来调用。FastCGI在Linux下是socket，为了调用CGI程序，还需要一个FastCGI的wrapper（启动另一个程序的程序），绑定在某个固定的socket伤。&lt;/p&gt;
 
 &lt;p&gt;  当Nginx将CGI请求发送给这个socket的时候，通过FastCGI接口，wrapper接收到请求，然后派生出一个新的线程，这个线程调用解释器或者外部程序处理脚本并读取返回数据；接着，wrapper再将返回的数据通过FastCGI接口，沿着固定的socket传递给Nginx；最后，Nginx将返回的数据发送给客户端。这就是Nginx+FastCGI的整个运作过程，如下图所示：&lt;/p&gt;
 
@@ -271,9 +593,9 @@
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;fastcgi&quot;&gt;3. FastCGI环境部署与测试&lt;/h3&gt;
+&lt;h3 id=&quot;fastcgi&quot;&gt;2. FastCGI环境部署与测试&lt;/h3&gt;
 
-&lt;h4 id=&quot;spawnfastcgi&quot;&gt;3.1 spawn_fastcgi的安装、部署与配置&lt;/h4&gt;
+&lt;h4 id=&quot;spawnfastcgi&quot;&gt;2.1 spawn_fastcgi的安装、部署与配置&lt;/h4&gt;
 
 &lt;ul&gt;
   &lt;li&gt;从&lt;code&gt;https://github.com/lighttpd/spawn-fcgi&lt;/code&gt;下载spawn-fcgi的安装包；&lt;/li&gt;
@@ -283,7 +605,7 @@
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;fastcgi-1&quot;&gt;3.2 fastcgi库的安装&lt;/h4&gt;
+&lt;h4 id=&quot;fastcgi-1&quot;&gt;2.2 fastcgi库的安装&lt;/h4&gt;
 
 &lt;ul&gt;
   &lt;li&gt;下载&lt;code&gt;http://www.fastcgi.com/dist/fcgi.tar.gz&lt;/code&gt;之后解压&lt;/li&gt;
@@ -293,7 +615,7 @@
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;fastcgidemo&quot;&gt;3.3 FastCGI的一个demo&lt;/h4&gt;
+&lt;h4 id=&quot;fastcgidemo&quot;&gt;2.3 FastCGI的一个demo&lt;/h4&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;fcgi_stdio.h&amp;gt;&lt;/span&gt;
 &lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdlib.h&amp;gt;&lt;/span&gt;
@@ -322,7 +644,7 @@
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;spawn-fcgiservernginx&quot;&gt;3.4 启动spawn-fcgi管理进程，绑定server，配置nginx转发请求&lt;/h4&gt;
+&lt;h4 id=&quot;spawn-fcgiservernginx&quot;&gt;2.4 启动spawn-fcgi管理进程，绑定server，配置nginx转发请求&lt;/h4&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;code&gt;/usr/local/nginx/sbin/spawn-fcgi -a 127.0.0.1 -p 8088 -f /usr/local/nginx/cgibin/demo&lt;/code&gt;启动spawn-fcgi进程，绑定server ip和端口（不要与nginx监听端口重合）；&lt;/li&gt;

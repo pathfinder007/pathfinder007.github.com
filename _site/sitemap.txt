@@ -24,6 +24,8 @@ http://lambda.hk/13/index.html
 http://lambda.hk/14/index.html
 http://lambda.hk/15/index.html
 
+http://lambda.hk/aws/2015/05/04/aws-s3-fundation
+http://lambda.hk/aws/2015/05/04/aws-nginx-env-errors-solution
 http://lambda.hk/aws/2015/05/04/aws-ec2-fundation
 http://lambda.hk/nginx/2015/05/01/nginx-supervisor
 http://lambda.hk/shell/2015/05/01/Shell-Search-File

@@ -64,7 +64,7 @@ int main() {
 
 * 通过`g++ cgidemo.cc -o cgidemo -lfcgi`进行编译；
 * 将cgidemo移到上一步新建的cgibin目录下;
-* 若提示缺少动态库libfcgi.so.0，建立一个软链接 ：ln -s /usr/local/libfcgi.so.0 /usr/lib/，执行idconfig更新；
+* 若提示缺少动态库libfcgi.so.0，建立一个软链接 ：ln -s /usr/local/lib/libfcgi.so.0 /usr/lib/，执行idconfig更新；
 
 <br />
 

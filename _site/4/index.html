@@ -185,6 +185,60 @@
 				
 			</div>
 			<div class="journal-body">
+				<h1 class="journal-title"><a href="/leetcode/2015/04/22/Leetcode-Subset">Subsets I/II</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>   给定一个vector容器存放的整形数组，返回所有的子集，要求子集中的元素为非递减排列；其中I中的元素没有重复，II中可能存在重复元素。</p>
+
+<p>  开始看到题目，第一感觉就是dfs，但是似乎这一题，又不算标准的dfs。当数组中没有重复元素时，对于长度为n的数组，子集有2^n个，即对于每个元素，都可以选择加入或者不加入。则可以先将数组排序，再依次将每个元素加入已生成的子集中。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/leetcode/2015/04/22/Leetcode-Subset">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/leetcode/2015/04/21/Leetcode-Find-Peak-Element">Find Peak Element</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  按照题意，peak number即在一个数组中，比前后元素都大的数字。对于nums[-1], nums[n]，都认为值为无穷小。题目要求的时间复杂度为O(logn)，毫无疑问需要使用二分查找，解题有一个小trick，即对mid元素做判断是否为peak number，若否，往那边跳的问题。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/leetcode/2015/04/21/Leetcode-Find-Peak-Element">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
 				<h1 class="journal-title"><a href="/leetcode/2015/04/20/Leetcode-Search-in-Rotated-Sorted-Array">Search in Rotated Sorted Array I/II</a><span class="author"></span></h1>
 				
 				<span class="teaser"><p>  给定一个有序数组，以某一个支点做旋转；给定一个target，找出该数组中是否存在该target.其中I数组没有重复元素，若存在，则返回元素索引，反之，返回-1。II数组中存在重复元素，存在返回True，否则返回False。</p>
@@ -247,60 +301,6 @@
 				
 				</span>
 				<span class="readmore"><a href="/leetcode/2015/04/20/Leetcode-Majority-Element">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#leetcode-ref" title="leetcode">
-	leetcode
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2015/04/20/Leetcode-Find-Minimum-in-Rotated-Sorted-Array">Find Minimum in Rotated Sorted Array I/II</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  一个有序数组，以某一个点为轴，进行旋转，找出数组中最小的元素，其中I中数组没有重复元素，II中数组存在重复元素。</p>
-
-<p>  由于这是一个递增的数组，以数组中某一个点为轴进行旋转，则旋转的位置，会产生一个递减。因此最直观的方法，遍历一遍数组，找出递减的位置，即找到了最小值，时间复杂度为O(n)。而这一题很明显的，是典型的二分查找应用，O(n)的算法没什么意义。使用二分查找，可以达到O(logn)的时间复杂度，通过递归或者非递归实现。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/leetcode/2015/04/20/Leetcode-Find-Minimum-in-Rotated-Sorted-Array">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#c++-ref" title="c++">
-	c++
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/c++/2015/04/20/C++-STL-map-hash_map-unordered_map">STL中的map、unordered_map、hash_map</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  在之前使用STL时，经常混淆的几个数据结构，特别是做Leetcode的题目时，对于使用哪一个map，一直没有太明确的概念，事实上，三个容器，有着比较大的区别.</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/c++/2015/04/20/C++-STL-map-hash_map-unordered_map">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -401,7 +401,7 @@
     	</a></li>
      
     	<li><a href="/categories.html#aws-ref">
-    		aws <span>1</span>
+    		aws <span>3</span>
     	</a></li>
     
   

@@ -4,7 +4,7 @@
  <title>Mushsen's Blog</title>
  <link href="http://lambda.hk/" rel="self"/>
  <link href="http://lambda.hk"/>
- <updated>2015-05-07T16:58:08+08:00</updated>
+ <updated>2015-05-07T18:59:30+08:00</updated>
  <id>http://lambda.hk</id>
  <author>
    <name>Hombo Wang</name>
@@ -13,7 +13,7 @@
 
  
  <entry>
-   <title>nginx配置对php的支持</title>
+   <title>nginx配置对php的支持，安装phpmyadmin</title>
    <link href="http://lambda.hk/nginx/2015/05/07/nginx-php"/>
    <updated>2015-05-07T00:00:00+08:00</updated>
    <id>http://lambda.hk/nginx/2015/05/07/nginx-php</id>
@@ -27,17 +27,23 @@
 
 &lt;p&gt;  nginx.conf中配置了root路径，即默认Nginx加载html文件的路径，默认是&lt;code&gt;nginx/html&lt;/code&gt;，这一点，影响到下面对php支持的配置项，很多直接复制粘贴别人的配置，不顾自己的环境，肯定成功不了。&lt;/p&gt;
 
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
 &lt;h3 id=&quot;php-cgi&quot;&gt;2. 安装php-cgi等工具&lt;/h3&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;php5&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fpm&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;php5&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cli&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;php5&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cgi&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mysql&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;php5&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mysql&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h3 id=&quot;spawn-fcgi&quot;&gt;2. 安装spawn-fcgi&lt;/h3&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;spawn-fcgi&quot;&gt;3. 安装spawn-fcgi&lt;/h3&gt;
 
 &lt;p&gt;  通过spawn-fcgi，管理FastCgi，它原属于lighttpd，但 9.10 后，spawn-fcgi被分离出来单独成包：&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;spawn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fcgi&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h3 id=&quot;nginxconf&quot;&gt;3. nginx.conf相关配置&lt;/h3&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;nginxconf&quot;&gt;4. nginx.conf相关配置&lt;/h3&gt;
 
 &lt;p&gt;  配置nginx.conf，相当于nginx收到关于php请求时，将其转发给后端的php解释器进行处理，cgi的一种典型实现。fastcgi_param 为默认的Web目录，前面默认设置为html，与配置文件中的root设置要对应。最后一个include的文件，位于conf/路径下&lt;/p&gt;
 
@@ -50,12 +56,19 @@
 	&lt;span class=&quot;n&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fastcgi_params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h3 id=&quot;section&quot;&gt;4. 需要启动的服务&lt;/h3&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section&quot;&gt;5. 需要启动的服务&lt;/h3&gt;
 
 &lt;p&gt;  首先重启nginx，然后启动fastcgi php。当出现error时，可能是nginx转发了请求，但是后端php解释器没有启动，查看一下9000端口的情况&lt;code&gt;netstat –ant | grep 9000&lt;/code&gt;。具体可以查看error.log中的相应记录。&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;spawn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fcgi&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;127.0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;9000&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;u&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;www&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;usr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;php&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cgi&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;phpmyadmin&quot;&gt;6. 安装phpmyadmin&lt;/h3&gt;
+
+&lt;p&gt;  首先从&lt;code&gt;http://sourceforge.net/projects/phpmyadmin/&lt;/code&gt;下载phpmyadmin的最新版本，解压后，拷贝到&lt;code&gt;/usr/local/nginx/html/&lt;/code&gt;中，权限设置成755，则可以通过&lt;code&gt;ip/phpmyadmin&lt;/code&gt;进行访问图形化管理界面。&lt;/p&gt;
 </content>
  </entry>
  

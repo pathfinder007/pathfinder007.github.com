@@ -23,7 +23,10 @@ http://lambda.hk/12/index.html
 http://lambda.hk/13/index.html
 http://lambda.hk/14/index.html
 http://lambda.hk/15/index.html
+http://lambda.hk/16/index.html
 
+http://lambda.hk/nginx/2015/05/07/nginx-php
+http://lambda.hk/aws/2015/05/05/backend-rest-rpc
 http://lambda.hk/aws/2015/05/04/aws-s3-fundation
 http://lambda.hk/aws/2015/05/04/aws-nginx-env-errors-solution
 http://lambda.hk/aws/2015/05/04/aws-ec2-fundation

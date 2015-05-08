@@ -2,7 +2,7 @@
 layout: post
 category: sql
 title: 使用Python封装MySQL的CRUD操作API
-tags:Backend mysql python
+tags: Backend mysql python
 ---
 
 &emsp;&emsp;Python可以通过mysqldb模块进行mysql操作，整个RDS这一块的代码架构组织，设想是封装一个CRUD的类，对于不同的表操作，分别进行实例化。这样看来，似乎可以在一定程度上减少sql语句的冗余，代码组织更具层次性。

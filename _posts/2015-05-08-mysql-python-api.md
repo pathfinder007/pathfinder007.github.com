@@ -23,24 +23,25 @@ class RdsApi(object):
     db     = 'your_db' 
     table  = ''
 
- 	def __init__(self, table):
-        self.table = table
 
-
- 	def build_connect(self):
+	def __init__(self, table):
+    	self.table = table
+    	
+    	
+    def build_connect(self):
         conn   = MySQLdb.connect(host = self.host, user = self.user, passwd = self.passwd, port = self.port)
         conn.select_db(self.db)                                                                                                                                                         
         cursor = conn.cursor()
         return (conn, cursor)
-
-
-    def free_connect(self, conn, cursor):
+	
+	
+	def free_connect(self, conn, cursor):
         conn.commit()
         cursor.close()
         conn.close()
-
-
-	def rdsSelectData(self, cond):
+       
+        
+    def rdsSelectData(self, cond):
         """
         params: cond-data filter condition.
         """
@@ -56,9 +57,9 @@ class RdsApi(object):
         
         except MySQLdb.Error, e:
             print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
-
-
-    def rdsInsertData(self, fmt, values):
+       
+            
+	def rdsInsertData(self, fmt, values):
         """
         params: values-string with format and data.
         """
@@ -72,8 +73,9 @@ class RdsApi(object):
         
         except MySQLdb.Error, e:
             print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
-
- 	def rdsUpdateData(self, cols, values, cond):
+     
+            
+	def rdsUpdateData(self, cols, values, cond):
         """
         params: cols-list, columns to update; values-list, uodate values; cond-data filter condition.
         """
@@ -92,8 +94,8 @@ class RdsApi(object):
         
         except MySQLdb.Error, e:
             print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
-
-
+            
+    
     def rdsDeleteData(self, cond):
         """
         params: cond-data filter condition.
@@ -107,6 +109,6 @@ class RdsApi(object):
             self.free_connect(conn, cursor)            
 
         except MySQLdb.Error, e:
-            print 'MySQL Error %d: %s' % (e.args[0], e.args[1])       
+            print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
 {% endhighlight %}
                     

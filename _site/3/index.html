@@ -187,6 +187,84 @@
 				
 			</div>
 			<div class="journal-body">
+				<h1 class="journal-title"><a href="/nginx/2015/04/30/nginx-tornado">Ubuntu14.04下搭建配置nginx与Tornado反向代理</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  上一节已经在Ubuntu 14.04上部署了Nginx服务器，Nginx是一个高效的Web服务器及代理服务器，Tornado是一个基于epoll的异步非阻塞的Web开发框架，通常使用Nginx做为Web服务器时，都会以FastCGI模式，而我们从开发、调试、运维的角度考虑，使用了反向代理的模式，Tornado作为主要的业务服务器，同时Nginx可以通过FastCGI做一些特殊业务和负载均衡的处理。而supervisor是一个守护进程软件，可以把Linux上众多的守护进程集中在supervisor进行统一管理。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/nginx/2015/04/30/nginx-tornado">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#leetcode-ref" title="leetcode">
+	leetcode
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/leetcode/2015/04/29/Leetcode-ListNode-Reorder">Reorder List</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  改变一个链表的顺序，从<code>L0-&gt;L1-&gt;L2...-&gt;Ln变成L0-&gt;Ln-&gt;L1-&gt;Ln-1...</code>,in-place并且不能改变节点的值。比较经典的链表相关题目。涉及到链表的切分、反转以及拼接。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/leetcode/2015/04/29/Leetcode-ListNode-Reorder">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#nginx-ref" title="nginx">
+	nginx
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/nginx/2015/04/28/nginx-ubuntu-install">Ubuntu14.04下安装Nginx</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  aws上面开的Instance为Ubuntu 14.04，下面记录在ubuntu 14.04上搭建一个Nginx服务器，通过浏览器<code>localhost</code>可以访问的过程</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/nginx/2015/04/28/nginx-ubuntu-install">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#nginx-ref" title="nginx">
+	nginx
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
 				<h1 class="journal-title"><a href="/nginx/2015/04/28/nginx-cgifast">Ubuntu14.04下搭建配置nginx与FastCGI环境</a><span class="author"></span></h1>
 				
 				<span class="teaser"><p>  Nginx不支持外部程序的调用或者解析，包括php程序、python程序都不行，因此业务处理模块的调用，必须通过FastCGI接口来调用。FastCGI在Linux下是socket，为了调用CGI程序，还需要一个FastCGI的wrapper（启动另一个程序的程序），绑定在某个固定的socket。</p>
@@ -221,90 +299,6 @@
 				
 				</span>
 				<span class="readmore"><a href="/algorithm/2015/04/27/Merge-Sort-Array-ListNode">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#leetcode-ref" title="leetcode">
-	leetcode
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2015/04/26/Leetcode-Reverse">Reverse Nodes in k-Group</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  给一个链表，每次反转k个节点，如果节点数不是k的倍数，最后剩下的节点不需要反转，只能操作节点，不能改变节点的值，使用常数空间。</p>
-
-<p>   跟昨天做的<code>Reverse Linked List II</code>是一样的思路，即对于每k个节点，看成一组[m, n]，<code>Reverse Linked List II</code>只需要反转一组子链表，而这一题需要反转多组。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/leetcode/2015/04/26/Leetcode-Reverse">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#leetcode-ref" title="leetcode">
-	leetcode
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2015/04/25/Leetcode-Reverse-Linked-List-II">Reverse Linked List II</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>   即给定一个链表，以及两个位置m，n，将从第m个节点到第n个节点的链表进行反转。要求最好是只扫描一次链表，以及in-place去做。比如，对于<code>1-&gt;2-&gt;3-&gt;4-&gt;5-&gt;NULL, m = 2 and n = 4</code>，反转后返回<code>1-&gt;4-&gt;3-&gt;2-&gt;5-&gt;NULL</code>。</p>
-
-<p>  开始想到的方法是，使用一个栈，从m到n，将节点的值入栈，然后再扫一遍链表，从m到n，再将值依次出栈，更改节点元素值即可。如此，有两个不好的地方，首先，多开辟了存储空间，最坏情况下，需要浪费O(n)的存储空间；再者，需要遍历两次。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/leetcode/2015/04/25/Leetcode-Reverse-Linked-List-II">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#leetcode-ref" title="leetcode">
-	leetcode
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/leetcode/2015/04/23/Leetcode-Largest-Rectangle">Largest Rectangle in Histogram/Maximal Rectangle</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>   Leetcode中求面积的两个相对比较难的题目，其中<code>Largest Rectangle in Histogram</code>给定n个元素的数组，每个元素为柱子的高度，宽度均为1，计算柱子组成的矩形的最大面积；<code>Maximal Rectangle</code>给一个二维数组，元素为0/1，找出包含1的最大的方形区域。</p>
-
-<p>  对于第一道题，穷举的时间复杂度为O(n^2)，可以通过减枝满足AC的要求；也可以使用栈来优化算法，达到O(n)的时间复杂度。很多需要进行时间复杂度优化的问题都可以通过栈或者是哈希表加以解决；而对于后者，开始想到了纪录一个矩形块的左右边界的方法，但没有具体想明白，可以通过逐层对每个元素，纪录左右边界以及有效高度的方法，类似DP。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/leetcode/2015/04/23/Leetcode-Largest-Rectangle">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -406,6 +400,10 @@
      
     	<li><a href="/categories.html#aws-ref">
     		aws <span>4</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#sql-ref">
+    		sql <span>3</span>
     	</a></li>
     
   

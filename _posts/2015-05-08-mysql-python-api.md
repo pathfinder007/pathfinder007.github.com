@@ -73,7 +73,7 @@ class RdsApi(object):
         except MySQLdb.Error, e:
             print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
 
- def rdsUpdateData(self, cols, values, cond):
+ 	def rdsUpdateData(self, cols, values, cond):
         """
         params: cols-list, columns to update; values-list, uodate values; cond-data filter condition.
         """

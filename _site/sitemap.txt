@@ -25,6 +25,9 @@ http://lambda.hk/14/index.html
 http://lambda.hk/15/index.html
 http://lambda.hk/16/index.html
 
+http://lambda.hk/sql/2015/05/08/mysql-python-api
+http://lambda.hk/sql/2015/05/08/mysql-operate
+http://lambda.hk/sql/2015/05/07/phpmyadmin-aws-remote-mysql
 http://lambda.hk/nginx/2015/05/07/nginx-php
 http://lambda.hk/aws/2015/05/05/backend-rest-rpc
 http://lambda.hk/aws/2015/05/04/aws-s3-fundation

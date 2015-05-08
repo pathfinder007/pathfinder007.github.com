@@ -179,6 +179,84 @@
 				
 				<div class="journal-cat-box">
 
+<a href="/categories.html#sql-ref" title="sql">
+	sql
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/sql/2015/05/08/mysql-python-api">使用Python封装MySQL的CRUD操作API</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  Python可以通过mysqldb模块进行mysql操作，整个RDS这一块的代码架构组织，设想是封装一个CRUD的类，对于不同的表操作，分别进行实例化。这样看来，似乎可以在一定程度上减少sql语句的冗余，代码组织更具层次性。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/sql/2015/05/08/mysql-python-api">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#sql-ref" title="sql">
+	sql
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/sql/2015/05/08/mysql-operate">mysql基本操作</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  项目涉及的环境的搭建，包括Nginx的基本配置，基本OK了，目前的方案，与S3的交互，都不使用Backend这边的Python模块去做，而交给Client以及Trainer/Predictor那边的C++模块，相当于在算法模块外面再包一层C++的接口，处理与Server的rest交互，以及与S3的交互。这几天先把与MySQL交互的Python接口封装好。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/sql/2015/05/08/mysql-operate">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
+<a href="/categories.html#sql-ref" title="sql">
+	sql
+
+</a>
+</div>
+				
+			</div>
+			<div class="journal-body">
+				<h1 class="journal-title"><a href="/sql/2015/05/07/phpmyadmin-aws-remote-mysql">phpmyadmin管理aws上mysql</a><span class="author"></span></h1>
+				
+				<span class="teaser"><p>  通过对phpmyadmin的配置，进行远程数据库的管理，主要包括，AWS EC2上面的本地数据库，以及AWS上RDS实例上的MySQL，本质上，其实是一样的，都是对远程数据库的管理。</p>
+
+
+				
+				</span>
+				<span class="readmore"><a href="/sql/2015/05/07/phpmyadmin-aws-remote-mysql">Read More</a></span>
+			</div>
+		</div>
+		<div class="clearboth"></div>
+		
+		<div class="journal-article">
+			<div class="journal-post-info">
+				
+				
+				<div class="journal-cat-box">
+
 <a href="/categories.html#nginx-ref" title="nginx">
 	nginx
 
@@ -221,84 +299,6 @@
 				
 				</span>
 				<span class="readmore"><a href="/aws/2015/05/05/backend-rest-rpc">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#aws-ref" title="aws">
-	aws
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/aws/2015/05/04/aws-s3-fundation">AWS上S3基本操作</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  AWS提供了一套自己的SDK，对于使用Python作为主要Backend语言来说，需要通过boto的接口，来进行S3的操作。操作主要涉及到S3的连接、bucket的建立以及删除，数据的存储、读取、删除操作。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/aws/2015/05/04/aws-s3-fundation">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#aws-ref" title="aws">
-	aws
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/aws/2015/05/04/aws-nginx-env-errors-solution">将Nginx环境从本地迁移到AWS错误以及解决方法</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  下午将本地的Nginx反向代理到Tornado，以及调用FastCGI接口的整个环境迁移到AWS上面，出现了一些问题，下面将问题以及解决方法做一个备忘。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/aws/2015/05/04/aws-nginx-env-errors-solution">Read More</a></span>
-			</div>
-		</div>
-		<div class="clearboth"></div>
-		
-		<div class="journal-article">
-			<div class="journal-post-info">
-				
-				
-				<div class="journal-cat-box">
-
-<a href="/categories.html#aws-ref" title="aws">
-	aws
-
-</a>
-</div>
-				
-			</div>
-			<div class="journal-body">
-				<h1 class="journal-title"><a href="/aws/2015/05/04/aws-ec2-fundation">SSH登录AWS上的EC2以及SCP操作</a><span class="author"></span></h1>
-				
-				<span class="teaser"><p>  3月底的时候，当时有做一个基于aws的高性能Web Server项目的意向。就开始对aws S3以及EC2进行了一定的调研，并做了一些测试。后来项目后延，这个事情暂时搁置。5月中旬左右将会正式开展，想了一下，得把以前一些有用的东西重拾一下，稍微搭建一个小系统，尽量缩短正式开始时候的工期。</p>
-
-
-				
-				</span>
-				<span class="readmore"><a href="/aws/2015/05/04/aws-ec2-fundation">Read More</a></span>
 			</div>
 		</div>
 		<div class="clearboth"></div>
@@ -400,6 +400,10 @@
      
     	<li><a href="/categories.html#aws-ref">
     		aws <span>4</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#sql-ref">
+    		sql <span>3</span>
     	</a></li>
     
   

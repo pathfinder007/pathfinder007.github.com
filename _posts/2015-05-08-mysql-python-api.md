@@ -12,103 +12,114 @@ tags: Backend mysql python
 &emsp;&emsp;本文实现项目中RDS操作最底层的CRUD封装。首先通过`sudo apt-get install python-mysqldb`安装mysqldb模块。需要注意的时候，Python代码中如果存在中文注释，需要在`#! /usr/bin/python`下添加`# -*- coding: UTF-8 -*-`，否则会因为编码问题报错。以下即为具体的CRUD底层接口实现：
 
 
+### 1. 数据库建立连接
+
 {% highlight Python %}
-import MySQLdb
-
-class RdsApi(object):
-    host   = 'your_ip'
-    user   = 'your_name'
-    passwd = 'your_passwd'
-    port   = 3306
-    db     = 'your_db' 
-    table  = ''
-
-
-	def __init__(self, table):
-    	self.table = table
-    	
-    	
-    def build_connect(self):
-        conn   = MySQLdb.connect(host = self.host, user = self.user, passwd = self.passwd, port = self.port)
-        conn.select_db(self.db)                                                                                                                                                         
-        cursor = conn.cursor()
-        return (conn, cursor)
-	
-	
-	def free_connect(self, conn, cursor):
-        conn.commit()
-        cursor.close()
-        conn.close()
-       
-        
-    def rdsSelectData(self, cond):
-        """
-        params: cond-data filter condition.
-        """
-        try:
-            (conn, cursor) = self.build_connect()
-            
-            query  = 'select * from ' + self.table + ' where ' + cond
-            count  = cursor.execute(query)
-            result = cursor.fetchall()
-            
-            self.free_connect(conn, cursor)            
-            return result
-        
-        except MySQLdb.Error, e:
-            print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
-       
-            
-	def rdsInsertData(self, fmt, values):
-        """
-        params: values-string with format and data.
-        """
-        try:
-            (conn, cursor) = self.build_connect()
-            
-            query  = 'insert into ' + self.table + ' values' + fmt
-            cursor.execute(query, values)
-       
-            self.free_connect(conn, cursor)            
-        
-        except MySQLdb.Error, e:
-            print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
-     
-            
-	def rdsUpdateData(self, cols, values, cond):
-        """
-        params: cols-list, columns to update; values-list, uodate values; cond-data filter condition.
-        """
-        try:
-            (conn, cursor) = self.build_connect()
-            
-            query  = 'update ' + self.table + ' set '
-            for i in xrange(len(values)):
-                col_val = str(cols[i]) + '=' + '"' + str(values[i]) + '",'    
-                query += col_val
-            
-            query =  query[:-1] + ' ' + cond
-            cursor.execute(query)
-        
-            self.free_connect(conn, cursor)            
-        
-        except MySQLdb.Error, e:
-            print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
-            
-    
-    def rdsDeleteData(self, cond):
-        """
-        params: cond-data filter condition.
-        """
-        try:
-            (conn, cursor) = self.build_connect()
-            
-            query = 'delete from ' + self.table + '  where ' + cond
-            cursor.execute(query)
-        
-            self.free_connect(conn, cursor)            
-
-        except MySQLdb.Error, e:
-            print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
+def build_connect(self):
+    conn = MySQLdb.connect(host = self.host, user = self.user, passwd = self.passwd, port = self.port)
+    conn.select_db(self.db)                                                                                                                                                         
+    cursor = conn.cursor(
+    return (conn, cursor)
 {% endhighlight %}
-                    
+
+<br />
+
+### 2. 数据库释放连接
+
+{% highlight Python %}
+def free_connect(self, conn, cursor):
+    conn.commit()
+    cursor.close()
+    conn.close()
+{% endhighlight %}
+
+<br />
+
+### 3. 查询操作
+
+{% highlight Python %}
+def rdsSelectData(self, cond):
+    """
+    params: cond-data filter condition.
+    """
+    try:
+        (conn, cursor) = self.build_connect()
+            
+        query  = 'select * from ' + self.table + ' where ' + cond
+        count  = cursor.execute(query)
+        result = cursor.fetchall()
+            
+        self.free_connect(conn, cursor)            
+        return result
+        
+    except MySQLdb.Error, e:
+        print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
+{% endhighlight %}
+
+<br />
+
+### 4. 插入操作
+
+{% highlight Python %}
+def rdsInsertData(self, fmt, values):
+    """
+    params: values-string with format and data.
+    """
+    try:
+        (conn, cursor) = self.build_connect()
+            
+        query  = 'insert into ' + self.table + ' values' + fmt
+        cursor.execute(query, values)
+       
+        self.free_connect(conn, cursor)            
+        
+    except MySQLdb.Error, e:
+        print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
+{% endhighlight %}
+
+<br />
+
+### 5. 更新操作
+
+{% highlight Python %}
+def rdsUpdateData(self, cols, values, cond):
+    """
+    params: cols-list, columns to update; values-list, uodate values; cond-data filter condition.
+    """
+    try:
+        (conn, cursor) = self.build_connect()
+            
+        query  = 'update ' + self.table + ' set '
+        for i in xrange(len(values)):
+            col_val = str(cols[i]) + '=' + '"' + str(values[i]) + '",'    
+            query += col_val
+            
+        query =  query[:-1] + ' ' + cond
+        cursor.execute(query)
+        
+        self.free_connect(conn, cursor)            
+        
+    except MySQLdb.Error, e:
+        print 'MySQL Error %d: %s' % (e.args[0], e.args[1])
+{% endhighlight %}
+
+<br />
+
+### 6. 删除操作
+
+{% highlight Python %}
+def rdsDeleteData(self, cond):
+    """
+    params: cond-data filter condition.
+    """
+    try:
+        (conn, cursor) = self.build_connect()
+            
+        query = 'delete from ' + self.table + '  where ' + cond
+        cursor.execute(query)
+        
+        self.free_connect(conn, cursor)            
+
+    except MySQLdb.Error, e:
+        print 'MySQL Error %d: %s' % (e.args[0], e.args[1])    
+{% endhighlight %}

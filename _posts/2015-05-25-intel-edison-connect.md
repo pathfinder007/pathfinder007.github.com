@@ -7,11 +7,11 @@ tags: Intel Edison
 
 &emsp;&emsp;之前稍微玩过一下puDuino，即俗称的超树莓派，拥有丰富的IO资源，基于Arduino开源平台。使用的是国产的处理器，使用ARM的授权IP，主频大概1GHz，内存1GB，运行一个改良版的Ubuntu系统，用户体验非常好。最近拿了一个Intel去年针对智能硬件领域推出的处理器Edison，其其包括Mini breakout board版本（只有一个SD卡大小），以及针对Arduino平台进行了定制，即Arduino expansion board版本（见下图），开发资源与Arduino的一套东西类似。
 
+<!--more-->
+
 <figure>
 	<img src="http://mhs-blog.qiniudn.com/2015_05_25_01.jpg" alt="">
 </figure>
-
-<!--more-->
 
 
 ## 1.Edison Arduino expansion board连接
@@ -55,6 +55,8 @@ ifconfig usb0 down
 ifconfig wlan0 down
 ifconfig wlan0 up
 {% endhighlight %}
+
+<br />
 
 <figure>
 	<img src="http://mhs-blog.qiniudn.com/2015_05_25_04.png" alt="">

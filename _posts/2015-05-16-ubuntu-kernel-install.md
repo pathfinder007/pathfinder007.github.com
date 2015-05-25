@@ -33,7 +33,7 @@ vim grub可以查看引导程序(boot loader)的配置文件；
 ### 2.内核卸载清理 
 
 {% highlight Python %}
-dpkg —get-selections | grep linux 列出系统安装的内核，带image的项
+dpkg —-get-selections | grep linux 列出系统安装的内核，带image的项
 sudo apt-get remove linux-image-内核版本
 sudo apt-get remove linux-headers-内核版本    自动删除内核文件，释放磁盘空间
 {% endhighlight %}

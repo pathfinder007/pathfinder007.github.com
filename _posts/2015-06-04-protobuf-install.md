@@ -15,14 +15,21 @@ tags: Protobuf automake openssl
 
 ## 1. protobuf源码安装
 
+### 1.1 不支持https
+
 &emsp;&emsp;从`https://github.com/google/protobuf`下载protobuf的源码，按照README中的说明，使用`./autogen.sh`去生成configure文件，autogen脚本的执行依赖于openssl，即是一种https的请求，而默认安装的curl，是未开启ssl支持的，从`curl -V`即可看到支持的请求类型。
 
 &emsp;&emsp;从`http://curl.haxx.se/`下载libcurl的最新版，在configure阶段，加入对ssl的支持。从` http://www.openssl.org/`下载openssl的源码，编译安装，在curl目录中，通过 `sudo ./configure --with-ssl --with-libssl-prefix=/usr/local/ssl`开启ssl支持。之后make安装。
 
-&emsp;&emsp;`./autogen.sh: 4: autoreconf: not found`错误，通过安装automake工具解决：`sudo apt-get install autoconf automake libtool`，正常的make安装protobuf即可。默认安装的是C++的package，包括了protoc编译器，若要继续安装python package，则进入python目录，依次执行`python setup.py build`，`python setup.py install`
+### 1.2 ./autogen.sh: 4: autoreconf: not found错误，
+
+&emsp;&emsp;通过安装automake工具解决：`sudo apt-get install autoconf automake libtool`，正常的make安装protobuf即可。默认安装的是C++的package，包括了protoc编译器，若要继续安装python package，则进入python目录，依次执行`python setup.py build`，`python setup.py install`
+
+### 1.3 protoc: error while loading shared libraries
+
+&emsp;&emsp;protobuf的默认安装路径是/usr/local/lib，而/usr/local/lib 不在Ubuntu体系默认的 LD_LIBRARY_PATH 里，所以就找不到该lib，可以通过创建文件/etc/ld.so.conf.d/libprotobuf.conf 包含内容`/usr/local/lib `，输入命令`sudo ldconfig`更新缓存解决。
 
 <br />
-
 
 ## 2. protobuf通信框架
 

@@ -26,4 +26,4 @@ tags: Protobuf automake openssl
 
 ## 2. protobuf通信框架
 
-&emsp;&emsp;一般protobuf结合tcp通信协议发挥其轻量的特性，在大规模网站架构中，使用较多，有效提高网络传输效率。百度最近开源了一个通信协议包，sofa-pbrpc，`https://github.com/BaiduPS/sofa-pbrpc/wiki`，做个记录。 
+&emsp;&emsp;一般protobuf结合tcp通信协议发挥其轻量的特性，在大规模网站架构中，使用较多，有效提高网络传输效率。百度开源的通信协议包，sofa-pbrpc，`https://github.com/BaiduPS/sofa-pbrpc/wiki`，做个记录。 

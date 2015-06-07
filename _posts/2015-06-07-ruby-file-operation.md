@@ -5,7 +5,7 @@ title: Ruby中的文件操作
 tags: Ruby
 ---
 
-&emsp;&emsp;ruby的相关文件操作。
+ruby的相关文件操作。
 
 * close 关闭文件
 * read 读取整个文件内容

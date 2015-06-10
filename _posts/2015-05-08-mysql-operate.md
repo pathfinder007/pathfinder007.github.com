@@ -11,7 +11,7 @@ tags: aws Backend mysql python
 
 &emsp;&emsp;很长一段时间没有做backend方面的工作了，不少东西都稍微有点生疏，很多基本的MySQL操作，居然都忘了。好在去年这个时候，在阿里云上，写过不少的SQL操作，拾起来倒挺快。
 
-## 1 MySQL基本操作
+## 1. MySQL基本操作
 
 {% highlight C++ %}
 mysql -h ip -u user -p    //使用mysql cli连接远程MySQL数据库
@@ -30,7 +30,7 @@ update birth set birthaddr = "usa" where name = "mushsen";    //修改表中的�
 
 <br />
 
-## 2 通过txt文件插入数据库
+## 2. 通过txt文件插入数据库
 
 &emsp;&emsp;通过文本文件插入数据库，当大批量数据时，可以先将需要插入的记录，批量写到txt文件中，每行包含一条记录，用tab分开，以通过一个简单的C脚本，将数据fprintf到一个文件中，并且按照create table时列出的列次序给出。
 
@@ -50,4 +50,22 @@ load data local infile "birth.txt" into table birth;
 {% highlight SQL %}
 mysql -h ip -u user --local-infile=1 -p
 {% endhighlight %}
+
+<br />
+
+## 3. 数据库中文支持 
+
+&emsp;&emsp;可以在创建数据库以及数据表时，指定字符编码实现，如下：
+
+{% highlight Python %}
+CREATE DATABASE `test`
+CHARACTER SET 'utf8'
+COLLATE 'utf8_general_ci';
+
+CREATE TABLE `database_user` (
+`ID` varchar(40) NOT NULL default '',
+`UserID` varchar(40) NOT NULL default '',
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+{% endhighlight %}
+
 

@@ -60,6 +60,8 @@ def get(self):
         self.write('fail')
 {% endhighlight %}
 
+<br />
+
 {% highlight Python %}
 def checksignature(self, signature, timestamp, nonce):
 	args = []

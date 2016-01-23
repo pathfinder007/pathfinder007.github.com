@@ -1,8 +1,8 @@
 ---
 layout: post
-category: sql
+category: Linux
 title: Linux下使用crontab创建定时任务
-tags: Linux 
+tags: Linux Crontab 
 ---
 
 &emsp;&emsp;项目中用到了crontab做定时任务，定时任务应该是Web开发中比较常见的一种机制，比如某个状态被Locked住，一定时间后，需要将其release。而Linux提供了方便简单的命令，即可实现这一功能。
